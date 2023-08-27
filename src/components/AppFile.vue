@@ -5,11 +5,11 @@ import { onClickOutside } from '@vueuse/core';
 import AppFileDelete from '@/components/AppFileDelete.vue';
 
 import axiosInstance from '@/assets/axios';
-import { AppFile } from '@/assets/data/interfaces';
 import { useLoaderStore } from '@/stores';
+import { FileRecord } from '@/assets/data/interfaces';
 
 interface Props {
-	file: AppFile;
+	file: FileRecord;
 }
 
 const props = defineProps<Props>();
@@ -25,14 +25,16 @@ onClickOutside(clickOutsideRef, () => (showContextmenu.value = false));
 
 /**
  * Retrieves a file from the server and opens it in a new browser window for viewing.
- * @param {string} fileName - The name of the file to be retrieved and viewed.
+ * @param {string} fileId - The ID of the file to be retrieved and viewed.
  */
-const viewFile = async (fileName: string) => {
-	if (!fileName) return;
+const viewFile = async (fileId: number) => {
+	if (!fileId) return;
 
 	loader.setLoader();
 	try {
-		const response = await axiosInstance.get(`file?file_name=${fileName}`, { responseType: 'blob' });
+		const response = await axiosInstance.get(`file/${fileId}`, {
+			responseType: 'blob',
+		});
 
 		// Access the 'Content-Type' header
 		const type = response.headers['content-type'] as string;
@@ -60,11 +62,11 @@ const viewFile = async (fileName: string) => {
 		/>
 		<div
 			ref="clickOutsideRef"
-			@click="viewFile(file.name)"
+			@click="viewFile(file.id)"
 			@contextmenu.prevent="showContextmenu = !showContextmenu"
 			class="text-sm ms-3 cursor-pointer hover:underline transition"
 		>
-			{{ file.name.substring(5) }}
+			{{ file.name }}
 		</div>
 		<AppFileDelete
 			v-if="showContextmenu"

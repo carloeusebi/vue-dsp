@@ -1,5 +1,5 @@
 import { Patient } from '@/assets/data/interfaces';
-import { deleteMixin, saveMixin } from '@/mixins';
+import { calculateAge, deleteMixin, saveMixin } from '@/mixins';
 import { defineStore } from 'pinia';
 
 const endpoint = '/patients';
@@ -48,6 +48,10 @@ export const usePatientsStore = defineStore('patients', {
 		 * @param patients the patient's list
 		 */
 		loadPatients(patients: Patient[]) {
+			patients = patients.map(patient => {
+				patient.age = calculateAge(patient.birthday);
+				return patient;
+			});
 			this.patients = patients;
 			localStorage.setItem('PATIENTS', JSON.stringify(patients));
 		},
@@ -65,7 +69,7 @@ export const usePatientsStore = defineStore('patients', {
 		 * Calls the database to update the patient, if success it updates it locally
 		 * @param patient The patient to be saved
 		 */
-		async save(patient: FormData): Promise<void> {
+		async save(patient: Patient): Promise<void> {
 			return saveMixin(this, endpoint, patient, this.patients, this.loadPatients);
 		},
 

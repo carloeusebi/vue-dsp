@@ -90,11 +90,11 @@ const uploadFile = async () => {
 		const response = await axiosInstance.post('file', formData, headers);
 
 		// Update the patient's files list with the newly uploaded file
-		const justUploadedFile = response.data.last_insert;
+		const justUploadedFile = response.data;
 		props.patient.files?.push(justUploadedFile);
 		unloadFile();
 	} catch (err) {
-		if (isAxiosError(err)) errors.value = err.response?.data;
+		if (isAxiosError(err)) errors.value = err.response?.data.errors;
 		else console.error(err);
 	} finally {
 		loader.unsetLoader();
