@@ -30,6 +30,7 @@ export interface Patient {
 	height?: string;
 	job?: string;
 	qualification?: string;
+	drugs?: string;
 	sex?: 'M' | 'F' | 'O';
 	cohabitants?: string;
 }
@@ -110,7 +111,6 @@ export interface Tag {
 }
 
 export type NewTag = Omit<Tag, 'id'>;
-
 export type NewPatient = Omit<Patient, 'id'>;
 export type NewQuestion = Omit<Question, 'id'>;
 export type NewSurvey = Omit<Survey, 'id' | 'token'>;

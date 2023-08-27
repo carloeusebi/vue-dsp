@@ -1,5 +1,7 @@
 import { Store } from 'pinia';
 
+import { Patient, Question, Survey, Tag } from '@/assets/data/interfaces';
+
 /**
  * Saves data to the db and updates the local store with the new data.
  * @param store - The Pinia store instance.
@@ -12,22 +14,16 @@ import { Store } from 'pinia';
 export async function saveMixin<T extends Store>(
 	store: T,
 	endpoint: string,
-	toSaveData: any,
+	toSaveData: Patient | Tag | Question | Survey,
 	storeData: Array<any>,
 	loadMethod: (data: Array<any>) => void
 ): Promise<void> {
 	try {
-		const res = await store.axios.post(endpoint, toSaveData);
-		const insertedItem = res.data.last_insert;
-
-		const indexToUpdate = storeData.findIndex(({ id }) => id === insertedItem.id);
-
-		if (indexToUpdate === -1) {
-			// this is a newly created item
-			storeData.push(insertedItem);
+		if (toSaveData.id) {
 		} else {
-			// this is an updated item
-			storeData[indexToUpdate] = insertedItem;
+			const res = await store.axios.post(endpoint, toSaveData);
+			const insertedItem = res.data;
+			storeData.push(insertedItem);
 		}
 		// Call the loadMethod to update the local store with the new data
 		loadMethod(storeData);

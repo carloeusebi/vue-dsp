@@ -2,7 +2,6 @@
 import { Ref, ref, watch } from 'vue';
 import AppInputElement from '@/components/AppInputElement.vue';
 import { Patient } from '@/assets/data/interfaces';
-import { emptyPatient } from '@/assets/data/data';
 
 interface Props {
 	patient: Patient;
@@ -15,16 +14,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 // const props = defineProps<Props>();
 
-const emit = defineEmits(['form-emptied']);
 const form: Ref<Patient> = ref(props.patient);
-
-/**
- * Empties all form's fields
- */
-const emptyFields = () => {
-	form.value = emptyPatient;
-	emit('form-emptied');
-};
 
 /**
  * Given a string it capitalizes every word in the string, marco di corato => Marco Di Corato
@@ -113,7 +103,6 @@ watch(
 				v-model.trim="form.birthday"
 				label="Data di nascita"
 				type="date"
-				:required="true"
 			/>
 		</div>
 
@@ -211,23 +200,20 @@ watch(
 			/>
 		</div>
 	</div>
-	<div class="md:col-span-2 z-0 w-full mb-6 group">
-		<!-- COHABITANTS -->
-		<AppInputElement
-			v-model.trim="form.cohabitants"
-			label="Conviventi"
-		/>
-	</div>
-
-	<div>
-		<button
-			v-if="!isTest"
-			type="button"
-			class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto me-4"
-			@click="emptyFields"
-			ref="cancelButtonRef"
-		>
-			Svuota
-		</button>
+	<div class="grid md:grid-cols-2 md:gap-6">
+		<div class="md:col-span-1 z-0 w-full mb-6 group">
+			<!-- COHABITANTS -->
+			<AppInputElement
+				v-model.trim="form.cohabitants"
+				label="Conviventi"
+			/>
+		</div>
+		<div class="md:col-span-1 z-0 w-full mb-6 group">
+			<!-- COHABITANTS -->
+			<AppInputElement
+				v-model.trim="form.drugs"
+				label="Farmaci"
+			/>
+		</div>
 	</div>
 </template>

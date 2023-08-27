@@ -43,18 +43,7 @@ const handleSavePatient = async () => {
 
 	const patientStore = usePatientsStore();
 
-	const keys = Object.keys(patientRef.value) as Array<keyof Patient>;
-	const patientFormData = new FormData();
-
-	// maps the FormData to the patient's keys, needed for file upload
-	keys.forEach(key => {
-		if (key === 'id' && !patientRef.value.id) return;
-		if (patientRef.value[key]) patientFormData.append(key, patientRef.value[key] as string);
-	});
-
-	// the store handles the patient saving
-
-	errors.value = await useSaveToStore(patientFormData, patientStore);
+	errors.value = await useSaveToStore(patientRef.value, patientStore);
 
 	if (!errorsStr.value) showModal.value = false;
 	else useScrollTo(modalComponent.value?.$refs.modal as HTMLTemplateElement, 0); // scrolls the modal to the top, needed to show errors when on smartphones
@@ -94,10 +83,7 @@ const handleSavePatient = async () => {
 				id="patient-form"
 				@submit.prevent="handleSavePatient"
 			>
-				<PatientForm
-					@form-emptied="errors = {}"
-					:patient="patientRef"
-				/>
+				<PatientForm :patient="patientRef" />
 			</form>
 		</template>
 		<template v-slot:button>
