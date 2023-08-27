@@ -19,7 +19,7 @@ export async function useSaveToStore(data: DataToStore, store: MyStore): Promise
 		await store.save(data);
 	} catch (err) {
 		if (isAxiosError(err)) {
-			errors = err.response?.data;
+			errors = err.response?.data.errors;
 		} else {
 			console.error(err);
 			alert('Qualcosa è andato storto, ma le modifiche dovrebbero essere state salvate. Prova a ricaricare la pagina!');

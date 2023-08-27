@@ -15,12 +15,25 @@ export async function saveMixin<T extends Store>(
 	store: T,
 	endpoint: string,
 	toSaveData: Patient | Tag | Question | Survey,
-	storeData: Array<any>,
+	storeData: Array<Patient | Tag | Question | Survey>,
 	loadMethod: (data: Array<any>) => void
 ): Promise<void> {
 	try {
 		if (toSaveData.id) {
+			// updates the database entry with the associate id
+			const { id } = toSaveData;
+			const res = await store.axios.put(`${endpoint}/${id}`, toSaveData);
+
+			const updatedEntity = res.data;
+
+			storeData = storeData.map(data => {
+				if (data.id === updatedEntity.id) {
+					return { ...updatedEntity };
+				}
+			});
 		} else {
+			// creates a new database entry
+
 			const res = await store.axios.post(endpoint, toSaveData);
 			const insertedItem = res.data;
 			storeData.push(insertedItem);

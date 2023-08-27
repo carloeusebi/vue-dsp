@@ -15,9 +15,8 @@ export async function deleteMixin<T extends Store>(
 	storeData: Array<any>,
 	loadMethod: (data: Array<any>) => void
 ) {
-	const data = { id };
 	try {
-		await store.axios.delete(endpoint, { data });
+		await store.axios.delete(`${endpoint}/${id}`);
 
 		// Remove the deleted item from the local store data
 		const filteredData = storeData.filter(item => item.id !== id);
