@@ -30,6 +30,7 @@ export async function saveMixin<T extends Store>(
 				if (data.id === updatedEntity.id) {
 					return { ...updatedEntity };
 				}
+				return data;
 			});
 		} else {
 			// creates a new database entry

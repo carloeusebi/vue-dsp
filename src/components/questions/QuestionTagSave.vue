@@ -34,7 +34,6 @@ const saveTag = async () => {
 	errors.value = {};
 	errors.value = await useSaveToStore(props.tag, useTagsStore());
 	if (!errorsStr.value) emit('close');
-	props.tag.tag = '';
 };
 </script>
 
