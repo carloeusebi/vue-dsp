@@ -2,7 +2,11 @@
 import AppLoader from './components/AppLoader.vue';
 import { useAuthStore } from './stores';
 
-useAuthStore().fetchAllData();
+const auth = useAuthStore();
+
+if (auth.isAdmin) {
+	auth.fetchAllData();
+}
 </script>
 
 <template>

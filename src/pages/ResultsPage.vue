@@ -18,6 +18,7 @@ const surveyId = parseInt(route.params.id as string);
 const loader = useLoaderStore();
 const survey = ref<Survey | null>(null);
 const patient = ref<Patient | null>(null);
+const error = ref('');
 
 /**
  * On mount fetches the Survey details, which are not stored locally
@@ -43,8 +44,10 @@ onMounted(async () => {
 			survey.questions = makeQuestionsPrintable(survey.questions);
 			return survey;
 		} catch (err) {
-			if (isAxiosError(err)) alert(err.response?.data);
-			else alert(err);
+			if (isAxiosError(err)) {
+				if (err.response?.status === 403) alert("Devi aver effettuato l'accesso per vedere questa pagina");
+				if (err.response?.status === 404) error.value = 'Test non trovato';
+			} else alert(err);
 		} finally {
 			loader.unsetLoader();
 		}
@@ -99,8 +102,7 @@ const saveUpdates = async () => {
 	try {
 		await useSurveysStore().save({ ...survey.value });
 	} catch (err) {
-		if (isAxiosError(err) && err.response?.status === 403)
-			alert("Devi aver effettuato l'accesso per vedere questa pagina");
+		if (isAxiosError(err)) console.error(err.response?.data);
 		else console.error(err);
 	} finally {
 		loader.unsetLoader();
@@ -134,9 +136,17 @@ const handleDeleteComment = (questionId: number, itemId: number) => {
 
 			<!-- PATIENT -->
 			<ResultsPatient
-				v-if="survey"
-				:survey="survey"
+				v-if="survey?.patient"
+				:patient="survey?.patient"
 			/>
+
+			<!-- error -->
+			<h1
+				class="text-xl font-bold"
+				v-if="error"
+			>
+				! {{ error }}
+			</h1>
 
 			<!-- QUESTIONNAIRE -->
 			<section

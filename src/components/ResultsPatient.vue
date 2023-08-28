@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { Survey } from '@/assets/data/interfaces';
+import { Patient } from '@/assets/data/interfaces';
 
 interface Props {
-	survey: Survey;
+	patient: Patient;
 }
 
 defineProps<Props>();
@@ -15,24 +15,24 @@ defineProps<Props>();
 	>
 		<div>
 			<h2 class="mb-3">Paziente:</h2>
-			<strong>Nome e cognome: </strong>{{ survey?.fname }}
-			{{ survey?.lname }}
+			<strong>Nome e cognome: </strong>{{ patient?.fname }}
+			{{ patient?.lname }}
 		</div>
 		<div>
-			<span><strong>Età: </strong>{{ survey?.age }}</span>
+			<span><strong>Età: </strong>{{ patient?.age }}</span>
 			<span
 				class="ms-3"
-				v-if="survey?.weight"
-				>| <strong>Peso: </strong>{{ survey?.weight }}kg</span
+				v-if="patient?.weight"
+				>| <strong>Peso: </strong>{{ patient?.weight }}kg</span
 			>
 			<span
 				class="ms-3"
-				v-if="survey?.height"
-				>| <strong>Altezza: </strong>{{ survey?.height }}cm</span
+				v-if="patient?.height"
+				>| <strong>Altezza: </strong>{{ patient?.height }}cm</span
 			>
 		</div>
-		<div v-if="survey?.job"><strong>Professione: </strong>{{ survey?.job }}</div>
-		<div v-if="survey?.cohabitants"><strong>Vive con: </strong>{{ survey?.cohabitants }}</div>
+		<div v-if="patient?.job"><strong>Professione: </strong>{{ patient?.job }}</div>
+		<div v-if="patient?.cohabitants"><strong>Vive con: </strong>{{ patient?.cohabitants }}</div>
 	</section>
 </template>
 

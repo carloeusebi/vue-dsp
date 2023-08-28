@@ -18,6 +18,7 @@ const id = useRoute().params.id;
 const loader = useLoaderStore();
 const survey = ref<Survey | null>(null);
 const scores = ref<Scores | null>(null);
+const error = ref('');
 
 /**
  * On mount fetches all survey details and the survey scores
@@ -29,9 +30,10 @@ onMounted(async () => {
 		survey.value = res.data.survey;
 		scores.value = res.data.scores;
 	} catch (err) {
-		if (isAxiosError(err) && err.response?.status === 403)
-			alert("Devi aver effettuato l'accesso per vedere questa pagina");
-		else alert(err);
+		if (isAxiosError(err)) {
+			if (err.response?.status === 403) alert("Devi aver effettuato l'accesso per vedere questa pagina");
+			else if (err.response?.status === 404) error.value = 'Test non trovato';
+		} else alert(err);
 	} finally {
 		loader.unsetLoader();
 	}
@@ -73,9 +75,17 @@ const scored = (score: number, cutoff: QuestionVariableCutoff): boolean => {
 
 			<!-- PATIENT -->
 			<ResultsPatient
-				v-if="survey"
-				:survey="survey"
+				v-if="survey?.patient"
+				:patient="survey?.patient"
 			/>
+
+			<!-- error -->
+			<h1
+				class="text-xl font-bold"
+				v-if="error"
+			>
+				! {{ error }}
+			</h1>
 
 			<!-- RESULTS -->
 			<div v-if="scores">

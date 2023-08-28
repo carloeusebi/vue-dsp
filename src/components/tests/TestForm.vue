@@ -13,42 +13,41 @@ import { useScrollTo } from '@/composables';
 
 const endpoint = 'tests/patient';
 
-const fetchPatient = async (token: string) => {
-	loader.setLoader();
-	errors.value = {};
-	const params = {
-		token,
-		id: props.patientId,
-	};
-	try {
-		const response = await axiosInstance.get(endpoint, { params });
-		patient.value = response.data.patient;
-	} catch (err) {
-		console.log(err);
-		// ignore the error and go on
-		emit('form-submit');
-	} finally {
-		loader.unsetLoader();
-	}
-};
+interface Props {
+	token: string;
+	patient: Patient;
+}
 
+const props = defineProps<Props>();
+const loader = useLoaderStore();
+
+const patientRef = ref<Patient>({ ...props.patient });
+
+const emit = defineEmits(['form-submit']);
+
+/**
+ * Ajax call to update patient's info on the server.
+ */
 const handleFormSubmit = async () => {
 	//@ts-ignore
 	useScrollTo(window, 0);
 	loader.setLoader();
 	errors.value = {};
-	if (patient.value === null) return;
+
+	if (patientRef.value === null) return;
+
 	const params = {
 		token: props.token,
-		...patient.value,
+		...patientRef.value,
 	};
+
 	try {
-		await axiosInstance.post(endpoint, params);
+		await axiosInstance.post(`${endpoint}/${patientRef.value.id}`, params);
 		emit('form-submit');
 	} catch (err) {
 		if (isAxiosError(err)) {
 			// Axios error means the patient information are not correct
-			errors.value = err.response?.data;
+			errors.value = err.response?.data.errors;
 			console.warn(err);
 		} else {
 			// If not axios error ignore the error and go on
@@ -60,30 +59,12 @@ const handleFormSubmit = async () => {
 	}
 };
 
-const props = defineProps({
-	patientId: {
-		type: Number,
-		required: true,
-	},
-	token: {
-		type: String,
-		required: true,
-	},
-});
-
-const loader = useLoaderStore();
-const emit = defineEmits(['form-submit']);
-const patient = ref<Patient | null>(null);
-
+//errors
 const errors: Ref<Errors> = ref({});
 const errorsStr = computed(() => {
 	const keys = Object.keys(errors.value);
 	return keys.reduce((str, key) => (str += `${errors.value[key]}<br>`), '');
 });
-
-fetchPatient(props.token);
-
-// fetches the patient
 </script>
 
 <template>
@@ -102,8 +83,7 @@ fetchPatient(props.token);
 		<form @submit.prevent="handleFormSubmit">
 			<PatientForm
 				v-if="patient"
-				@form-emptied="errors = {}"
-				:patient="patient"
+				:patient="patientRef"
 				:is-test="true"
 			/>
 			<!-- FORM BUTTON -->

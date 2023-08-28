@@ -47,7 +47,7 @@ export const useTestsStore = defineStore('tests', {
 			this.test = survey;
 			localStorage.setItem('TEST', JSON.stringify(this.test));
 
-			return this.axios.post(endpoint, survey).catch(err => {
+			return this.axios.put(endpoint, survey).catch(err => {
 				if (isAxiosError(err)) console.warn(err.response?.data);
 				throw err;
 			});

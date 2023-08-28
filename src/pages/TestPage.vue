@@ -101,7 +101,6 @@ disableBackButton();
 
 const route = useRoute();
 const token = route.params.token as string;
-console.log(token);
 
 fetchTest(token);
 
@@ -164,7 +163,7 @@ const handleQuestionComplete = () => {
 			/>
 			<TestForm
 				v-else-if="showForm"
-				:patient-id="test.patient_id"
+				:patient="test.patient"
 				:token="test.token"
 				@form-submit="showForm = false"
 			/>
