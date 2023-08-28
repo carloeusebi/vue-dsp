@@ -24,9 +24,8 @@ const scores = ref<Scores | null>(null);
  */
 onMounted(async () => {
 	loader.setLoader();
-	const params = { id };
 	try {
-		const res = await axiosInstance.get('surveys/score', { params });
+		const res = await axiosInstance.get(`surveys/score/${id}`);
 		survey.value = res.data.survey;
 		scores.value = res.data.scores;
 	} catch (err) {

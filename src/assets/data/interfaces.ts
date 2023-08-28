@@ -112,7 +112,7 @@ export type NewQuestion = Omit<Question, 'id'>;
 export type NewSurvey = Omit<Survey, 'id' | 'token'>;
 
 export interface LoginForm {
-	username: string;
+	email: string;
 	password: string;
 }
 

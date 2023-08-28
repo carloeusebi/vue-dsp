@@ -10,7 +10,7 @@ const auth = useAuthStore();
 const loader = useLoaderStore();
 
 const form: Ref<LoginForm> = ref({
-	username: '',
+	email: '',
 	password: '',
 });
 const isInvalid = ref(false);
@@ -26,11 +26,11 @@ const login = async () => {
 		isInvalid.value = true;
 		if (isAxiosError(err)) {
 			errorMessage.value =
-				err.response?.status === 401 ? 'Username o Password errati' : err.response?.data['server-error'];
+				err.response?.status === 401 ? 'Email o Password errati' : err.response?.data['server-error'];
 		} else console.warn(err);
 	} finally {
 		loader.unsetLoader();
-		form.value.username = '';
+		form.value.email = '';
 		form.value.password = '';
 	}
 };
@@ -64,7 +64,7 @@ const login = async () => {
 					</label>
 					<div class="mt-2">
 						<input
-							v-model="form.username"
+							v-model="form.email"
 							id="email"
 							type="email"
 							autocomplete="email"

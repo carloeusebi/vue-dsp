@@ -7,7 +7,6 @@ export const useAuthStore = defineStore('auth', {
 	//state
 	state: () => ({
 		user: JSON.parse(localStorage.getItem('USER') as string) as string | null,
-		token: JSON.parse(localStorage.getItem('TOKEN') as string) as string | null,
 	}),
 
 	//getters
@@ -38,12 +37,10 @@ export const useAuthStore = defineStore('auth', {
 			return this.axios
 				.post('/login', credentials)
 				.then(({ data }: { data: LoginResponseData }) => {
-					const { user, token } = data;
+					const { user } = data;
 					this.user = user;
-					this.token = token;
 
 					localStorage.setItem('USER', JSON.stringify(user));
-					localStorage.setItem('TOKEN', JSON.stringify(token));
 
 					this.fetchAllData();
 

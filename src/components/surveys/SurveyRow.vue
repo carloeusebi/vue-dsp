@@ -31,7 +31,7 @@ const props = defineProps<Props>();
 const loader = useLoaderStore();
 const showModal = ref(false);
 const token = props.survey.token;
-const link = `${import.meta.env.VITE_BASE_URL}/admin/test?token=${token}`;
+const link = `${import.meta.env.VITE_BASE_URL}/admin/test/${token}`;
 
 const errors: Ref<Errors> = ref({});
 const errorsStr = computed(() => {

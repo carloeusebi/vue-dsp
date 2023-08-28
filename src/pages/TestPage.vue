@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import axios, { AxiosRequestConfig } from 'axios';
 import { storeToRefs } from 'pinia';
 import { Ref, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -13,6 +12,7 @@ import router from '@/routes';
 import { Question, QuestionItemI } from '@/assets/data/interfaces';
 import { useGetIndexOfFirstItemWithoutProp, useGetTimeDifferenceFromNow } from '@/composables';
 import { useLoaderStore, useTestsStore } from '@/stores';
+import { isAxiosError } from 'axios';
 
 /**
  * The maximum time the patient has to complete the questionnaire
@@ -62,31 +62,30 @@ const goTo404 = () => {
  * @param token the token in the query string
  */
 const fetchTest = async (token: string) => {
-	const params: AxiosRequestConfig = { params: { token } };
 	loader.setLoader();
 
 	try {
-		await testsStore.fetch(params);
+		await testsStore.fetch(token);
 
 		// creates the pages wit one Questionnaire per pages
 		test.value.questions.forEach(question => {
 			pages.value.push({ question });
 		});
 
-		showForm.value = test.value.last_update === null;
+		showForm.value = test.value.updated_at === null;
 
 		// sets the first non-completed Questionnaire as the active one
 		active.value = useGetIndexOfFirstItemWithoutProp(test.value.questions, 'completed');
 
 		// if more than 120 minutes have passed between answer, it resets the questionnaire
-		if (test.value.last_update) {
-			const minutesSinceLastAnswer = useGetTimeDifferenceFromNow(test.value.last_update as string, 'minutes');
+		if (test.value.updated_at) {
+			const minutesSinceLastAnswer = useGetTimeDifferenceFromNow(test.value.updated_at as string, 'minutes');
 			if (minutesSinceLastAnswer > MINUTES_TO_COMPLETE_QUESTIONNAIRE) {
 				resetAnswers(active.value);
 			}
 		}
 	} catch (err) {
-		if (axios.isAxiosError(err)) {
+		if (isAxiosError(err)) {
 			// axios returns an error if the test is already complete, in that case we just redirect to page 404
 			console.warn(err.response?.data.error);
 			goTo404();
@@ -101,13 +100,10 @@ const loader = useLoaderStore();
 disableBackButton();
 
 const route = useRoute();
-let token: string;
+const token = route.params.token as string;
+console.log(token);
 
-// reads the token
-if (route.query.token) {
-	token = route.query.token as string;
-	fetchTest(token);
-} else goTo404();
+fetchTest(token);
 
 interface Page {
 	question: Question;
@@ -177,7 +173,7 @@ const handleQuestionComplete = () => {
 				v-else-if="isCompleted"
 				class="text-center pt-5"
 			>
-				<h2>Grazie {{ test.fname }} per aver completato il test</h2>
+				<h2>Grazie {{ test.patient.fname }} per aver completato il test</h2>
 				<p>Questo link non sarà più valido.</p>
 			</div>
 			<!-- TEST QUESTION -->

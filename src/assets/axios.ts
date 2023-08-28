@@ -8,12 +8,6 @@ const axiosInstance = axios.create({
 	withCredentials: true,
 });
 
-axiosInstance.interceptors.request.use(req => {
-	const auth = useAuthStore();
-	req.headers.Authorization = `Bearer ${auth.token}`;
-	return req;
-});
-
 axiosInstance.interceptors.response.use(
 	res => {
 		if (res.status >= 200 && res.status <= 299) {

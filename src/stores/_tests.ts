@@ -1,5 +1,5 @@
 import { Survey } from '@/assets/data/interfaces';
-import { AxiosRequestConfig, isAxiosError } from 'axios';
+import { isAxiosError } from 'axios';
 import { defineStore } from 'pinia';
 
 const endpoint = '/tests';
@@ -21,9 +21,10 @@ export const useTestsStore = defineStore('tests', {
 		 * Fetches the test from the server
 		 * @param params param should be the token
 		 */
-		async fetch(params: AxiosRequestConfig) {
+		async fetch(token: string) {
+			const params = { token }; // to go through the backend middleware
 			return this.axios
-				.get(endpoint, params)
+				.get(`${endpoint}/${token}`, { params })
 				.then(({ data }) => {
 					this.load(data);
 				})

@@ -37,10 +37,9 @@ onMounted(async () => {
 			questions.map(q => ({ ...q, printable: true })) as PrintableQuestion[];
 
 		loader.setLoader();
-		const params = { id };
 		try {
-			const res = await axiosInstance.get('surveys', { params });
-			const survey = res.data.list as Survey;
+			const res = await axiosInstance.get(`surveys/${id}`);
+			const survey = res.data as Survey;
 			survey.questions = makeQuestionsPrintable(survey.questions);
 			return survey;
 		} catch (err) {

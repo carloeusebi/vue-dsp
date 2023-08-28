@@ -44,7 +44,7 @@ export const routes = [
 		},
 	},
 	{
-		path: '/test',
+		path: '/test/:token',
 		component: TestPage,
 		name: 'test',
 		meta: {
@@ -68,7 +68,7 @@ export const routes = [
 		},
 	},
 	{
-		path: '/:pathMatch(.*)*',
+		path: '/404',
 		component: PageNotFound,
 		name: '404',
 	},
