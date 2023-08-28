@@ -54,7 +54,7 @@ const resetAnswers = (index: number) => {
  * Redirects to page not found
  */
 const goTo404 = () => {
-	router.push('404');
+	router.push({ name: '404' });
 };
 
 /**

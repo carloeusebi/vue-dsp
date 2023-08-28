@@ -68,7 +68,11 @@ export const routes = [
 		},
 	},
 	{
-		path: '/404',
+		path: '/:pathMatch(.*)*',
+		component: PageNotFound,
+	},
+	{
+		path: '/page-not-found',
 		component: PageNotFound,
 		name: '404',
 	},
