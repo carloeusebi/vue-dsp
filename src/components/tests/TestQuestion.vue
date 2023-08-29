@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import AppButton from '@/components/AppButton.vue';
 import AppModal from '@/components/AppModal.vue';
@@ -20,8 +20,15 @@ const props = defineProps<Props>();
 const min = computed(() => (props.question.type === 'EDI' ? 0 : parseInt(props.question.type.at(0) as string)));
 const max = computed(() => (props.question.type === 'EDI' ? 5 : parseInt(props.question.type.at(-1) as string)));
 
-const firstNotAnsweredItemIndex = useGetIndexOfFirstItemWithoutProp(props.question.items, 'answer');
-const active = ref(firstNotAnsweredItemIndex);
+const firstNotAnsweredItemIndex = computed(() => useGetIndexOfFirstItemWithoutProp(props.question.items, 'answer'));
+const active = ref(firstNotAnsweredItemIndex.value);
+
+watch(
+	() => props.current,
+	() => {
+		active.value = firstNotAnsweredItemIndex.value;
+	}
+);
 
 /**
  * Determines the css class that displays the the clicked answer
@@ -87,15 +94,19 @@ const goToNextQuestion = () => {
 
 	setTimeout(() => {
 		const isLast = () => active.value === props.question.items.length - 1;
-		if (isLast()) {
-			emit('question-complete');
-			active.value = 0;
-			showQuestionDescription.value = true;
-			clicked.value = -1;
-		} else {
-			active.value++;
-			comment.value = '';
-			clicked.value = -1;
+
+		let keepCycling = true;
+		while (props.question.items[active.value].hasOwnProperty('answer') && keepCycling) {
+			if (isLast()) {
+				emit('question-complete');
+				showQuestionDescription.value = true;
+				clicked.value = -1;
+				keepCycling = false;
+			} else {
+				active.value++;
+				comment.value = '';
+				clicked.value = -1;
+			}
 		}
 	}, 1500);
 };

@@ -95,7 +95,7 @@ const changeAnswer = (questionId: number | undefined, itemId: number, answer: nu
 	if (!editMode.value || !survey.value) return;
 	const questionToUpdate = survey.value.questions.find(({ id }) => id === questionId);
 	const itemToUpdate = questionToUpdate?.items.find(({ id }) => id === itemId) as QuestionItemI;
-	const previousAnswer = itemToUpdate.answer || -1;
+	const previousAnswer = itemToUpdate.answer || itemToUpdate.answer === 0 ? itemToUpdate.answer : -1;
 
 	if (answer === previousAnswer) delete itemToUpdate.answer;
 	else itemToUpdate.answer = answer;

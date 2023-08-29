@@ -142,13 +142,16 @@ const handleQuestionComplete = () => {
 	const isLastQuestion = () => active.value === test.value.questions.length - 1;
 
 	test.value.questions[active.value].completed = true;
-	if (isLastQuestion()) {
-		test.value.completed = true;
-		isCompleted.value = true;
-	} else {
-		active.value++;
+	while (test.value.questions[active.value].hasOwnProperty('completed')) {
+		if (isLastQuestion()) {
+			test.value.completed = true;
+			isCompleted.value = true;
+			break;
+		} else {
+			active.value++;
+		}
+		testsStore.save(test.value);
 	}
-	testsStore.save(test.value);
 };
 </script>
 
