@@ -44,7 +44,7 @@ export const routes = [
 		},
 	},
 	{
-		path: '/test/:token',
+		path: '/questionario/:token',
 		component: TestPage,
 		name: 'test',
 		meta: {

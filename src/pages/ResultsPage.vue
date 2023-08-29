@@ -211,7 +211,7 @@ const thereAreComments = (questions: Question[]): boolean => {
 							<font-awesome-icon
 								:icon="['fas', question.printable ? 'eye' : 'eye-slash']"
 								size="lg"
-								class="text-gray-400"
+								class="text-gray-400 non-printable"
 							/>
 						</div>
 						<p class="mb-5">{{ question.description }}</p>
@@ -226,19 +226,21 @@ const thereAreComments = (questions: Question[]): boolean => {
 								class="uppercase font-bold"
 							>
 								<!-- checkbox -->
-								<label class="container shrink">
-									<input
-										v-model="checkboxes[i][j]"
-										type="checkbox"
-										class="cursor-pointer"
-										:id="`cb-${i}-${j}`"
-									/>
-									<span class="checkmark"></span>
-								</label>
+								<div class="non-printable">
+									<label class="container shrink">
+										<input
+											v-model="checkboxes[i][j]"
+											type="checkbox"
+											class="cursor-pointer"
+											:id="`cb-${i}-${j}`"
+										/>
+										<span class="checkmark"></span>
+									</label>
+								</div>
 								<!-- text -->
 								<label
 									:for="`cb-${i}-${j}`"
-									class="ms-7 cursor-pointer"
+									class="ms-7 print:ms-0 cursor-pointer"
 									>{{ question.type === 'EDI' ? (j < 2 ? 0 : j - 2) : j + min(question) }} = {{ legend.legend }}</label
 								>
 							</div>

@@ -19,7 +19,7 @@ defineProps<Props>();
 			{{ patient?.lname }}
 		</div>
 		<div>
-			<span><strong>Età: </strong>{{ patient?.age }}</span>
+			<span v-if="patient.age"><strong>Età: </strong>{{ patient?.age }}</span>
 			<span
 				class="ms-3"
 				v-if="patient?.weight"
