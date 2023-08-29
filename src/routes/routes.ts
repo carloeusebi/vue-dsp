@@ -60,7 +60,7 @@ export const routes = [
 		},
 	},
 	{
-		path: '/punteggi/:id',
+		path: '/risultati/:id',
 		component: ScoresPage,
 		name: 'scores',
 		meta: {
