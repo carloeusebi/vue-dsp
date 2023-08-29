@@ -99,52 +99,37 @@ const scored = (score: number, cutoff: QuestionVariableCutoff): boolean => {
 					</h2>
 
 					<!-- VARIABLES -->
-					<table class="table-auto mb-8">
-						<thead>
-							<tr class="text-left">
-								<th class="md:min-w-[300px]">Variabile</th>
-								<th>Punteggio</th>
-								<th>Cutoffs</th>
-								<th>Indicazioni</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr
-								v-for="variable in question.variables"
-								:key="variable.id"
-								class="align-top"
-							>
-								<!-- variable name -->
-								<td>{{ variable.name }}</td>
-								<!-- score -->
-								<td class="text-end">{{ score(question.question, variable.name) }}</td>
-								<!-- cutoffs -->
-								<td>
-									<ul>
-										<li
-											v-for="cutoff in variable.cutoffs"
-											:key="cutoff.id"
-										>
-											{{ printCutoff(cutoff) }}
-										</li>
-									</ul>
-								</td>
-								<!-- indications -->
-								<td>
-									<ul>
-										<li
-											v-for="cutoff in variable.cutoffs"
-											:key="cutoff.id"
-											class="px-4"
-											:class="{ 'bg-yellow-200': scored(score(question.question, variable.name), cutoff) }"
-										>
+					<ul>
+						<li
+							v-for="variable in question.variables"
+							:key="variable.id"
+						>
+							<div class="font-bold mb-3">{{ variable.name }}: {{ score(question.question, variable.name) }}</div>
+							<table class="table-auto">
+								<thead>
+									<tr>
+										<td class="text-center min-w-[66px]">Cutoff</td>
+										<td class="px-3 md:px-6"></td>
+										<td>Indicazioni</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr
+										v-for="cutoff in variable.cutoffs"
+										:key="cutoff.id"
+									>
+										<td class="text-center align-top">{{ printCutoff(cutoff) }}</td>
+										<td></td>
+										<td :class="{ 'bg-yellow-200': scored(score(question.question, variable.name), cutoff) }">
 											{{ cutoff.name }}
-										</li>
-									</ul>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<hr class="my-3" />
+						</li>
+					</ul>
+
 					<hr class="mb-8" />
 				</section>
 			</div>
@@ -152,9 +137,4 @@ const scored = (score: number, cutoff: QuestionVariableCutoff): boolean => {
 	</div>
 </template>
 
-<style scoped>
-table th,
-table td {
-	padding: 0 1rem;
-}
-</style>
+<style scoped></style>
