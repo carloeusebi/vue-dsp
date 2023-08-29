@@ -11,15 +11,14 @@ const emit = defineEmits(['start']);
 	>
 		<h1 class="text-center text-4xl font-bold uppercase mb-5">QUESTIONARI PER LA VALUTAZIONE PSICOLOGICA</h1>
 		<p class="text-justify">
-			Questo fascicolo contiene una serie di questionari appositamente selezionati per esplorare alcuni aspetti del
-			funzionamento psicologico che potrebbero influire sul Suo benessere. La preghiamo di compilare ogni questionario
-			in tutte le sue parti, anche nel caso in cui qualche domanda possa risultarle poco chiara o non pertinente. La
-			compilazione di tutto il plico di questionari richiede circa un'ora di tempo, quindi, nel caso si dovesse sentire
-			particolarmente affaticata/o, può effettuare una o più interruzioni. Da ogni questionario, completato per intero,
-			verrà ricavato un punteggio che darà delle indicazioni sul suo stato. Questi dati permetteranno di integrare
-			quanto emerso nei colloqui con informazioni che potranno servire per impostare un trattamento più adeguato al suo
-			problema e alla sua personalità. Il terapeuta con il quale è in contatto fara in modo di comunicarle il profilo
-			risultante.
+			Le verranno proposti una serie di questionari appositamente selezionati per esplorare alcuni aspetti del
+			funzionamento psicologico che potrebbero influire sul Suo benessere. La prego di compilare ogni questionario in
+			tutte le sue parti, anche nel caso in cui qualche domanda possa risultarLe poco chiara o non pertinente (in tal
+			caso La invito a lasciare un commento, così da poter ricontrollare la domanda in seduta). La compilazione di tutti
+			i questionari può richiedere del tempo, quindi, nel caso si dovesse sentire particolarmente affaticata/o, può
+			effettuare una o più interruzioni. Da ogni questionario verrà ricavato un punteggio che darà delle indicazioni sul
+			suo stato. Questi dati permetteranno di integrare quanto emerso nei colloqui con informazioni che potranno servire
+			per impostare un trattamento più adeguato al suo problema e alla sua personalità.
 		</p>
 		<div class="flex justify-center my-6">
 			<AppButton
