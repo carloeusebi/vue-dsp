@@ -49,7 +49,7 @@ export const usePatientsStore = defineStore('patients', {
 		 */
 		loadPatients(patients: Patient[]) {
 			patients = patients.map(patient => {
-				patient.age = calculateAge(patient.birthday);
+				if (patient.birthday) patient.age = calculateAge(patient.birthday);
 				return patient;
 			});
 			this.patients = patients;

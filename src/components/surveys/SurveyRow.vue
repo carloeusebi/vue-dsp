@@ -81,11 +81,11 @@ const sendEmail = async () => {
 	const data = {
 		email_to: props.survey?.patient.email,
 		subject: 'Questionario per la valutazione',
-		body: `<a href="${link}">Link al questionario per la valutazione psicologica</a>`,
+		link,
 	};
 
 	try {
-		await axiosInstance.post('/email', data);
+		await axiosInstance.post('/email/test-link', data);
 		showSuccessAlert();
 	} catch (err) {
 		if (isAxiosError(err)) {

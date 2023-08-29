@@ -45,8 +45,13 @@ const handleSavePatient = async () => {
 
 	errors.value = await useSaveToStore(patientRef.value, patientStore);
 
-	if (!errorsStr.value) showModal.value = false;
-	else useScrollTo(modalComponent.value?.$refs.modal as HTMLTemplateElement, 0); // scrolls the modal to the top, needed to show errors when on smartphones
+	if (!errorsStr.value) {
+		showModal.value = false;
+		patientRef.value = { ...(props.toEditPatient || (emptyPatient as Patient)) };
+	} else {
+		// scrolls the modal to the top, needed to show errors when on smartphones
+		useScrollTo(modalComponent.value?.$refs.modal as HTMLTemplateElement, 0);
+	}
 };
 </script>
 
