@@ -98,6 +98,7 @@ export interface Survey {
 	updated_at?: string;
 	completed: boolean;
 	token: string;
+	justCompleted?: boolean;
 }
 
 export interface Tag {

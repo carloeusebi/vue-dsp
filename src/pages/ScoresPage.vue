@@ -65,6 +65,8 @@ const scored = (score: number, cutoff: QuestionVariableCutoff): boolean => {
 		return score >= cutoff.from && score <= cutoff.to;
 	}
 };
+
+const hasUnansweredItems = (question: Question): boolean => question.items.some(item => item.answer === -1);
 </script>
 
 <template>
@@ -94,9 +96,17 @@ const scored = (score: number, cutoff: QuestionVariableCutoff): boolean => {
 					:key="question.id"
 					:id="question.id.toString()"
 				>
+					<!-- questionnaire's name -->
 					<h2>
 						{{ question.question }}
 					</h2>
+					<div
+						v-if="hasUnansweredItems(question)"
+						class="text-red-500 mb-3 print:hidden"
+					>
+						<font-awesome-icon :icon="['fas', 'triangle-exclamation']" />
+						Questo questionario ha domande senza risposta!
+					</div>
 
 					<!-- VARIABLES -->
 					<ul>
