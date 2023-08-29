@@ -44,26 +44,44 @@ const score = (question: Question['question'], variable: string): number => {
 	return scores.value ? scores.value[question][variable] : 0;
 };
 
+//TODO FIX THIS MESS
+const getValueForSex = (cutoff: QuestionVariableCutoff, patientSex: 'M' | 'F' | 'O' | undefined) => {
+	return cutoff.femFrom || cutoff.femTo ? patientSex : undefined;
+};
+
 const printCutoff = (cutoff: QuestionVariableCutoff): string => {
 	let elementToPrint = '';
 	const { type } = cutoff;
+	const sex = getValueForSex(cutoff, survey.value?.patient.sex);
 
-	if (type === 'greater-than') elementToPrint = `> ${cutoff.from}`;
-	else if (type === 'lesser-than') elementToPrint = `< ${cutoff.from}`;
-	else elementToPrint = `${cutoff.from} - ${cutoff.to}`;
+	//if cutoff has different breakpoints for male and female, prints those value accordingly
+
+	if (type === 'greater-than') {
+		elementToPrint = sex === 'F' ? `${sex} > ${cutoff.femFrom}` : `${sex} > ${cutoff.from}`;
+	} else if (type === 'lesser-than') {
+		elementToPrint = sex === 'F' ? `${sex} < ${cutoff.femFrom}` : `${sex} < ${cutoff.from}`;
+	} else {
+		elementToPrint =
+			sex === 'F' ? `${sex} ${cutoff.femFrom} - ${cutoff.femTo}` : `${sex} ${cutoff.from} - ${cutoff.to}`;
+	}
 
 	return elementToPrint;
 };
 
 const scored = (score: number, cutoff: QuestionVariableCutoff): boolean => {
 	const { type } = cutoff;
+	const sex = getValueForSex(cutoff, survey.value?.patient.sex);
+
+	//if cutoff has different breakpoints for male and female, calculates those value accordingly
 
 	if (type === 'greater-than') {
-		return score > cutoff.from;
+		return sex === 'F' && cutoff.femFrom ? score > cutoff.femFrom : score > cutoff.from;
 	} else if (type === 'lesser-than') {
-		return score < cutoff.from;
+		return sex === 'F' && cutoff.femFrom ? score < cutoff.femFrom : score < cutoff.from;
 	} else {
-		return score >= cutoff.from && score <= cutoff.to;
+		return sex === 'F' && cutoff.femFrom && cutoff.femTo
+			? score >= cutoff.femFrom && score <= cutoff.femTo
+			: score >= cutoff.from && score <= cutoff.to;
 	}
 };
 
