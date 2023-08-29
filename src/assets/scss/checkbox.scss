@@ -26,8 +26,8 @@ label.container input {
 }
 
 /* On mouse-over or focus, add a grey background color */
-.container:hover input ~ .checkmark,
-.container input:focus ~ .checkmark {
+label.container:hover input ~ .checkmark,
+label.container input:focus ~ .checkmark {
 	background-color: #ccc;
 }
 

@@ -1,13 +1,17 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { isAxiosError } from 'axios';
+
+import ResultsHeader from '@/components/ResultsHeader.vue';
+import ResultsPatient from '@/components/ResultsPatient.vue';
+import AppAlert from '@/components/AppAlert.vue';
 
 import { Patient, Question, QuestionItemI, Survey } from '@/assets/data/interfaces';
 import { useLoaderStore, usePatientsStore, useSurveysStore } from '@/stores';
-import { useRoute } from 'vue-router';
 import axiosInstance from '@/assets/axios';
-import { isAxiosError } from 'axios';
-import ResultsHeader from '@/components/ResultsHeader.vue';
-import ResultsPatient from '@/components/ResultsPatient.vue';
+
+//
 
 interface PrintableQuestion extends Question {
 	printable: boolean;
@@ -19,6 +23,7 @@ const loader = useLoaderStore();
 const survey = ref<Survey | null>(null);
 const patient = ref<Patient | null>(null);
 const error = ref('');
+const onlyShowAnswersWithComment = ref(false);
 
 /**
  * On mount fetches the Survey details, which are not stored locally
@@ -90,7 +95,10 @@ const changeAnswer = (questionId: number | undefined, itemId: number, answer: nu
 	if (!editMode.value || !survey.value) return;
 	const questionToUpdate = survey.value.questions.find(({ id }) => id === questionId);
 	const itemToUpdate = questionToUpdate?.items.find(({ id }) => id === itemId) as QuestionItemI;
-	itemToUpdate.answer = answer;
+	const previousAnswer = itemToUpdate.answer || -1;
+
+	if (answer === previousAnswer) delete itemToUpdate.answer;
+	else itemToUpdate.answer = answer;
 };
 
 /**
@@ -123,205 +131,261 @@ const handleDeleteComment = (questionId: number, itemId: number) => {
 	// if answer is negative return
 	if (!proceed) return;
 
-	item.comment = '';
+	delete item.comment;
 	saveUpdates();
+};
+
+/**
+ * Checks if ha Questionnaire has comments. Used to show a Questionnaire only if it has comments.
+ */
+const questionHasComments = (question: Question): boolean => {
+	return question.items.reduce((hasComments, item) => hasComments || item.hasOwnProperty('comment'), false);
+};
+
+const thereAreComments = (questions: Question[]): boolean => {
+	return questions.reduce((hasComments, question) => hasComments || questionHasComments(question), false);
 };
 </script>
 
 <template>
 	<div class="bg-white min-h-screen">
 		<div class="container max-w-6xl mx-auto p-6">
-			<!-- HEADER -->
-			<ResultsHeader :title="survey?.title" />
+			<header>
+				<!-- HEADER -->
+				<ResultsHeader :title="survey?.title" />
 
-			<!-- PATIENT -->
-			<ResultsPatient
-				v-if="survey?.patient"
-				:patient="survey?.patient"
-			/>
+				<!-- PATIENT -->
+				<ResultsPatient
+					v-if="survey?.patient"
+					:patient="survey?.patient"
+				/>
 
-			<!-- error -->
-			<h1
-				class="text-xl font-bold"
-				v-if="error"
-			>
-				! {{ error }}
-			</h1>
+				<!-- error -->
+				<h1
+					class="text-xl font-bold"
+					v-if="error"
+				>
+					! {{ error }}
+				</h1>
+
+				<!-- TOGGLE SHOW ANSWERS WITH COMMENT -->
+				<!-- checkbox -->
+				<div class="non-printable my-5 cursor-pointer">
+					<label class="container shrink">
+						<input
+							v-model="onlyShowAnswersWithComment"
+							type="checkbox"
+							class="cursor-pointer"
+							id="onlyShowAnswersWithComment"
+						/>
+						<span class="checkmark"></span>
+					</label>
+					<label
+						class="ms-7 cursor-pointer select-none"
+						for="onlyShowAnswersWithComment"
+					>
+						Mostra solo risposte con commento
+					</label>
+				</div>
+			</header>
 
 			<!-- QUESTIONNAIRE -->
-			<section
-				v-for="(question, i) in (survey?.questions as PrintableQuestion[])"
-				:key="question.id"
-				:id="question.id.toString()"
-				class="my-10 border-b pb-5"
-				:class="{ 'edit-mode': editMode, 'non-printable': !question.printable }"
-			>
-				<div
-					class="inline-flex items-center gap-3 cursor-pointer mb-5"
-					@click="question.printable = !question.printable"
+			<ul>
+				<li
+					v-for="(question, i) in (survey?.questions as PrintableQuestion[])"
+					:key="question.id"
 				>
-					<h2 class="mb-0">
-						{{ question.question }}
-					</h2>
-					<font-awesome-icon
-						:icon="['fas', question.printable ? 'eye' : 'eye-slash']"
-						size="lg"
-						class="text-gray-400"
-					/>
-				</div>
-				<p class="mb-5">{{ question.description }}</p>
-				<!-- LEGEND -->
-				<div
-					v-if="question.type !== 'MUL'"
-					class="border border-black my-5 p-2 grid md:grid-cols-2"
-				>
-					<div
-						v-for="(legend, j) in question.legend"
-						:key="j"
-						class="uppercase font-bold"
+					<section
+						v-if="!onlyShowAnswersWithComment || questionHasComments(question)"
+						:id="question.id.toString()"
+						class="my-10 border-b pb-5"
+						:class="{ 'edit-mode': editMode, 'non-printable': !question.printable }"
 					>
-						<!-- checkbox -->
-						<label class="container shrink">
-							<input
-								v-model="checkboxes[i][j]"
-								type="checkbox"
-								class="cursor-pointer"
-								:id="`cb-${i}-${j}`"
+						<div
+							class="inline-flex items-center gap-3 cursor-pointer mb-5"
+							@click="question.printable = !question.printable"
+						>
+							<h2 class="mb-0">
+								{{ question.question }}
+							</h2>
+							<font-awesome-icon
+								:icon="['fas', question.printable ? 'eye' : 'eye-slash']"
+								size="lg"
+								class="text-gray-400"
 							/>
-							<span class="checkmark"></span>
-						</label>
-						<!-- text -->
-						<label
-							:for="`cb-${i}-${j}`"
-							class="ms-7 cursor-pointer"
-							>{{ question.type === 'EDI' ? (j < 2 ? 0 : j - 2) : j + min(question) }} = {{ legend.legend }}</label
-						>
-					</div>
-				</div>
-				<!-- ITEMS -->
-				<div>
-					<div
-						v-for="(item, itemNumber) in question.items"
-						:key="item.id"
-						class="grid grid-cols-6 relative"
-					>
-						<!-- question -->
-						<div
-							:class="[item.text ? 'col-span-4' : 'col-span-1']"
-							class="p-2 border border-black flex justify-between"
-						>
-							{{ itemNumber + 1 }}. {{ item.text }}
 						</div>
-						<!-- ANSWERS -->
-						<div :class="[item.text ? 'col-span-2' : 'col-span-5']">
-							<!-- ! IF MUL -->
+						<p class="mb-5">{{ question.description }}</p>
+						<!-- LEGEND -->
+						<div
+							v-if="question.type !== 'MUL'"
+							class="border border-black my-5 p-2 grid md:grid-cols-2"
+						>
 							<div
-								v-if="item.multipleAnswers"
-								class="flex h-full"
+								v-for="(legend, j) in question.legend"
+								:key="j"
+								class="uppercase font-bold"
+							>
+								<!-- checkbox -->
+								<label class="container shrink">
+									<input
+										v-model="checkboxes[i][j]"
+										type="checkbox"
+										class="cursor-pointer"
+										:id="`cb-${i}-${j}`"
+									/>
+									<span class="checkmark"></span>
+								</label>
+								<!-- text -->
+								<label
+									:for="`cb-${i}-${j}`"
+									class="ms-7 cursor-pointer"
+									>{{ question.type === 'EDI' ? (j < 2 ? 0 : j - 2) : j + min(question) }} = {{ legend.legend }}</label
+								>
+							</div>
+						</div>
+						<!-- ITEMS -->
+						<ul>
+							<li
+								v-for="(item, itemNumber) in question.items"
+								:key="item.id"
 							>
 								<div
-									v-for="ans in item.multipleAnswers"
-									:style="`flex-basis: calc(100% / ${item.multipleAnswers.length})`"
-									:key="ans.id"
+									v-if="!onlyShowAnswersWithComment || item.hasOwnProperty('comment')"
+									class="grid grid-cols-6 relative"
 								>
+									<!-- question -->
 									<div
-										class="answer-cell border border-black flex-grow flex justify-center items-center h-full p-2"
-										:class="{ 'bg-green-500': ans.points === item.answer }"
-										@click="changeAnswer(question.id, item.id, ans.points)"
+										:class="[item.text ? 'col-span-4' : 'col-span-1']"
+										class="p-2 border border-black flex justify-between"
 									>
-										{{ ans.customAnswer }}
+										{{ itemNumber + 1 }}. {{ item.text }}
+									</div>
+									<!-- ANSWERS -->
+									<div :class="[item.text ? 'col-span-2' : 'col-span-5']">
+										<!-- ! IF MUL -->
+										<div
+											v-if="item.multipleAnswers"
+											class="flex h-full"
+										>
+											<div
+												v-for="ans in item.multipleAnswers"
+												:style="`flex-basis: calc(100% / ${item.multipleAnswers.length})`"
+												:key="ans.id"
+											>
+												<div
+													class="answer-cell border border-black flex-grow flex justify-center items-center h-full p-2"
+													:class="{ 'bg-green-500': ans.points === item.answer }"
+													@click="changeAnswer(question.id, item.id, ans.points)"
+												>
+													{{ ans.customAnswer }}
+												</div>
+											</div>
+										</div>
+										<!-- ! IF OTHER TYPE -->
+										<div
+											v-else
+											class="flex h-full"
+										>
+											<!-- @vue-ignore -->
+											<div
+												v-for="(legend, n) in question.legend"
+												:key="n"
+												class="flex-grow h-full"
+												:class="{ hidden: !checkboxes[i][n] && !checkboxes[i].every(cb => !cb) }"
+											>
+												<div
+													class="answer-cell border border-black flex-grow flex justify-center items-center h-full"
+													:class="{ 'bg-green-500': itemValue(question, n) === item.answer }"
+													@click="changeAnswer(question.id, item.id, itemValue(question, n))"
+												>
+													{{ question.type === 'EDI' ? (n < 2 ? 0 : n - 2) : itemValue(question, n) }}
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- COMMENTS -->
+									<!-- comment for the digital version -->
+									<div
+										class="comment-container non-printable"
+										v-if="item.comment"
+									>
+										<div class="flex">
+											<font-awesome-icon
+												:icon="['far', 'comment-dots']"
+												size="xl"
+												class="p-2"
+											/>
+										</div>
+										<div class="comment flex">
+											<!-- comment delete button -->
+											<span class="grow">{{ item.comment }}</span>
+											<font-awesome-icon
+												@click="handleDeleteComment(question.id, item.id)"
+												:icon="['fas', 'trash-can']"
+												size="sm"
+												class="ms-1 text-red-500 z-0 self-start cursor-pointer p-2"
+											/>
+										</div>
+									</div>
+									<!-- comment for the print version -->
+									<div
+										v-if="item.comment"
+										class="hidden printable"
+									>
+										*{{ item.comment }}
 									</div>
 								</div>
-							</div>
-							<!-- ! IF OTHER TYPE -->
-							<div
-								v-else
-								class="flex h-full"
-							>
-								<!-- @vue-ignore -->
-								<div
-									v-for="(legend, n) in question.legend"
-									:key="n"
-									class="flex-grow h-full"
-									:class="{ hidden: !checkboxes[i][n] && !checkboxes[i].every(cb => !cb) }"
-								>
-									<div
-										class="answer-cell border border-black flex-grow flex justify-center items-center h-full"
-										:class="{ 'bg-green-500': itemValue(question, n) === item.answer }"
-										@click="changeAnswer(question.id, item.id, itemValue(question, n))"
-									>
-										{{ question.type === 'EDI' ? (n < 2 ? 0 : n - 2) : itemValue(question, n) }}
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- COMMENTS -->
-						<!-- comment for the digital version -->
-						<div
-							class="comment-container"
-							v-if="item.comment"
-						>
-							<div class="flex">
-								<font-awesome-icon
-									:icon="['far', 'comment-dots']"
-									size="xl"
-									class="z-0 p-2"
-								/>
-							</div>
-							<div class="comment flex">
-								<!-- comment delete button -->
-								<span class="grow">{{ item.comment }}</span>
-								<font-awesome-icon
-									@click="handleDeleteComment(question.id, item.id)"
-									:icon="['fas', 'trash-can']"
-									size="sm"
-									class="ms-1 text-red-500 z-0 self-start cursor-pointer p-2"
-								/>
-							</div>
-						</div>
-						<!-- comment for the print version -->
-						<div
-							v-if="item.comment"
-							class="print-comment"
-						>
-							*{{ item.comment }}
-						</div>
-					</div>
-				</div>
-			</section>
+							</li>
+						</ul>
+					</section>
+				</li>
+			</ul>
+
+			<!-- Alert -->
+			<div
+				v-if="survey?.questions"
+				class="non-printable"
+			>
+				<AppAlert
+					:show="onlyShowAnswersWithComment && !thereAreComments(survey?.questions)"
+					message="Non ci sono questionari con commenti."
+				/>
+			</div>
 		</div>
 	</div>
 
 	<!-- EDIT BUTTON -->
-	<div
-		class="edit-button"
-		:class="[editMode ? 'bg-red-800 hover:bg-red-900' : 'bg-blue-800 hover:bg-blue-900']"
-		@click="editMode = !editMode"
-	>
-		<font-awesome-icon
-			:icon="['fas', 'pen-to-square']"
-			size="2xl"
-		/>
-	</div>
+	<div class="non-printable">
+		<div
+			class="edit-button"
+			:class="[editMode ? 'bg-red-800 hover:bg-red-900' : 'bg-blue-800 hover:bg-blue-900']"
+			@click="editMode = !editMode"
+		>
+			<font-awesome-icon
+				:icon="['fas', 'pen-to-square']"
+				size="2xl"
+			/>
+		</div>
 
-	<!-- SAVE BUTTON -->
-	<div
-		v-if="editMode"
-		@click="saveUpdates"
-		class="save-button bg-green-800 hover:bg-green-900"
-	>
-		<font-awesome-icon
-			:icon="['fas', 'floppy-disk']"
-			size="2xl"
-		/>
-	</div>
+		<!-- SAVE BUTTON -->
+		<div
+			v-if="editMode"
+			@click="saveUpdates"
+			class="save-button bg-green-800 hover:bg-green-900"
+		>
+			<font-awesome-icon
+				:icon="['fas', 'floppy-disk']"
+				size="2xl"
+			/>
+		</div>
 
-	<!-- EDIT ALERT -->
-	<div
-		v-if="editMode"
-		class="edit-mode-alert text-center text-xl md:text-4xl text-red-600 font-extrabold top-12 md:top-32 w-auto uppercase"
-	>
-		Modalità modifica attiva
+		<!-- EDIT ALERT -->
+		<div
+			v-if="editMode"
+			class="edit-mode-alert text-center text-xl md:text-4xl text-red-600 font-extrabold top-12 md:top-32 w-auto uppercase"
+		>
+			Modalità modifica attiva
+		</div>
 	</div>
 </template>
 
@@ -343,6 +407,10 @@ const handleDeleteComment = (questionId: number, itemId: number) => {
 	transform: translateY(-50%);
 	z-index: 1;
 
+	.fa-comment-dots {
+		z-index: -10;
+	}
+
 	&:hover .comment {
 		display: flex;
 	}
@@ -350,6 +418,8 @@ const handleDeleteComment = (questionId: number, itemId: number) => {
 
 .comment {
 	position: absolute;
+	top: -10px;
+
 	justify-content: center;
 	align-items: center;
 	display: none;
@@ -361,12 +431,6 @@ const handleDeleteComment = (questionId: number, itemId: number) => {
 	right: 5px;
 	min-width: max-content;
 	max-width: 75vw;
-}
-
-.print-comment {
-	display: none;
-	text-align: right;
-	width: 700px;
 }
 
 .edit-button,
@@ -411,28 +475,12 @@ const handleDeleteComment = (questionId: number, itemId: number) => {
 // PRINT MEDIA
 
 @media print {
-	section.non-printable {
+	.non-printable {
 		display: none;
 	}
-	.print-comment {
+
+	.printable {
 		display: block;
-	}
-
-	.fa-comment-dots {
-		display: none;
-	}
-
-	.fa-eye,
-	.fa-eye-slash {
-		display: none;
-	}
-
-	.edit-button {
-		display: none;
-	}
-
-	label.container {
-		display: none;
 	}
 }
 </style>
