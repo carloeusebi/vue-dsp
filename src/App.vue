@@ -13,3 +13,9 @@ if (auth.isAdmin) {
 	<router-view></router-view>
 	<AppLoader />
 </template>
+
+<style>
+::-webkit-scrollbar {
+	display: none;
+}
+</style>
