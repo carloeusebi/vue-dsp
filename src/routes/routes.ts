@@ -48,7 +48,7 @@ export const routes = [
 		component: TestPage,
 		name: 'test',
 		meta: {
-			title: 'Dellasanta Psicologo | Test',
+			title: 'Dellasanta Psicologo | Questionario',
 		},
 	},
 	{
