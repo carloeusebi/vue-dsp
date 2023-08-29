@@ -107,7 +107,7 @@ const uploadFile = async () => {
 		@click="showModal = true"
 		color="yellow"
 		icon="file-pdf"
-		label="Visualizza filed del paziente"
+		label="Visualizza files del paziente"
 	/>
 
 	<AppModal

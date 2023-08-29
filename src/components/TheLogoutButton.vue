@@ -22,6 +22,7 @@ const handleLogout = async () => {
 	<AppButtonBlank
 		@click="handleLogout"
 		color="red"
+		icon="right-from-bracket"
 		label="Esci"
 	/>
 </template>

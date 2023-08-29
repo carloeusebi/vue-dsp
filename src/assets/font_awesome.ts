@@ -16,6 +16,7 @@ import {
 	faEyeSlash,
 	faEye,
 	faTriangleExclamation,
+	faRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
 import { faSquare, faSquareCheck, faCommentDots } from '@fortawesome/free-regular-svg-icons';
 
@@ -40,4 +41,5 @@ export const faIcons = [
 	faEyeSlash,
 	faEye,
 	faTriangleExclamation,
+	faRightFromBracket,
 ];
