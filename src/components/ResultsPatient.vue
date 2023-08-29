@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { Patient } from '@/assets/data/interfaces';
+import { calculateAge } from '@/mixins';
 
 interface Props {
 	patient: Patient;
@@ -19,16 +20,22 @@ defineProps<Props>();
 			{{ patient?.lname }}
 		</div>
 		<div>
-			<span v-if="patient.age"><strong>Età: </strong>{{ patient?.age }}</span>
+			<span v-if="patient.sex"><strong>Sesso: </strong>{{ patient.sex }}</span>
+			|
+			<span v-if="patient.birthday"><strong>Età: </strong>{{ calculateAge(patient.birthday) }}</span>
 			<span
 				class="ms-3"
 				v-if="patient?.weight"
-				>| <strong>Peso: </strong>{{ patient?.weight }}kg</span
+			>
+				|
+				<strong>Peso: </strong>{{ patient?.weight }}kg</span
 			>
 			<span
 				class="ms-3"
 				v-if="patient?.height"
-				>| <strong>Altezza: </strong>{{ patient?.height }}cm</span
+			>
+				|
+				<strong>Altezza: </strong>{{ patient?.height }}cm</span
 			>
 		</div>
 		<div v-if="patient?.job"><strong>Professione: </strong>{{ patient?.job }}</div>

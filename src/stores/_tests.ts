@@ -43,11 +43,18 @@ export const useTestsStore = defineStore('tests', {
 			localStorage.setItem('TEST', JSON.stringify(test));
 		},
 
-		async save(survey: Survey) {
+		/**
+		 * Updates the survey with the new answer.
+		 * @param survey The Survey to update.
+		 * @param justCompleted True if the Survey has just been completed (answer was last answer).
+		 */
+		async save(survey: Survey, justCompleted = false) {
 			this.test = survey;
 			localStorage.setItem('TEST', JSON.stringify(this.test));
 
-			return this.axios.put(endpoint, survey).catch(err => {
+			const payload = { ...survey, justCompleted };
+
+			return this.axios.put(endpoint, payload).catch(err => {
 				if (isAxiosError(err)) console.warn(err.response?.data);
 				throw err;
 			});
