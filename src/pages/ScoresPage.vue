@@ -33,6 +33,7 @@ onMounted(async () => {
 		if (isAxiosError(err)) {
 			if (err.response?.status === 403) alert("Devi aver effettuato l'accesso per vedere questa pagina");
 			else if (err.response?.status === 404) error.value = 'Test non trovato';
+			else if (err.response?.status === 422) error.value = err.response?.data.message;
 		} else alert(err);
 	} finally {
 		loader.unsetLoader();
