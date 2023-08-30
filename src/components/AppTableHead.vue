@@ -1,28 +1,23 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { Cell, Patient, Survey } from '@/assets/data/interfaces';
-
-const order = ref({ by: 'id', direction: 'down' });
+import { Cell, Order, Patient, Survey } from '@/assets/data/interfaces';
 
 interface Props {
 	cells: Cell<Patient | Survey>[];
-	hasReset: boolean;
+	resetTo?: Order<Patient | Survey>;
 	canSort: boolean;
 }
 
 defineProps<Props>();
+const order = ref({ by: 'id', direction: 'down' });
 
 const emit = defineEmits(['sort-change']);
 
-const sort = (prop: string, direction = false) => {
+const sort = (prop: string, direction?: string | undefined) => {
 	if (direction) {
-		order.value.by = 'asc';
-		order.value.direction = 'down';
-	}
-	if (prop === order.value.by) {
-		order.value.direction = order.value.direction === 'up' ? 'down' : 'up';
+		order.value.direction = direction;
 	} else {
-		order.value.direction = 'down';
+		order.value.direction = order.value.direction === 'up' ? 'down' : 'up';
 	}
 	order.value.by = prop;
 
@@ -54,8 +49,8 @@ const sort = (prop: string, direction = false) => {
 				</div>
 			</th>
 			<th
-				v-if="hasReset"
-				@click="sort('id', true)"
+				v-if="resetTo"
+				@click="sort(resetTo.by, resetTo.direction)"
 			>
 				<div
 					v-if="canSort"

@@ -8,6 +8,7 @@ import ResultsPage from '@/pages/ResultsPage.vue';
 import PageNotFound from '@/pages/PageNotFound.vue';
 import ScoresPage from '@/pages/ScoresPage.vue';
 import PatientsShowVue from '@/pages/PatientsShow.vue';
+import SurveysShowVue from '@/pages/SurveysShow.vue';
 
 export const routes = [
 	{
@@ -43,6 +44,11 @@ export const routes = [
 						path: '/sondaggi',
 						component: SurveysIndex,
 						name: 'surveys.index',
+					},
+					{
+						path: '/sondaggi/:id',
+						component: SurveysShowVue,
+						name: 'surveys.show',
 					},
 				],
 			},

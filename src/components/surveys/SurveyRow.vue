@@ -8,7 +8,7 @@ import SurveyDelete from './SurveyDelete.vue';
 
 import axiosInstance from '@/assets/axios';
 import { useLoaderStore, usePatientsStore } from '@/stores';
-import { Errors, Patient, Survey } from '@/assets/data/interfaces';
+import { Patient, Survey } from '@/assets/data/interfaces';
 import { isAxiosError } from 'axios';
 import PatientRow from '../patients/PatientRow.vue';
 
@@ -32,12 +32,6 @@ const loader = useLoaderStore();
 const showModal = ref(false);
 const token = props.survey.token;
 const link = `${import.meta.env.VITE_BASE_URL}/admin/questionario/${token}`;
-
-const errors: Ref<Errors> = ref({});
-const errorsStr = computed(() => {
-	const keys = Object.keys(errors.value);
-	return keys.reduce((str, key) => (str += `${errors.value[key]}<br>`), '');
-});
 
 const createdAt = computed(() => new Date(props.survey.created_at as string).toLocaleDateString());
 const updatedAt = computed(() => {
@@ -139,12 +133,13 @@ const handleCloseModal = () => {
 
 		<!-- DETAILS BUTTON -->
 		<td class="px-4 py-3 text-sm border text-center">
-			<span
-				@click="showModal = true"
-				class="px-3 py-2 font-semibold leading-tight text-sky-700 bg-sky-100 rounded-sm cursor-pointer select-none hover:bg-sky-200 transition-colors"
-			>
-				Dettagli
-			</span>
+			<router-link :to="{ name: 'surveys.show', params: { id: survey.id } }">
+				<span
+					class="px-3 py-2 font-semibold leading-tight text-sky-700 bg-sky-100 rounded-sm cursor-pointer select-none hover:bg-sky-200 transition-colors"
+				>
+					Dettagli
+				</span>
+			</router-link>
 		</td>
 	</tr>
 

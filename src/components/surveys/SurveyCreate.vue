@@ -10,7 +10,7 @@ import AppAlert from '@/components/AppAlert.vue';
 import AppSearchbar from '../AppSearchbar.vue';
 import QuestionTags from '@/components/questions/QuestionTags.vue';
 
-import { Errors, Patient, Survey } from '@/assets/data/interfaces';
+import { Patient, Survey } from '@/assets/data/interfaces';
 import { emptySurvey } from '@/assets/data/data';
 import {
 	useFilterQuestionsByTags,
@@ -20,6 +20,7 @@ import {
 	useStringifyQuestionTags,
 } from '@/composables';
 import { usePatientsStore, useQuestionsStore, useSurveysStore } from '@/stores';
+import router from '@/routes';
 
 interface Props {
 	patient?: Patient;
@@ -28,37 +29,33 @@ interface Props {
 const props = defineProps<Props>();
 if (props.patient) emptySurvey.patient_id = props.patient.id as number;
 const showModal = ref(false);
-const patients = useSort(usePatientsStore().getPatients, 'lname', 'down');
+const patients = computed(() => useSort(usePatientsStore().patients, { by: 'lname', direction: 'down' }));
 
 const newSurvey: Ref<Survey> = ref({ ...(emptySurvey as Survey) });
 
-const errors: Ref<Errors> = ref({});
-const errorsStr = computed(() => {
-	const keys = Object.keys(errors.value);
-	return keys.reduce((str, key) => (str += `${errors.value[key]}<br>`), '');
-});
+const errors = ref<string[]>([]);
 
 /**
  * Checks for errors
  */
 const handleFormSubmit = () => {
 	// check for errors
-	errors.value = {};
+	errors.value = [];
 
 	if (!newSurvey.value.title) {
-		errors.value['no-title'] = 'Il nome per il Sondaggio è obbligatorio';
+		errors.value.push('Il nome per il Sondaggio è obbligatorio');
 	}
 
 	if (!newSurvey.value.patient_id) {
-		errors.value['no-patient'] = 'Nessun Paziente selezionato, il Paziente è obbligatorio';
+		errors.value.push('Nessun Paziente selezionato, il Paziente è obbligatorio');
 	}
 
 	const selectedQuestions = questions.value.filter(({ selected }) => selected);
 	if (!selectedQuestions.length) {
-		errors.value['no-questions'] = 'Nessun questionario selezionato, selezionarne almeno uno';
+		errors.value.push('Nessun questionario selezionato, selezionarne almeno uno');
 	}
 
-	if (errorsStr.value) return;
+	if (errors.value.length) return;
 
 	newSurvey.value.questions = [...selectedQuestions];
 	saveSurvey();
@@ -71,13 +68,16 @@ const saveSurvey = async () => {
 	const surveyStore = useSurveysStore();
 	errors.value = await useSaveToStore(newSurvey.value, surveyStore);
 
-	if (!errorsStr.value) {
+	if (!errors.value.length) {
 		showModal.value = false;
 		newSurvey.value = { ...(emptySurvey as Survey) };
 		questions.value = questions.value.map(q => {
 			q.selected = false;
 			return q;
 		});
+
+		const id = surveyStore.lastInsertedId;
+		router.push({ name: 'surveys.show', params: { id } });
 	}
 };
 
@@ -143,13 +143,20 @@ const filteredQuestionsIds = computed(() => {
 
 			<!-- ALERT -->
 			<AppAlert
-				:show="errorsStr.length > 0"
+				:show="errors.length > 0"
 				type="warning"
 				title="Attenzione"
 				class="my-4"
 				:transition="false"
 			>
-				<span v-html="errorsStr"></span>
+				<ul>
+					<li
+						v-for="(error, n) in errors"
+						:key="n"
+					>
+						{{ error }}
+					</li>
+				</ul>
 			</AppAlert>
 			<hr class="my-8" />
 
@@ -157,6 +164,7 @@ const filteredQuestionsIds = computed(() => {
 			<form
 				@submit.prevent="handleFormSubmit"
 				id="survey-create"
+				novalidate
 			>
 				<!-- TITLE -->
 

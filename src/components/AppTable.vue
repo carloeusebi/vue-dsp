@@ -5,12 +5,11 @@ import { Cell, Order, Patient, Survey } from '@/assets/data/interfaces';
 
 interface Props {
 	cells: Cell<any>[];
-	hasReset?: boolean;
+	resetTo?: Order<any>;
 	canSort?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
-	hasReset: () => true,
 	canSort: () => true,
 });
 
@@ -29,7 +28,7 @@ const handle = (newOrder: Order<Patient | Survey>) => {
 				<AppTableHead
 					@sort-change="handle"
 					:cells="cells"
-					:has-reset="hasReset"
+					:reset-to="resetTo"
 					:can-sort="canSort"
 				/>
 

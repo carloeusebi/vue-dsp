@@ -1,24 +1,19 @@
 <script lang="ts" setup>
+import { useRouter } from 'vue-router';
 import AppButtonBlank from './AppButtonBlank.vue';
 
-defineProps({
-	to: {
-		type: String,
-		required: true,
-	},
-});
+const router = useRouter();
+const goBack = () => {
+	router.back();
+};
 </script>
 
 <template>
 	<!-- back button -->
-	<router-link
-		class="flex items-center"
-		:to="to"
-	>
-		<app-button-blank
-			color="gray"
-			label="Indietro"
-			icon="circle-chevron-left"
-		/>
-	</router-link>
+	<app-button-blank
+		@click="goBack"
+		color="gray"
+		label="Indietro"
+		icon="circle-chevron-left"
+	/>
 </template>

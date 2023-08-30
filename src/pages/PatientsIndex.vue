@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, Ref } from 'vue';
-import { usePatientsStore } from '@/stores';
+import { useLoaderStore, usePatientsStore } from '@/stores';
 import { storeToRefs } from 'pinia';
 
 import PatientRow from '@/components/patients/PatientRow.vue';
@@ -11,11 +11,14 @@ import AppTable from '../components/AppTable.vue';
 import AppPagination from '@/components/AppPagination.vue';
 
 import { Cell, Order, Patient } from '@/assets/data/interfaces';
-import { usePagination } from '@/composables';
+import { usePagination, useExtractQueryParams } from '@/composables';
 
 const PATIENTS_PER_PAGE = 25;
 
+const { alertMessage, alertType } = useExtractQueryParams();
+
 const patientsStore = usePatientsStore();
+const loader = useLoaderStore();
 const { patients } = storeToRefs(patientsStore);
 
 const tableCells: Ref<Cell<Patient>[]> = ref([
@@ -29,6 +32,8 @@ const tableCells: Ref<Cell<Patient>[]> = ref([
 	},
 ]);
 
+const defaultOrder: Order<Patient> = { by: 'id', direction: 'down' };
+
 const changeOrder = (newOrder: Order<Patient>) => {
 	order.value = { ...newOrder };
 };
@@ -36,7 +41,7 @@ const changeOrder = (newOrder: Order<Patient>) => {
 const { handleSearchbarKeypress, order, pages, activePage, filteredAndOrdered } = usePagination(
 	patients,
 	['fname', 'lname'],
-	{ by: 'id', direction: 'down' },
+	defaultOrder,
 	PATIENTS_PER_PAGE
 );
 
@@ -50,10 +55,17 @@ const handlePageClick = (newPage: number) => {
 		<!-- SEARCH -->
 		<div class="relative flex justify-between w-full">
 			<AppSearchbar @key-press="handleSearchbarKeypress" />
-			<!-- CREATE PATIENTS -->
 		</div>
+		<AppAlert
+			:show="alertMessage != undefined && alertType != undefined"
+			:type="alertType"
+			:message="alertMessage"
+			class="my-5"
+		/>
+
 		<div class="flex justify-between my-3 px-3">
 			<h1 class="text-3xl font-bold">Pazienti</h1>
+			<!-- CREATE PATIENTS -->
 			<PatientSave
 				icon="plus"
 				title="Aggiungi un paziente"
@@ -75,7 +87,7 @@ const handlePageClick = (newPage: number) => {
 			v-if="filteredAndOrdered.length > 0"
 			@sort-change="changeOrder"
 			:cells="tableCells"
-			:has-reset="true"
+			:reset-to="defaultOrder"
 		>
 			<template v-slot:tbody>
 				<PatientRow
@@ -88,7 +100,7 @@ const handlePageClick = (newPage: number) => {
 		</AppTable>
 		<div v-else>
 			<AppAlert
-				:show="true"
+				:show="!loader.isLoading"
 				title="Ops!"
 			>
 				Nessun paziente trovato!

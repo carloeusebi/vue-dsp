@@ -7,8 +7,9 @@ const endpoint = '/questions';
 export const useQuestionsStore = defineStore('questions', {
 	//state
 	state: () => ({
-		questions: JSON.parse(localStorage.getItem('QUESTIONS') as string) as Question[],
-		labels: JSON.parse(localStorage.getItem('QUESTION_LABELS') as string) as Question,
+		questions: [] as Question[],
+		labels: {} as Question,
+		lastInsertedId: null as null | number,
 	}),
 
 	//getters
@@ -19,10 +20,9 @@ export const useQuestionsStore = defineStore('questions', {
 
 	//actions
 	actions: {
-		fetch() {
-			this.axios.get(endpoint).then(res => {
-				this.load(res.data);
-			});
+		async fetch() {
+			const { data } = await this.axios.get(endpoint);
+			this.load(data);
 		},
 
 		/**
@@ -62,9 +62,10 @@ export const useQuestionsStore = defineStore('questions', {
 		 * @param question The question to be saved
 		 */
 		async save(question: Question): Promise<void> {
-			return await saveMixin(this, endpoint, question, this.questions, this.loadQuestions).catch(e => {
+			const id = await saveMixin(this, endpoint, question, this.questions, this.loadQuestions).catch(e => {
 				throw e;
 			});
+			this.lastInsertedId = id;
 		},
 
 		/**

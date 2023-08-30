@@ -5,10 +5,7 @@ const props = defineProps({
 	show: Boolean,
 	type: String,
 	message: String,
-	title: {
-		type: String,
-		default: 'Ops',
-	},
+	title: String,
 });
 
 const className = computed((): string => {
@@ -21,6 +18,18 @@ const className = computed((): string => {
 			return 'blue';
 	}
 });
+
+const actualTitle = computed(() => {
+	if (props.title || props.title === '') return props.title;
+	switch (props.type) {
+		case 'warning':
+			return 'Attenzione';
+		case 'success':
+			return 'Successo';
+		default:
+			return 'Ops';
+	}
+});
 </script>
 
 <template>
@@ -30,10 +39,10 @@ const className = computed((): string => {
 		role="alert"
 	>
 		<p
-			v-if="title"
+			v-if="actualTitle"
 			class="font-bold"
 		>
-			{{ title }}
+			{{ actualTitle }}
 		</p>
 		<slot></slot>
 		<span>{{ message }}</span>

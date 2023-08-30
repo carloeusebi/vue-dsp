@@ -17,6 +17,9 @@ import {
 	faEye,
 	faTriangleExclamation,
 	faRightFromBracket,
+	faEnvelope,
+	faSquarePollVertical,
+	faListCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import { faSquare, faSquareCheck, faCommentDots } from '@fortawesome/free-regular-svg-icons';
 
@@ -42,4 +45,7 @@ export const faIcons = [
 	faEye,
 	faTriangleExclamation,
 	faRightFromBracket,
+	faEnvelope,
+	faSquarePollVertical,
+	faListCheck,
 ];

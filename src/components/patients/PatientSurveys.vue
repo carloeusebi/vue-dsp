@@ -23,7 +23,9 @@ const surveyCells: Cell<Survey>[] = [
 	{ label: 'Ultima modifica', key: 'updated_at' },
 	{ label: '', key: 'completed' },
 ];
-const order = ref<Order<Survey>>({ by: 'updated_at', direction: 'up' });
+
+const defaultOrder: Order<Survey> = { by: 'created_at', direction: 'up' };
+const order = ref<Order<Survey>>(defaultOrder);
 
 const changeOrder = (newOrder: Order<Survey>) => {
 	order.value = { ...newOrder };
@@ -37,6 +39,8 @@ const orderedSurveys = computed(() => useSort(surveys.value, order.value));
 		<AppTable
 			class="survey-table"
 			:cells="surveyCells"
+			:can-sort="true"
+			:reset-to="defaultOrder"
 			@sort-change="changeOrder"
 		>
 			<template #tbody>
