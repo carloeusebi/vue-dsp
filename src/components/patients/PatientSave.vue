@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
 	toEditPatient: () => ({ ...(emptyPatient as Patient) }),
 });
 
-const emit = defineEmits(['patient-save']);
+const emit = defineEmits(['attempt', 'patient-save']);
 
 const router = useRouter();
 const showModal = ref(false);
@@ -42,6 +42,7 @@ const errors = ref<string[]>([]);
  */
 const handleSavePatient = async () => {
 	errors.value = [];
+	emit('attempt');
 
 	const patientStore = usePatientsStore();
 	errors.value = await useSaveToStore(patientRef.value, patientStore);

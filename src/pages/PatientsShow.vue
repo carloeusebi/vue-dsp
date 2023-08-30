@@ -35,6 +35,7 @@ const showSuccessAlert = ref(false);
 				button-label="Modifica"
 				:to-edit-patient="{ ...patient }"
 				@patient-save="showSuccessAlert = true"
+				@attempt="showSuccessAlert = false"
 			/>
 			<PatientDelete :to-delete-patient="patient" />
 		</div>

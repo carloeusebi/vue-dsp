@@ -9,7 +9,7 @@ import SurveyRow from '../components/surveys/SurveyRow.vue';
 import SurveyCreate from '@/components/surveys/SurveyCreate.vue';
 import AppPagination from '@/components/AppPagination.vue';
 
-import { useSurveysStore } from '@/stores';
+import { useLoaderStore, useSurveysStore } from '@/stores';
 import { useExtractQueryParams, usePagination } from '@/composables';
 import { Cell, Order, Survey } from '@/assets/data/interfaces';
 
@@ -18,13 +18,14 @@ const SURVEYS_PER_PAGE = 25;
 const surveysStore = useSurveysStore();
 const { surveys } = storeToRefs(surveysStore);
 const { alertType, alertMessage } = useExtractQueryParams();
+const loader = useLoaderStore();
 
 const tableCells: Ref<Cell<Survey>[]> = ref([
 	{ label: 'Paziente', key: 'patient_name' },
 	{ label: 'Titolo', key: 'title' },
 	{ label: 'Creato il', key: 'created_at' },
 	{ label: 'Ultima modifica', key: 'updated_at' },
-	{ label: 'Compl', key: 'completed' },
+	{ label: '<span class="hidden md:inline">Compl</span>', key: 'completed' },
 ]);
 
 const defaultOrder: Order<Survey> = { by: 'created_at', direction: 'up' };
@@ -93,7 +94,7 @@ const handlePageClick = (newPage: number) => {
 		</AppTable>
 		<div v-else>
 			<AppAlert
-				:show="true"
+				:show="!loader.isLoading"
 				title="Ops!"
 			>
 				Nessun sondaggio trovato!
@@ -105,7 +106,7 @@ const handlePageClick = (newPage: number) => {
 <style scoped>
 /* name column */
 :deep(td:first-of-type) {
-	max-width: 200px;
+	max-width: 100px;
 }
 
 /* min width to prevent dates to break line */
@@ -117,16 +118,15 @@ const handlePageClick = (newPage: number) => {
 /* completed column */
 :deep(th:nth-of-type(5)),
 :deep(td:nth-of-type(5)) {
-	width: 40px;
+	max-width: 30px;
+	padding: 0.25rem;
 	text-align: center;
 }
 
 :deep(th:nth-of-type(3)),
 :deep(td:nth-of-type(3)),
 :deep(th:nth-of-type(4)),
-:deep(td:nth-of-type(4)),
-:deep(th:nth-of-type(5)),
-:deep(td:nth-of-type(5)) {
+:deep(td:nth-of-type(4)) {
 	display: none;
 }
 
@@ -139,6 +139,11 @@ const handlePageClick = (newPage: number) => {
 	:deep(th:nth-of-type(5)),
 	:deep(td:nth-of-type(5)) {
 		display: table-cell;
+	}
+
+	:deep(th:nth-of-type(5)),
+	:deep(td:nth-of-type(5)) {
+		max-width: 50px;
 	}
 }
 </style>

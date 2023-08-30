@@ -14,10 +14,13 @@ export const usePatientsStore = defineStore('patients', {
 
 	//actions
 	actions: {
-		fetch() {
-			this.axios.get(endpoint).then(res => {
-				this.load(res.data);
-			});
+		async fetch() {
+			try {
+				const { data } = await this.axios.get(endpoint);
+				this.load(data);
+			} catch (err) {
+				console.warn(err);
+			}
 		},
 
 		async fetchById(id: number): Promise<Patient | undefined> {

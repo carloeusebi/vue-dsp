@@ -8,7 +8,7 @@ import QuestionsRow from '@/components/questions/QuestionsRow.vue';
 import QuestionCreate from '@/components/questions/QuestionCreate.vue';
 import QuestionTags from '@/components/questions/QuestionTags.vue';
 
-import { useQuestionsStore } from '@/stores';
+import { useLoaderStore, useQuestionsStore } from '@/stores';
 import { useFilterQuestionsByTags, useSearchFilter, useStringifyQuestionTags } from '@/composables';
 import AppBackButton from '@/components/AppBackButton.vue';
 
@@ -17,6 +17,7 @@ const handleSearchbarKeypress = (word: string) => (searchWord.value = word.toLow
 const questionsStore = useQuestionsStore();
 const { questions } = storeToRefs(questionsStore);
 const searchWord = ref('');
+const loader = useLoaderStore();
 
 let selectedTagsIds = ref<number[]>([]);
 const searchableQuestions = computed(() => useStringifyQuestionTags(questions.value));
@@ -72,8 +73,7 @@ const filteredQuestions = computed(() => {
 		</ul>
 		<AppAlert
 			v-else
-			:show="true"
-			title="Ops!"
+			:show="!loader.isLoading"
 		>
 			Nessun questionario trovato!
 		</AppAlert>

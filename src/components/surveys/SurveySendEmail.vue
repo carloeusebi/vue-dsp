@@ -10,7 +10,7 @@ interface Props {
 	link: string;
 }
 const props = defineProps<Props>();
-const emit = defineEmits(['send-email']);
+const emit = defineEmits(['attempt', 'send-email']);
 const loader = useLoaderStore();
 
 /**
@@ -18,6 +18,7 @@ const loader = useLoaderStore();
  */
 const sendEmail = async () => {
 	loader.setLoader();
+	emit('attempt');
 	let message = 'Email inviata correttamente.';
 	let title: 'Successo' | 'Attenzione' = 'Successo';
 	let type: 'success' | 'info' | 'warning' = 'success';

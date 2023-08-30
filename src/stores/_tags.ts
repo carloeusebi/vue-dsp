@@ -19,8 +19,12 @@ export const useTagsStore = defineStore('tags', {
 	// actions
 	actions: {
 		async fetch() {
-			const { data } = await this.axios.get(endpoint);
-			this.load(data);
+			try {
+				const { data } = await this.axios.get(endpoint);
+				this.load(data);
+			} catch (err) {
+				console.warn(err);
+			}
 		},
 
 		/**
