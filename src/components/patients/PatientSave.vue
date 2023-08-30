@@ -12,6 +12,7 @@ import { emptyPatient } from '@/assets/data/data';
 import { useSaveToStore, useScrollTo } from '@/composables';
 import { usePatientsStore } from '@/stores';
 import { useRouter } from 'vue-router';
+import AppCheckbox from '../AppCheckbox.vue';
 
 interface Props {
 	title: string;
@@ -32,6 +33,7 @@ const showModal = ref(false);
 const patientRef: Ref<Patient> = ref({ ...props.toEditPatient });
 // modal component ref
 const modalComponent = ref<InstanceType<typeof AppModal> | null>(null);
+const stayInPage = ref(false);
 
 const errors = ref<string[]>([]);
 
@@ -43,13 +45,18 @@ const handleSavePatient = async () => {
 
 	const patientStore = usePatientsStore();
 	errors.value = await useSaveToStore(patientRef.value, patientStore);
+	const fullName = `${patientRef.value.fname} ${patientRef.value.lname}`;
 
 	if (!errors.value.length) {
 		showModal.value = false;
 		patientRef.value = { ...(props.toEditPatient || (emptyPatient as Patient)) };
 		const id = patientStore.lastInsertedId;
-		router.push({ name: 'patients.show', params: { id } });
-		emit('patient-save');
+
+		if (stayInPage.value) {
+			emit('patient-save', fullName);
+		} else {
+			router.push({ name: 'patients.show', params: { id } });
+		}
 	} else {
 		// scrolls the modal to the top, needed to show errors when on smartphones
 		useScrollTo(modalComponent.value?.$refs.modal as HTMLTemplateElement, 0);
@@ -71,7 +78,21 @@ const handleSavePatient = async () => {
 		ref="modalComponent"
 	>
 		<template v-slot:content>
-			<h2>{{ title }}</h2>
+			<div class="flex justify-between items-center">
+				<h2>{{ title }}</h2>
+				<div v-if="title === 'Aggiungi un paziente'">
+					<AppCheckbox
+						v-model="stayInPage"
+						id="stay-in-page"
+					/>
+					<label
+						class="cursor-pointer select-none"
+						for="stay-in-page"
+					>
+						Rimani sulla stessa pagina
+					</label>
+				</div>
+			</div>
 
 			<!-- ALERT -->
 			<AppAlert
@@ -89,7 +110,7 @@ const handleSavePatient = async () => {
 					</li>
 				</ul>
 			</AppAlert>
-			<hr class="mb-10" />
+			<hr class="mb-3" />
 
 			<!-- FORM -->
 			<form

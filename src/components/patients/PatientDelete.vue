@@ -22,12 +22,12 @@ const handleDeletePatient = async () => {
 	const patientStore = usePatientsStore();
 	const id: number = props.toDeletePatient.id || -1;
 
-	const alertType = 'success';
-	const alertMessage = `${props.toDeletePatient.fname} ${props.toDeletePatient.lname} eliminato correttamente.`;
+	const type = 'success';
+	const message = `${props.toDeletePatient.fname} ${props.toDeletePatient.lname} eliminato correttamente.`;
 
 	const redirectTo: RouteLocationRaw = {
 		name: 'patients.index',
-		query: { alertType, alertMessage },
+		query: { type, message },
 	};
 	await useDeleteFromStore(patientStore, id, redirectTo);
 };

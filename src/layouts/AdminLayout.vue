@@ -7,7 +7,7 @@ import TheNavbar from '@/components/TheNavbar.vue';
 		<TheNavbar />
 	</header>
 	<main>
-		<div class="container mx-auto p-2 lg:p-6">
+		<div class="container mx-auto p-2 md:p-5">
 			<router-view></router-view>
 		</div>
 	</main>

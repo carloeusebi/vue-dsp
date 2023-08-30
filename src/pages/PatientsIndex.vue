@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, Ref } from 'vue';
+import { computed, onMounted, ref, Ref } from 'vue';
 import { useLoaderStore, usePatientsStore } from '@/stores';
 import { storeToRefs } from 'pinia';
 
@@ -15,11 +15,22 @@ import { usePagination, useExtractQueryParams } from '@/composables';
 
 const PATIENTS_PER_PAGE = 25;
 
-const { alertMessage, alertType } = useExtractQueryParams();
+const alertMessage = ref('');
+const alertType = ref('');
+
+onMounted(() => {
+	const { message, type } = useExtractQueryParams();
+	alertMessage.value = message;
+	alertType.value = type;
+});
 
 const patientsStore = usePatientsStore();
 const loader = useLoaderStore();
 const { patients } = storeToRefs(patientsStore);
+
+const showAlert = computed(() => {
+	return alertMessage.value !== undefined && alertType.value !== undefined;
+});
 
 const tableCells: Ref<Cell<Patient>[]> = ref([
 	{ label: 'Nome', key: 'fname' },
@@ -48,6 +59,11 @@ const { handleSearchbarKeypress, order, pages, activePage, filteredAndOrdered } 
 const handlePageClick = (newPage: number) => {
 	activePage.value = newPage;
 };
+
+const handlePatientSaved = (fullName: string) => {
+	alertMessage.value = `${fullName} inserito con successo`;
+	alertType.value = 'success';
+};
 </script>
 
 <template>
@@ -57,7 +73,7 @@ const handlePageClick = (newPage: number) => {
 			<AppSearchbar @key-press="handleSearchbarKeypress" />
 		</div>
 		<AppAlert
-			:show="alertMessage != undefined && alertType != undefined"
+			:show="showAlert"
 			:type="alertType"
 			:message="alertMessage"
 			class="my-5"
@@ -70,6 +86,7 @@ const handlePageClick = (newPage: number) => {
 				icon="plus"
 				title="Aggiungi un paziente"
 				button-label="Aggiungi"
+				@patient-save="handlePatientSaved"
 			/>
 		</div>
 

@@ -10,6 +10,8 @@ import SurveyDetails from '@/components/surveys/SurveyDetails.vue';
 
 import axiosInstance from '@/assets/axios';
 import { useLoaderStore, useSurveysStore } from '@/stores';
+import SurveyScoreList from '@/components/surveys/SurveyScoreList.vue';
+import SurveySendEmail from '@/components/surveys/SurveySendEmail.vue';
 
 const getScores = async (id: undefined | number) => {
 	if (!id) return;
@@ -21,11 +23,21 @@ const getScores = async (id: undefined | number) => {
 	}
 };
 
+const copyUrl = async () => {
+	try {
+		await navigator.clipboard.writeText(link.value);
+	} catch (e) {
+		alert(e);
+	}
+};
+
 const id = parseInt(useRoute().params.id as string);
 const loader = useLoaderStore();
 const surveysStore = useSurveysStore();
 const survey = computed(() => surveysStore.getById(id));
 const scores = ref();
+
+const link = computed(() => `${import.meta.env.VITE_BASE_URL}/admin/questionario/${survey.value?.token}`);
 
 getScores(id);
 </script>
@@ -62,10 +74,9 @@ getScores(id);
 					color="green"
 				/>
 			</router-link>
-			<AppButtonBlank
-				v-if="!survey.completed"
-				label="Invia un'email"
-				icon="envelope"
+			<SurveySendEmail
+				:survey="survey"
+				:link="link"
 			/>
 			<SurveyDelete :to-delete-survey="survey" />
 		</div>
@@ -82,9 +93,15 @@ getScores(id);
 				size="2xl"
 			/>
 		</div>
-		<div class="grid lg:grid-cols-2">
+		<div class="grid lg:grid-cols-2 gap-3">
 			<div>
 				<SurveyDetails :survey="survey" />
+				<AppButtonBlank
+					@click="copyUrl"
+					class="my-3"
+					label="Copia link negli appunti"
+					icon="copy"
+				/>
 				<hr class="my-5 lg:hidden" />
 			</div>
 			<!-- SCORES -->
@@ -92,26 +109,17 @@ getScores(id);
 				v-if="scores"
 				class="scores max-h-[600px] overflow-y-scroll rounded-md p-3"
 			>
-				<ul>
-					<li
-						v-for="(variables, question) in scores.scores"
-						:key="question"
-						class="mb-3"
-					>
-						<div>
-							<strong>{{ question }}</strong>
-						</div>
-						<ul>
-							<li
-								v-for="(score, variable) in variables"
-								:key="variable"
-								class="ps-3"
-							>
-								{{ variable }}: {{ score }}
-							</li>
-						</ul>
-					</li>
-				</ul>
+				<SurveyScoreList :scores="scores" />
+			</div>
+			<div
+				v-else
+				class="px-5"
+			>
+				<AppAlert
+					:show="!loader.isLoading"
+					title="Aspetta"
+					:message="`${survey.title} di ${survey.patient_name} non è stato ancora completato.`"
+				/>
 			</div>
 		</div>
 	</div>
@@ -127,8 +135,30 @@ getScores(id);
 	</div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .scores {
 	box-shadow: 0 0 30px 1px inset #ddd;
+}
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #a3a3a3 #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+	width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+	background: transparent;
+	margin: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: #a3a3a3;
+	border-radius: 20px;
+	border: 1px none #000000;
 }
 </style>
