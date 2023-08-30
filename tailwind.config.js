@@ -52,6 +52,7 @@ export default {
 		'group-hover:bg-red-600',
 		'group-hover:bg-green-600',
 		'group-hover:bg-yellow-600',
+		'group-hover:bg-gray-600',
 		'text-gray',
 		'grid-cols-1',
 		'grid-cols-2',

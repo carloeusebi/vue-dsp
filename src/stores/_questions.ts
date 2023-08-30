@@ -45,7 +45,6 @@ export const useQuestionsStore = defineStore('questions', {
 				if (!q.variables) q.variables = [];
 			});
 			this.questions = questions;
-			localStorage.setItem('QUESTIONS', JSON.stringify(questions));
 		},
 
 		/**
@@ -54,7 +53,6 @@ export const useQuestionsStore = defineStore('questions', {
 		 */
 		loadLabels(labels: Question) {
 			this.labels = labels;
-			localStorage.setItem('QUESTION_LABELS', JSON.stringify(labels));
 		},
 
 		/**

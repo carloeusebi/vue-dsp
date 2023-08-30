@@ -31,7 +31,7 @@ export const usePatientsStore = defineStore('patients', {
 		 * @returns The Patient object
 		 */
 		getById(id: number): Patient | undefined {
-			return this.patients.find(patient => patient.id === id);
+			return this.patients.find(patient => patient.id == id);
 		},
 
 		/**

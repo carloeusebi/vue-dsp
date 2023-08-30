@@ -21,14 +21,6 @@ const showSuccessAlert = ref(false);
 </script>
 
 <template>
-	<div>
-		<AppAlert
-			:show="showSuccessAlert"
-			message="Paziente modificato con successo."
-			type="success"
-		/>
-	</div>
-
 	<header class="flex justify-between mt-5">
 		<AppBackButton class="h-full" />
 		<div
@@ -49,6 +41,14 @@ const showSuccessAlert = ref(false);
 	</header>
 
 	<hr class="my-5" />
+
+	<div class="mb-5">
+		<AppAlert
+			:show="showSuccessAlert"
+			message="Paziente modificato con successo."
+			type="success"
+		/>
+	</div>
 
 	<div v-if="patient">
 		<h1 class="text-2xl font-bold mb-3">{{ patient.fname }} {{ patient.lname }}</h1>

@@ -52,11 +52,10 @@ const handleSavePatient = async () => {
 		patientRef.value = { ...(props.toEditPatient || (emptyPatient as Patient)) };
 		const id = patientStore.lastInsertedId;
 
-		if (stayInPage.value) {
-			emit('patient-save', fullName);
-		} else {
+		if (!stayInPage.value) {
 			router.push({ name: 'patients.show', params: { id } });
 		}
+		emit('patient-save', fullName);
 	} else {
 		// scrolls the modal to the top, needed to show errors when on smartphones
 		useScrollTo(modalComponent.value?.$refs.modal as HTMLTemplateElement, 0);

@@ -8,7 +8,7 @@ const endpoint = 'tags';
 export const useTagsStore = defineStore('tags', {
 	//
 	state: () => ({
-		tags: JSON.parse(localStorage.getItem('TAGS') as string) as Tag[],
+		tags: [] as Tag[],
 	}),
 
 	// getters
@@ -38,7 +38,6 @@ export const useTagsStore = defineStore('tags', {
 		 */
 		load(tags: Tag[]) {
 			this.tags = tags;
-			localStorage.setItem('TAGS', JSON.stringify(tags));
 		},
 
 		/**

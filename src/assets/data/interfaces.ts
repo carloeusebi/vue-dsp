@@ -126,6 +126,13 @@ export interface Order<T> {
 	direction: 'up' | 'down';
 }
 
+export interface Alert {
+	show: boolean;
+	title: string;
+	message: string;
+	type: 'success' | 'warning' | 'info';
+}
+
 type PatientsStore = ReturnType<typeof usePatientsStore>;
 type QuestionStore = ReturnType<typeof useQuestionsStore>;
 type SurveyStore = ReturnType<typeof useSurveysStore>;

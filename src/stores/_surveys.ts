@@ -19,11 +19,11 @@ export const useSurveysStore = defineStore('surveys', {
 		},
 
 		getById(id: number): Survey | undefined {
-			return this.surveys.find(survey => survey.id === id);
+			return this.surveys.find(survey => survey.id == id);
 		},
 
 		getByPatientId(id: number) {
-			return this.surveys.filter(survey => id === survey.patient_id);
+			return this.surveys.filter(survey => id == survey.patient_id);
 		},
 
 		load(surveys: Survey[]) {
