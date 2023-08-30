@@ -10,11 +10,6 @@ export const useSurveysStore = defineStore('surveys', {
 		surveys: JSON.parse(localStorage.getItem('SURVEYS') as string) as Survey[],
 	}),
 
-	// getters
-	getters: {
-		getSurveys: (state): Survey[] => state.surveys,
-	},
-
 	//actions
 	actions: {
 		async fetch(id?: number) {
@@ -26,6 +21,10 @@ export const useSurveysStore = defineStore('surveys', {
 
 		fetchById(id: string): Survey | undefined {
 			return this.surveys.find(s => String(s.id) == id);
+		},
+
+		getByPatientId(id: number) {
+			return this.surveys.filter(survey => id === survey.patient_id);
 		},
 
 		load(surveys: Survey[]) {
@@ -40,7 +39,7 @@ export const useSurveysStore = defineStore('surveys', {
 		 * Saves the survey to the db and updates the local store with the new data
 		 * @param survey The survey to be saved in the server request
 		 */
-		async save(survey: Survey): Promise<void> {
+		async save(survey: Survey): Promise<number> {
 			return saveMixin(this, endpoint, survey, this.surveys, this.load);
 		},
 

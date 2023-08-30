@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { Cell } from '@/assets/data/interfaces';
+import { Cell, Patient, Survey } from '@/assets/data/interfaces';
 
-const order = ref({ by: 'id', type: 'down' });
+const order = ref({ by: 'id', direction: 'down' });
 
 interface Props {
-	cells: Cell[];
+	cells: Cell<Patient | Survey>[];
 	hasReset: boolean;
 	canSort: boolean;
 }
@@ -14,15 +14,15 @@ defineProps<Props>();
 
 const emit = defineEmits(['sort-change']);
 
-const sort = (prop: string, type = false) => {
-	if (type) {
+const sort = (prop: string, direction = false) => {
+	if (direction) {
 		order.value.by = 'asc';
-		order.value.type = 'down';
+		order.value.direction = 'down';
 	}
 	if (prop === order.value.by) {
-		order.value.type = order.value.type === 'up' ? 'down' : 'up';
+		order.value.direction = order.value.direction === 'up' ? 'down' : 'up';
 	} else {
-		order.value.type = 'down';
+		order.value.direction = 'down';
 	}
 	order.value.by = prop;
 
@@ -32,7 +32,9 @@ const sort = (prop: string, type = false) => {
 
 <template>
 	<thead>
-		<tr class="cursor-pointer text-center select-none text-md font-semibold tracking-wide text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+		<tr
+			class="cursor-pointer text-center select-none text-md font-semibold tracking-wide text-gray-900 bg-gray-100 uppercase border-b border-gray-600"
+		>
 			<th
 				v-for="cell in cells"
 				class="px-4 py-3"
@@ -47,7 +49,7 @@ const sort = (prop: string, type = false) => {
 					<font-awesome-icon
 						v-if="canSort"
 						:class="{ 'opacity-0': order.by !== cell.key }"
-						:icon="`fa-solid fa-angle-${order.type}`"
+						:icon="`fa-solid fa-angle-${order.direction}`"
 					/>
 				</div>
 			</th>

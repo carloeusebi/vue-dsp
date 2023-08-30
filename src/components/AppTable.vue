@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import AppTableHead from './AppTableHead.vue';
 
-import { Cell, Patient, Survey } from '@/assets/data/interfaces';
+import { Cell, Order, Patient, Survey } from '@/assets/data/interfaces';
 
 interface Props {
-	cells: Cell[];
+	cells: Cell<any>[];
 	hasReset?: boolean;
 	canSort?: boolean;
 }
@@ -16,7 +16,7 @@ withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(['sort-change']);
 
-const handle = (newOrder: keyof Patient | keyof Survey) => {
+const handle = (newOrder: Order<Patient | Survey>) => {
 	emit('sort-change', newOrder);
 };
 </script>

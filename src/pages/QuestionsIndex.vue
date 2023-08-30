@@ -10,6 +10,7 @@ import QuestionTags from '@/components/questions/QuestionTags.vue';
 
 import { useQuestionsStore } from '@/stores';
 import { useFilterQuestionsByTags, useSearchFilter, useStringifyQuestionTags } from '@/composables';
+import AppBackButton from '@/components/AppBackButton.vue';
 
 const handleSearchbarKeypress = (word: string) => (searchWord.value = word.toLowerCase());
 
@@ -45,7 +46,7 @@ const filteredQuestions = computed(() => {
 </script>
 
 <template>
-	<section class="relative container mx-auto mt-6 p-2 lg:p-6">
+	<section class="relative mt-6">
 		<div class="relative flex items-center gap-6">
 			<AppSearchbar @key-press="handleSearchbarKeypress" />
 			<QuestionTags
@@ -54,19 +55,7 @@ const filteredQuestions = computed(() => {
 			/>
 		</div>
 		<div class="flex justify-between h-[36px] my-3">
-			<!-- back button -->
-			<router-link
-				class="flex items-center"
-				to="/sondaggi"
-			>
-				<button class="text-gray-700 hover:text-gray-800 font-medium rounded-md">
-					<font-awesome-icon
-						:icon="['fas', 'circle-chevron-left']"
-						class="me-2"
-					/>
-					Indietro
-				</button>
-			</router-link>
+			<h1 class="text-3xl font-bold">Questionari</h1>
 			<QuestionCreate />
 		</div>
 

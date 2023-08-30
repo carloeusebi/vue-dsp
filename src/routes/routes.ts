@@ -1,12 +1,13 @@
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import LoginPage from '@/pages/LoginPage.vue';
-import PatientsPage from '@/pages/PatientsPage.vue';
-import SurveysPage from '@/pages/SurveysPage.vue';
-import QuestionsPage from '@/pages/QuestionsPage.vue';
+import PatientsIndex from '@/pages/PatientsIndex.vue';
+import SurveysIndex from '@/pages/SurveysIndex.vue';
+import QuestionsIndex from '@/pages/QuestionsIndex.vue';
 import TestPage from '@/pages/TestPage.vue';
 import ResultsPage from '@/pages/ResultsPage.vue';
 import PageNotFound from '@/pages/PageNotFound.vue';
 import ScoresPage from '@/pages/ScoresPage.vue';
+import PatientsShowVue from '@/pages/PatientsShow.vue';
 
 export const routes = [
 	{
@@ -20,18 +21,41 @@ export const routes = [
 		children: [
 			{
 				path: '/pazienti',
-				component: PatientsPage,
 				name: 'patients',
+				children: [
+					{
+						path: '/pazienti',
+						component: PatientsIndex,
+						name: 'patients.index',
+					},
+					{
+						path: '/pazienti/:id',
+						component: PatientsShowVue,
+						name: 'patients.show',
+					},
+				],
 			},
 			{
 				path: '/sondaggi',
-				component: SurveysPage,
 				name: 'surveys',
+				children: [
+					{
+						path: '/sondaggi',
+						component: SurveysIndex,
+						name: 'surveys.index',
+					},
+				],
 			},
 			{
 				path: '/questionari',
-				component: QuestionsPage,
 				name: 'questions',
+				children: [
+					{
+						path: '/questionari',
+						component: QuestionsIndex,
+						name: 'questions.index',
+					},
+				],
 			},
 		],
 	},

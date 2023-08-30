@@ -4,8 +4,11 @@ import { computed } from 'vue';
 const props = defineProps({
 	show: Boolean,
 	type: String,
-	title: String,
 	message: String,
+	title: {
+		type: String,
+		default: 'Ops',
+	},
 });
 
 const className = computed((): string => {

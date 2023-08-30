@@ -7,6 +7,7 @@ import { useDeleteFromStore } from './_useDeleteFromStore';
 import { useSearchFilter } from './_useSearchFilter';
 import { useSaveToStore } from './_useSaveToStore';
 import { useGenerateId } from './_useGenerateId';
+import { usePagination } from './_usePagination';
 import { useScrollTo } from './_useScrollTo';
 import { useSort } from './_useSort';
 
@@ -20,6 +21,7 @@ export {
 	useSearchFilter,
 	useSaveToStore,
 	useGenerateId,
+	usePagination,
 	useScrollTo,
 	useSort,
 };

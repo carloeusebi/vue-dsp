@@ -7,7 +7,7 @@ import AppAlert from '@/components/AppAlert.vue';
 import AppTable from '../components/AppTable.vue';
 import SurveyRow from '../components/surveys/SurveyRow.vue';
 import AppButtonBlank from '@/components/AppButtonBlank.vue';
-import SurveyCreate from '@/components/surveys/SurveyCreate.vue';
+// import SurveyCreate from '@/components/surveys/SurveyCreate.vue';
 import AppPagination from '@/components/AppPagination.vue';
 
 import { useSurveysStore } from '@/stores';
@@ -68,7 +68,7 @@ const handlePageClick = (newPage: number) => {
 </script>
 
 <template>
-	<section class="relative container mx-auto mt-6 p-2 lg:p-6">
+	<section class="relative mt-6">
 		<!-- SEARCH -->
 		<div class="relative flex justify-between w-full">
 			<AppSearchbar @key-press="handleSearchbarKeypress" />
@@ -78,17 +78,8 @@ const handlePageClick = (newPage: number) => {
 			<h1 class="text-3xl font-bold">Sondaggi</h1>
 			<!-- CREATE BUTTON -->
 			<div class="flex gap-2">
-				<SurveyCreate />
+				<!-- <SurveyCreate /> -->
 				<!-- QUESTIONS BUTTON -->
-				<router-link
-					to="/questionari"
-					class="flex"
-				>
-					<AppButtonBlank
-						icon="pen"
-						label="Modifica questionari"
-					/>
-				</router-link>
 			</div>
 		</div>
 
