@@ -1,14 +1,19 @@
 import AdminLayout from '@/layouts/AdminLayout.vue';
+
 import LoginPage from '@/pages/LoginPage.vue';
+
 import PatientsIndex from '@/pages/PatientsIndex.vue';
+import PatientsShowVue from '@/pages/PatientsShow.vue';
 import SurveysIndex from '@/pages/SurveysIndex.vue';
+import SurveysShowVue from '@/pages/SurveysShow.vue';
 import QuestionsIndex from '@/pages/QuestionsIndex.vue';
+import QuestionsShow from '@/pages/QuestionsShow.vue';
+
 import TestPage from '@/pages/TestPage.vue';
 import ResultsPage from '@/pages/ResultsPage.vue';
-import PageNotFound from '@/pages/PageNotFound.vue';
 import ScoresPage from '@/pages/ScoresPage.vue';
-import PatientsShowVue from '@/pages/PatientsShow.vue';
-import SurveysShowVue from '@/pages/SurveysShow.vue';
+
+import PageNotFound from '@/pages/PageNotFound.vue';
 
 export const routes = [
 	{
@@ -60,6 +65,11 @@ export const routes = [
 						path: '/questionari',
 						component: QuestionsIndex,
 						name: 'questions.index',
+					},
+					{
+						path: '/questionari/:id',
+						component: QuestionsShow,
+						name: 'questions.show',
 					},
 				],
 			},

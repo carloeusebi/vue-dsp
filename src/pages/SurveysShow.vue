@@ -161,7 +161,7 @@ getScores(id);
 
 	<!-- SURVEY NOT FOUND -->
 	<div v-else>
-		<div class="my5">
+		<div class="my-5">
 			<AppAlert
 				:show="!loader.isLoading && !isFetching"
 				message="Nessun Sondaggio trovato."

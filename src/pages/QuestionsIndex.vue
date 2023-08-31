@@ -9,8 +9,12 @@ import QuestionCreate from '@/components/questions/QuestionCreate.vue';
 import QuestionTags from '@/components/questions/QuestionTags.vue';
 
 import { useLoaderStore, useQuestionsStore } from '@/stores';
-import { useFilterQuestionsByTags, useSearchFilter, useStringifyQuestionTags } from '@/composables';
-import AppBackButton from '@/components/AppBackButton.vue';
+import {
+	useExtractQueryParams,
+	useFilterQuestionsByTags,
+	useSearchFilter,
+	useStringifyQuestionTags,
+} from '@/composables';
 
 const handleSearchbarKeypress = (word: string) => (searchWord.value = word.toLowerCase());
 
@@ -18,6 +22,7 @@ const questionsStore = useQuestionsStore();
 const { questions } = storeToRefs(questionsStore);
 const searchWord = ref('');
 const loader = useLoaderStore();
+const { alertType, alertMessage } = useExtractQueryParams();
 
 let selectedTagsIds = ref<number[]>([]);
 const searchableQuestions = computed(() => useStringifyQuestionTags(questions.value));
@@ -55,6 +60,12 @@ const filteredQuestions = computed(() => {
 				@change-selection="handleChangeSelection($event)"
 			/>
 		</div>
+		<AppAlert
+			:show="alertMessage != undefined && alertType != undefined"
+			:type="alertType"
+			:message="alertMessage"
+			class="my-5"
+		/>
 		<div class="flex justify-between h-[36px] my-3">
 			<h1 class="text-3xl font-bold">Questionari</h1>
 			<QuestionCreate />

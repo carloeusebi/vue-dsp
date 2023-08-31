@@ -23,6 +23,10 @@ export const useQuestionsStore = defineStore('questions', {
 			}
 		},
 
+		getById(id: number) {
+			return this.questions.find(question => question.id == id);
+		},
+
 		/**
 		 * Loads bot labels and questions list received from the ajax call to the db
 		 * @param questions An object with labels and questions list
@@ -38,9 +42,15 @@ export const useQuestionsStore = defineStore('questions', {
 		 */
 		loadQuestions(questions: Question[]) {
 			questions.forEach(q => {
-				if (!q.items) q.items = [];
 				if (!q.legend) q.legend = [];
 				if (!q.variables) q.variables = [];
+
+				q.items = q.items
+					? q.items.map(item => {
+							item.reversed = item.reversed ? item.reversed : false;
+							return item;
+					  })
+					: [];
 			});
 			this.questions = questions;
 		},
