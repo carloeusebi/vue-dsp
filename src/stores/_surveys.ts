@@ -35,7 +35,6 @@ export const useSurveysStore = defineStore('surveys', {
 				s.patient_name = `${s.patient.fname} ${s.patient.lname}`;
 				return s;
 			});
-			localStorage.setItem('SURVEYS', JSON.stringify(surveys));
 		},
 
 		/**

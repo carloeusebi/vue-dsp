@@ -7,7 +7,7 @@ const endpoint = '/tests';
 export const useTestsStore = defineStore('tests', {
 	// state
 	state: () => ({
-		test: JSON.parse(localStorage.getItem('TEST') as string) as Survey,
+		test: {} as Survey,
 	}),
 
 	// getters
@@ -40,7 +40,6 @@ export const useTestsStore = defineStore('tests', {
 		 */
 		load(test: Survey) {
 			this.test = test;
-			localStorage.setItem('TEST', JSON.stringify(test));
 		},
 
 		/**
@@ -50,8 +49,6 @@ export const useTestsStore = defineStore('tests', {
 		 */
 		async save(survey: Survey, justCompleted = false) {
 			this.test = survey;
-			localStorage.setItem('TEST', JSON.stringify(this.test));
-
 			const payload = { ...survey, justCompleted };
 
 			return this.axios.put(endpoint, payload).catch(err => {
