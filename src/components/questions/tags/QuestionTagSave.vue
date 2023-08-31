@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { Ref, computed, ref } from 'vue';
+import { Ref, ref } from 'vue';
 
-import AppModal from '../AppModal.vue';
-import AppAlert from '../AppAlert.vue';
-import AppButton from '../AppButton.vue';
-import AppInputElement from '../AppInputElement.vue';
+import AppModal from '@/components/AppModal.vue';
+import AppAlert from '@/components/AppAlert.vue';
+import AppButton from '@/components/AppButton.vue';
+import AppInputElement from '@/components/AppInputElement.vue';
 
-import { Errors, NewTag, Tag } from '@/assets/data/interfaces';
+import { NewTag, Tag } from '@/assets/data/interfaces';
 import { useSaveToStore } from '@/composables';
 import { useTagsStore } from '@/stores';
 
@@ -22,18 +22,20 @@ const props = withDefaults(defineProps<Props>(), {
 });
 const emit = defineEmits(['close']);
 
+const tagRef = ref(props.tag);
 const title = props.type === 'create' ? 'Crea un nuovo tag' : `Modifica ${props.tag.tag}`;
-
-const errors: Ref<Errors> = ref({});
-const errorsStr = computed(() => {
-	const keys = Object.keys(errors.value);
-	return keys.reduce((str, key) => (str += `${errors.value[key]}<br>`), '');
-});
+const errors: Ref<string[]> = ref([]);
 
 const saveTag = async () => {
-	errors.value = {};
+	errors.value = [];
 	errors.value = await useSaveToStore(props.tag, useTagsStore());
-	if (!errorsStr.value) emit('close');
+	if (!errors.value.length) {
+		//timeout give time to modals to close before emptying the text
+		setTimeout(() => {
+			tagRef.value = { ...{ tag: '', color: '#000000' } };
+		}, 500);
+		emit('close');
+	}
 };
 </script>
 
@@ -50,12 +52,20 @@ const saveTag = async () => {
 
 			<!-- ALERT -->
 			<AppAlert
-				:show="errorsStr.length > 0"
+				:show="errors.length > 0"
 				type="warning"
 				title="Attenzione"
-				:message="errorsStr"
 				class="my-4"
-			/>
+			>
+				<ul>
+					<li
+						v-for="error in errors"
+						:key="error"
+					>
+						{{ error }}
+					</li>
+				</ul>
+			</AppAlert>
 
 			<!-- FORM -->
 			<form
@@ -65,12 +75,12 @@ const saveTag = async () => {
 			>
 				<AppInputElement
 					label="Nome del tag"
-					v-model="tag.tag"
+					v-model="tagRef.tag"
 					:required="true"
 				/>
 				<input
 					type="color"
-					v-model="tag.color"
+					v-model="tagRef.color"
 					required
 				/>
 			</form>

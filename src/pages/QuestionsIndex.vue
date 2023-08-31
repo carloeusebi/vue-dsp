@@ -6,7 +6,7 @@ import AppSearchbar from '@/components/AppSearchbar.vue';
 import AppAlert from '@/components/AppAlert.vue';
 import QuestionsRow from '@/components/questions/QuestionsRow.vue';
 import QuestionCreate from '@/components/questions/QuestionCreate.vue';
-import QuestionTags from '@/components/questions/QuestionTags.vue';
+import QuestionTags from '@/components/questions/tags/QuestionTags.vue';
 
 import { useLoaderStore, useQuestionsStore } from '@/stores';
 import {

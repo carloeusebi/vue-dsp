@@ -8,7 +8,7 @@ import AppButton from '@/components/AppButton.vue';
 import AppModal from '@/components/AppModal.vue';
 import AppAlert from '@/components/AppAlert.vue';
 import AppSearchbar from '../AppSearchbar.vue';
-import QuestionTags from '@/components/questions/QuestionTags.vue';
+import QuestionTags from '@/components/questions/tags/QuestionTags.vue';
 
 import { Patient, Survey } from '@/assets/data/interfaces';
 import { emptySurvey } from '@/assets/data/data';

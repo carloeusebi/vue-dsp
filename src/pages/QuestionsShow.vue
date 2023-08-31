@@ -7,7 +7,7 @@ import AppBackButton from '@/components/AppBackButton.vue';
 import AppButtonBlank from '@/components/AppButtonBlank.vue';
 import QuestionDelete from '@/components/questions/QuestionDelete.vue';
 import QuestionForm from '@/components/questions/QuestionForm.vue';
-import QuestionTags from '@/components/questions/QuestionTags.vue';
+import QuestionTags from '@/components/questions/tags/QuestionTags.vue';
 
 import { useLoaderStore, useQuestionsStore, useTagsStore } from '@/stores';
 import { Alert, Question, Tag } from '@/assets/data/interfaces';
@@ -18,8 +18,6 @@ const loader = useLoaderStore();
 
 const computedQuestion = computed(() => questionsStore.getById(id));
 const question = ref({ ...(computedQuestion.value as Question) });
-
-console.log(question.value);
 
 const appAlert = ref<Alert>({
 	show: false,

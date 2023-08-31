@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 
 import AppButton from '@/components/AppButton.vue';
+import AppButtonBlank from '@/components/AppButtonBlank.vue';
 import AppDropdown from '@/components/AppDropdown.vue';
 import QuestionTag from './QuestionTag.vue';
 import QuestionTagSave from './QuestionTagSave.vue';
@@ -9,7 +10,6 @@ import QuestionTagSave from './QuestionTagSave.vue';
 import { useTagsStore } from '@/stores';
 import { storeToRefs } from 'pinia';
 import { useDeleteFromStore } from '@/composables';
-import AppButtonBlank from '../AppButtonBlank.vue';
 
 interface Props {
 	editable?: boolean;

@@ -2,6 +2,8 @@
 import draggable from 'vuedraggable';
 import { Ref, computed, reactive, ref } from 'vue';
 
+import AppButtonBlank from '../AppButtonBlank.vue';
+import AppCheckbox from '../AppCheckbox.vue';
 import AppInputElement from '@/components/AppInputElement.vue';
 import QuestionVariables from './QuestionVariables.vue';
 import QuestionItem from './QuestionItem.vue';
@@ -11,8 +13,6 @@ import { useGenerateId } from '@/composables';
 import { questionTypes } from '@/assets/data/data';
 import { Question, QuestionLegend } from '@/assets/data/interfaces';
 import { useQuestionsStore } from '@/stores';
-import AppButtonBlank from '../AppButtonBlank.vue';
-import AppCheckbox from '../AppCheckbox.vue';
 
 interface Props {
 	question: Question;
