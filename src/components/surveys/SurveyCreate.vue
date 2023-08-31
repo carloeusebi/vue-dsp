@@ -21,6 +21,7 @@ import {
 } from '@/composables';
 import { usePatientsStore, useQuestionsStore, useSurveysStore } from '@/stores';
 import router from '@/routes';
+import { storeToRefs } from 'pinia';
 
 interface Props {
 	patient?: Patient;
@@ -85,9 +86,10 @@ const saveSurvey = async () => {
 //**************** QUESTIONS ************************* */
 //**************************************************** */
 
-const questions = ref(useQuestionsStore().getQuestions);
+const questionsStore = useQuestionsStore();
+const { questions } = storeToRefs(questionsStore);
 const questionsFilter = ref('');
-const searchableQuestions = useStringifyQuestionTags(questions.value);
+const searchableQuestions = computed(() => useStringifyQuestionTags(questions.value));
 
 let selectedTagsIds = ref<number[]>([]);
 
@@ -106,7 +108,9 @@ const handleChangeSelection = (newValue: number[]) => {
 /**
  * A list of Questions filtered by Tags, if no Tag is selected a list of all Questions.
  */
-const questionsWithSelectedTags = computed(() => useFilterQuestionsByTags(searchableQuestions, selectedTagsIds.value));
+const questionsWithSelectedTags = computed(() =>
+	useFilterQuestionsByTags(searchableQuestions.value, selectedTagsIds.value)
+);
 
 /**
  * Returns an array of IDs because the draggable component can't reorder a computed property
@@ -164,7 +168,6 @@ const filteredQuestionsIds = computed(() => {
 			<form
 				@submit.prevent="handleFormSubmit"
 				id="survey-create"
-				novalidate
 			>
 				<!-- TITLE -->
 

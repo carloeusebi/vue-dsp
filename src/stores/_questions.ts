@@ -12,12 +12,6 @@ export const useQuestionsStore = defineStore('questions', {
 		lastInsertedId: null as null | number,
 	}),
 
-	//getters
-	getters: {
-		getQuestions: (state): Question[] => state.questions,
-		getLabels: (state): Question => state.labels,
-	},
-
 	//actions
 	actions: {
 		async fetch() {
