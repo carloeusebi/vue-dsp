@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import AppAlert from '@/components/AppAlert.vue';
@@ -16,8 +16,20 @@ const id = parseInt(useRoute().params.id as string);
 const questionsStore = useQuestionsStore();
 const loader = useLoaderStore();
 
-const computedQuestion = computed(() => questionsStore.getById(id));
-const question = ref({ ...(computedQuestion.value as Question) });
+const originalQuestion = computed(() => questionsStore.getById(id));
+const question = ref<Question | undefined>();
+
+if (originalQuestion.value) {
+	question.value = { ...originalQuestion.value };
+}
+
+watch(
+	() => originalQuestion.value,
+	newValue => {
+		if (!newValue) return;
+		question.value = { ...(newValue as Question) };
+	}
+);
 
 const appAlert = ref<Alert>({
 	show: false,
@@ -48,7 +60,7 @@ const handleTagSelectionChange = (newValue: number[]) => {
 			<div class="container mx-auto px-2 md:px-5 flex justify-between mt-5">
 				<AppBackButton />
 				<div
-					v-if="question.id"
+					v-if="question"
 					class="flex justify-end gap-3"
 				>
 					<!-- tags -->
@@ -79,7 +91,7 @@ const handleTagSelectionChange = (newValue: number[]) => {
 		</div>
 
 		<div class="my-24">
-			<div v-if="question.id">
+			<div v-if="question">
 				<h1 class="text-3xl font-bold mb-3">{{ question?.question }}</h1>
 
 				<!-- TAGS LIST -->

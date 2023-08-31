@@ -68,10 +68,7 @@ export const useQuestionsStore = defineStore('questions', {
 		 * @param question The question to be saved
 		 */
 		async save(question: Question): Promise<void> {
-			const id = await saveMixin(this, endpoint, question, this.questions, this.loadQuestions).catch(e => {
-				throw e;
-			});
-			this.lastInsertedId = id;
+			this.lastInsertedId = await saveMixin(this, endpoint, question, this.questions, this.loadQuestions);
 		},
 
 		/**

@@ -34,6 +34,8 @@ const handleDeleteQuestion = async () => {
 		query: { alertType, alertMessage },
 	};
 
+	showDeleteModal.value = false;
+
 	await useDeleteFromStore(questionStore, id, redirectTo);
 };
 </script>

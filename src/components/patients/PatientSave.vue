@@ -1,18 +1,18 @@
 <script lang="ts" setup>
 import { ref, Ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-import AppModal from '@/components/AppModal.vue';
 import AppAlert from '@/components/AppAlert.vue';
-import AppButtonBlank from '@/components/AppButtonBlank.vue';
 import AppButton from '@/components/AppButton.vue';
+import AppButtonBlank from '@/components/AppButtonBlank.vue';
+import AppCheckbox from '../AppCheckbox.vue';
+import AppModal from '@/components/AppModal.vue';
 import PatientForm from './PatientForm.vue';
 
 import { Patient } from '@/assets/data/interfaces';
 import { emptyPatient } from '@/assets/data/data';
 import { useSaveToStore, useScrollTo } from '@/composables';
 import { usePatientsStore } from '@/stores';
-import { useRouter } from 'vue-router';
-import AppCheckbox from '../AppCheckbox.vue';
 
 interface Props {
 	title: string;
