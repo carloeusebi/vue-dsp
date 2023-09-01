@@ -117,11 +117,21 @@ window.addEventListener('keydown', e => {
 	};
 	const getValidValues = (questions: Question[], active: number): number[] => {
 		const question = getQuestion(questions, active);
-		if (!question || question.type === 'MUL') return [];
+		if (!question) return [];
 
 		const validValues: number[] = [];
-		const minValue = min(question.type);
-		question.legend.forEach((_value, i) => validValues.push(minValue + i));
+
+		if (question.type === 'MUL' && itemsArray) {
+			const activeItem = itemsArray[active];
+			if (!activeItem.multipleAnswers) return [];
+			const min = activeItem.multipleAnswers.at(0)?.points || 0;
+			const max = activeItem.multipleAnswers.at(-1)?.points || 0;
+
+			for (let i = min; i <= max; i++) validValues.push(i);
+		} else {
+			const minValue = min(question.type);
+			question.legend.forEach((_value, i) => validValues.push(minValue + i));
+		}
 
 		return validValues;
 	};
