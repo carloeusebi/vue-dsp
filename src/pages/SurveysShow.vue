@@ -79,7 +79,7 @@ getScores(id);
 			<!-- RESULTS -->
 			<router-link
 				target="_blank"
-				:to="{ name: 'results', params: { id: survey.id } }"
+				:to="{ name: 'answers', params: { id: survey.id } }"
 			>
 				<AppButtonBlank
 					label="Visualizza Risposte"

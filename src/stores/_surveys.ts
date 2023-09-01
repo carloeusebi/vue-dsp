@@ -22,6 +22,15 @@ export const useSurveysStore = defineStore('surveys', {
 			}
 		},
 
+		async fetchById(id: number): Promise<Survey | undefined> {
+			try {
+				const { data } = await this.axios.get(`${endpoint}/${id}`);
+				return data;
+			} catch (err) {
+				console.warn(err);
+			}
+		},
+
 		getById(id: number): Survey | undefined {
 			return this.surveys.find(survey => survey.id == id);
 		},

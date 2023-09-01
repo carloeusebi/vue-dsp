@@ -10,10 +10,11 @@ import QuestionsIndex from '@/pages/QuestionsIndex.vue';
 import QuestionsShow from '@/pages/QuestionsShow.vue';
 
 import TestPage from '@/pages/TestPage.vue';
-import ResultsPage from '@/pages/ResultsPage.vue';
+import AnswersPage from '@/pages/AnswersPage.vue';
 import ScoresPage from '@/pages/ScoresPage.vue';
 
 import PageNotFound from '@/pages/PageNotFound.vue';
+import ResultsLayoutVue from '@/layouts/ResultsLayout.vue';
 
 export const routes = [
 	{
@@ -76,6 +77,31 @@ export const routes = [
 		],
 	},
 	{
+		component: ResultsLayoutVue,
+		name: 'results',
+		meta: {
+			requiresAdmin: true,
+		},
+		children: [
+			{
+				path: '/risposte/:id',
+				component: AnswersPage,
+				name: 'answers',
+				meta: {
+					title: 'Risposte Test',
+				},
+			},
+			{
+				path: '/risultati/:id',
+				component: ScoresPage,
+				name: 'scores',
+				meta: {
+					title: 'Risultati Test',
+				},
+			},
+		],
+	},
+	{
 		path: '/login',
 		component: LoginPage,
 		name: 'login',
@@ -91,22 +117,7 @@ export const routes = [
 			title: 'Dellasanta Psicologo | Questionario',
 		},
 	},
-	{
-		path: '/risposte/:id',
-		component: ResultsPage,
-		name: 'results',
-		meta: {
-			title: 'Risposte Test',
-		},
-	},
-	{
-		path: '/risultati/:id',
-		component: ScoresPage,
-		name: 'scores',
-		meta: {
-			title: 'Risultati Test',
-		},
-	},
+
 	{
 		path: '/:pathMatch(.*)*',
 		component: PageNotFound,

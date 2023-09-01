@@ -2,6 +2,7 @@
 interface Props {
 	modelValue: boolean;
 	id?: string;
+	label?: string;
 }
 defineProps<Props>();
 
@@ -9,18 +10,26 @@ const emit = defineEmits(['update:modelValue']);
 </script>
 
 <template>
-	<div class="inline-block me-7">
-		<label class="container">
-			<input
-				:value="modelValue"
-				:checked="modelValue"
-				:id="id"
-				@change="emit('update:modelValue', !modelValue)"
-				type="checkbox"
-				class="cursor-pointer"
-			/>
-			<span class="checkmark"></span>
-		</label>
+	<div class="flex items-center">
+		<div>
+			<label class="container">
+				<input
+					:value="modelValue"
+					:checked="modelValue"
+					:id="id"
+					@change="emit('update:modelValue', !modelValue)"
+					type="checkbox"
+					class="cursor-pointer"
+				/>
+				<span class="checkmark"></span>
+			</label>
+		</div>
+		<label
+			v-if="label"
+			:for="id"
+			v-html="label"
+			class="ms-7 cursor-pointer select-none"
+		></label>
 	</div>
 </template>
 
@@ -31,7 +40,7 @@ label.container {
 	position: relative;
 	cursor: pointer;
 	font-size: 22px;
-	bottom: 28px;
+	bottom: 22px;
 }
 
 /* Hide the browser's default checkbox */

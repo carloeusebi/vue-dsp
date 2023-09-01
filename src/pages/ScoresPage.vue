@@ -3,9 +3,6 @@ import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import { isAxiosError } from 'axios';
 
-import ResultsHeader from '@/components/ResultsHeader.vue';
-import ResultsPatient from '@/components/ResultsPatient.vue';
-
 import { useLoaderStore } from '@/stores';
 import axiosInstance from '@/assets/axios';
 import { Question, QuestionVariableCutoff, Survey } from '@/assets/data/interfaces';
@@ -89,80 +86,59 @@ const hasUnansweredItems = (question: Question): boolean => question.items.some(
 </script>
 
 <template>
-	<div class="bg-white min-h-screen">
-		<div class="container max-w-6xl mx-auto p-6">
-			<!-- HEADER -->
-			<ResultsHeader :title="survey?.title" />
-
-			<!-- PATIENT -->
-			<ResultsPatient
-				v-if="survey?.patient"
-				:patient="survey?.patient"
-			/>
-
-			<!-- error -->
-			<h1
-				class="text-xl font-bold"
-				v-if="error"
+	<!-- RESULTS -->
+	<div v-if="scores">
+		<section
+			v-for="question in survey?.questions"
+			:key="question.id"
+			:id="question.id.toString()"
+		>
+			<!-- questionnaire's name -->
+			<h2>
+				{{ question.question }}
+			</h2>
+			<div
+				v-if="hasUnansweredItems(question)"
+				class="text-red-500 mb-3 print:hidden"
 			>
-				! {{ error }}
-			</h1>
-
-			<!-- RESULTS -->
-			<div v-if="scores">
-				<section
-					v-for="question in survey?.questions"
-					:key="question.id"
-					:id="question.id.toString()"
-				>
-					<!-- questionnaire's name -->
-					<h2>
-						{{ question.question }}
-					</h2>
-					<div
-						v-if="hasUnansweredItems(question)"
-						class="text-red-500 mb-3 print:hidden"
-					>
-						<font-awesome-icon :icon="['fas', 'triangle-exclamation']" />
-						Questo questionario ha domande senza risposta!
-					</div>
-
-					<!-- VARIABLES -->
-					<ul>
-						<li
-							v-for="variable in question.variables"
-							:key="variable.id"
-						>
-							<div class="font-bold mb-3">{{ variable.name }}: {{ score(question.question, variable.name) }}</div>
-							<table class="table-auto">
-								<thead>
-									<tr>
-										<td class="text-center min-w-[66px]">Cutoff</td>
-										<td class="px-3 md:px-6"></td>
-										<td>Indicazioni</td>
-									</tr>
-								</thead>
-								<tbody>
-									<tr
-										v-for="cutoff in variable.cutoffs"
-										:key="cutoff.id"
-									>
-										<td class="text-center align-top">{{ printCutoff(cutoff) }}</td>
-										<td></td>
-										<td :class="{ 'bg-yellow-200': scored(score(question.question, variable.name), cutoff) }">
-											{{ cutoff.name }}
-										</td>
-									</tr>
-								</tbody>
-							</table>
-							<hr class="my-3" />
-						</li>
-					</ul>
-
-					<hr class="mb-8" />
-				</section>
+				<font-awesome-icon :icon="['fas', 'triangle-exclamation']" />
+				Questo questionario ha domande senza risposta!
 			</div>
-		</div>
+
+			<!-- VARIABLES -->
+			<ul>
+				<li
+					v-for="variable in question.variables"
+					:key="variable.id"
+				>
+					<div class="font-bold mb-3">{{ variable.name }}: {{ score(question.question, variable.name) }}</div>
+					<table class="table-auto">
+						<thead>
+							<tr>
+								<td class="text-center min-w-[66px]">Cutoff</td>
+								<td class="px-3 md:px-6"></td>
+								<td>Indicazioni</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr
+								v-for="cutoff in variable.cutoffs"
+								:key="cutoff.id"
+							>
+								<td class="text-center align-top">{{ printCutoff(cutoff) }}</td>
+								<td></td>
+								<td :class="{ 'bg-yellow-200': scored(score(question.question, variable.name), cutoff) }">
+									{{ cutoff.name }}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<hr class="my-3" />
+				</li>
+			</ul>
+
+			<hr class="mb-8" />
+		</section>
 	</div>
 </template>
 
