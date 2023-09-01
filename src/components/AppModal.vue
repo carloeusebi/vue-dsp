@@ -1,10 +1,6 @@
 <script lang="ts" setup>
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue';
-import { useRoute } from 'vue-router';
-import router from '@/routes';
-import { computed, watch } from 'vue';
-
-const route = useRoute();
+import { onBeforeRouteLeave } from 'vue-router';
 
 const props = defineProps({
 	open: Boolean,
@@ -12,64 +8,22 @@ const props = defineProps({
 		type: String,
 		default: 'sm:max-w-4xl',
 	},
-	/**
-	 * Disables history mode, should only be set to True when the modal can't open other modals from inside.
-	 * History Mode is used to close the modals with the back button.
-	 */
-	disableHistoryMode: {
-		type: Boolean,
-		default: false,
-	},
 });
 
 const emit = defineEmits(['close']);
 
-/**
- * The modal ID value is calculated so that it is always higher than the previously opened modal
- */
-const modal_id = computed(() => ((route.query.modal_id as string) ? parseInt(route.query.modal_id as string) + 1 : 1));
-/**
- * The ID the modal had when it was opened
- */
-let assignedIdWhenOpened: number;
-
-// Watch for changes in the 'open' prop to manage modal behavior
-watch(
-	() => props.open,
-	newValue => {
-		if (props.disableHistoryMode) return;
-		// If modal is being opened
-		if (newValue === true) {
-			router.push({ query: { modal_id: modal_id.value } });
-			assignedIdWhenOpened = modal_id.value;
-		}
-
-		// If modal is being closed from the outside this will update the route history and keep it keep it coherent with the modal state
-		if (newValue === false && parseInt(route.query.modal_id as string) === assignedIdWhenOpened) {
-			router.back();
-		}
-	}
-);
-
-/**
- * Watches the modal_id param in the url query, if it changes it either means a new modal has opened, or the back button was pressed.
- * If the new value is not null and it is higher then the modal's assigned id it means a new modal has opened, in this case we do nothing.
- * If the new value is null it means that the current modal was the only opened modal when the back button was pressed, so we close the modal.
- * If the new value is not null but it lower than the assigned Id it means we have more than one open modal, and the back button was pressed. We close the modal with the highest id, which is the last opened one, the top one.
- */
-watch(
-	() => route.query.modal_id,
-	newValue => {
-		if (props.disableHistoryMode) return;
-		if (!route.query.modal_id || parseInt(newValue as string) < assignedIdWhenOpened) {
-			emit('close');
-		}
-	}
-);
-
 const closeModal = () => {
 	emit('close');
 };
+
+onBeforeRouteLeave((_to, _from, next) => {
+	if (props.open) {
+		next(false);
+		closeModal();
+	} else {
+		next();
+	}
+});
 </script>
 
 <template>

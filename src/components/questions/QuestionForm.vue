@@ -2,6 +2,8 @@
 import draggable from 'vuedraggable';
 import { Ref, computed, reactive, ref } from 'vue';
 
+import AppButtonBlank from '../AppButtonBlank.vue';
+import AppCheckbox from '../AppCheckbox.vue';
 import AppInputElement from '@/components/AppInputElement.vue';
 import QuestionVariables from './QuestionVariables.vue';
 import QuestionItem from './QuestionItem.vue';
@@ -11,13 +13,12 @@ import { useGenerateId } from '@/composables';
 import { questionTypes } from '@/assets/data/data';
 import { Question, QuestionLegend } from '@/assets/data/interfaces';
 import { useQuestionsStore } from '@/stores';
-import AppButtonBlank from '../AppButtonBlank.vue';
 
 interface Props {
 	question: Question;
 }
 
-const labels = useQuestionsStore().getLabels;
+const labels = useQuestionsStore().labels;
 
 const props = defineProps<Props>();
 const emit = defineEmits(['answer-added', 'variable-added']);
@@ -77,7 +78,7 @@ const addItem = () => {
 	const text = capitalizeItem(newItem.value);
 	form.items.push({ id, text, reversed: newItemReversed.value });
 
-	emit('answer-added', itemsListRef.value?.scrollHeight);
+	emit('answer-added');
 
 	newItem.value = '';
 	newItemReversed.value = false;
@@ -96,7 +97,7 @@ const addMULItem = () => {
 	};
 
 	form.items.push(newMULItem);
-	emit('answer-added', itemsListRef.value?.scrollHeight);
+	emit('answer-added');
 };
 </script>
 
@@ -209,25 +210,21 @@ const addMULItem = () => {
 		</div>
 
 		<!-- ADD NEW ITEM -->
-		<div class="flex items-end bg-white">
-			<div class="grow">
-				<label class="container shrink">
-					<input
-						v-model="newItemReversed"
-						type="checkbox"
-						class="me-2 cursor-pointer"
-					/>
-					<span class="checkmark"></span>
-				</label>
-				<AppInputElement
-					@keydown.enter.prevent="addItem"
-					@keyup.ctrl="addItem"
-					@keyup.ctrl.v="addItem"
-					class="grow ms-8"
-					v-model.trim="newItem"
-					id="new-answer"
+		<div class="flex items-center">
+			<div>
+				<AppCheckbox
+					v-model="newItemReversed"
+					id="new-item-reversed"
 				/>
 			</div>
+			<AppInputElement
+				@keydown.enter.prevent="addItem"
+				@keyup.ctrl="addItem"
+				@keyup.ctrl.v="addItem"
+				class="grow ms-8"
+				v-model.trim="newItem"
+				id="new-answer"
+			/>
 			<font-awesome-icon
 				@click="addItem"
 				class="ms-3 cursor-pointer text-blue-700 hover:text-blue-800"
@@ -243,7 +240,7 @@ const addMULItem = () => {
 	<QuestionVariables
 		v-model="question.variables"
 		:items="question.items"
-		@add-variable="emit('variable-added', -1)"
+		@add-variable="emit('variable-added')"
 	/>
 </template>
 

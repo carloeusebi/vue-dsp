@@ -1,4 +1,4 @@
-import { MyStore, Errors, Question, Survey, NewTag, Patient } from '@/assets/data/interfaces';
+import { MyStore, Question, Survey, NewTag, Patient } from '@/assets/data/interfaces';
 import { useLoaderStore } from '@/stores';
 import { isAxiosError } from 'axios';
 
@@ -10,10 +10,10 @@ type DataToStore = Patient | Question | Survey | NewTag;
  * @param store The store
  * @returns An Error object, empty if there are no errors
  */
-export async function useSaveToStore(data: DataToStore, store: MyStore): Promise<Errors> {
+export async function useSaveToStore(data: DataToStore, store: MyStore): Promise<string[]> {
 	const loader = useLoaderStore();
 	loader.setLoader();
-	let errors = {};
+	let errors: { [string: string]: string } = {};
 	try {
 		//@ts-ignore
 		await store.save(data);
@@ -28,5 +28,5 @@ export async function useSaveToStore(data: DataToStore, store: MyStore): Promise
 		loader.unsetLoader();
 	}
 
-	return errors;
+	return Object.values(errors);
 }

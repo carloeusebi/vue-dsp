@@ -2,8 +2,8 @@
 import { ref } from 'vue';
 import { Tag } from '@/assets/data/interfaces';
 import QuestionTagSave from './QuestionTagSave.vue';
-import AppModal from '../AppModal.vue';
-import AppButton from '../AppButton.vue';
+import AppModal from '@/components/AppModal.vue';
+import AppButton from '@/components/AppButton.vue';
 
 interface Props {
 	tag: Tag;

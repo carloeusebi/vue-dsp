@@ -1,3 +1,30 @@
+<script lang="ts" setup>
+interface Props {
+	modelValue: boolean;
+	id?: string;
+}
+defineProps<Props>();
+
+const emit = defineEmits(['update:modelValue']);
+</script>
+
+<template>
+	<div class="inline-block me-7">
+		<label class="container">
+			<input
+				:value="modelValue"
+				:checked="modelValue"
+				:id="id"
+				@change="emit('update:modelValue', !modelValue)"
+				type="checkbox"
+				class="cursor-pointer"
+			/>
+			<span class="checkmark"></span>
+		</label>
+	</div>
+</template>
+
+<style lang="scss" scoped>
 /* The container */
 label.container {
 	display: block;
@@ -64,3 +91,4 @@ label.container input:focus ~ .checkmark {
 	border-width: 0 3px 3px 0;
 	transform: rotate(45deg);
 }
+</style>

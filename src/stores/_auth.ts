@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { usePatientsStore, useSurveysStore, useQuestionsStore, useTagsStore } from './index';
+import { usePatientsStore, useSurveysStore, useQuestionsStore, useTagsStore, useLoaderStore } from './index';
 import { LoginForm } from '@/assets/data/interfaces';
 import { isAxiosError } from 'axios';
 
@@ -20,11 +20,17 @@ export const useAuthStore = defineStore('auth', {
 		/**
 		 * Fills all the Admin stores
 		 */
-		fetchAllData() {
-			useSurveysStore().fetch();
-			usePatientsStore().fetch();
-			useQuestionsStore().fetch();
-			useTagsStore().fetch();
+		async fetchAllData() {
+			const loader = useLoaderStore();
+
+			loader.setLoader();
+			await Promise.all([
+				useSurveysStore().fetch(),
+				usePatientsStore().fetch(),
+				useQuestionsStore().fetch(),
+				useTagsStore().fetch(),
+			]);
+			loader.unsetLoader();
 		},
 
 		/**

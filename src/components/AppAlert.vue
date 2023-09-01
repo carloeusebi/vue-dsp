@@ -4,60 +4,47 @@ import { computed } from 'vue';
 const props = defineProps({
 	show: Boolean,
 	type: String,
-	title: String,
 	message: String,
-	padding: {
-		type: Number,
-		default: 6,
-	},
-	duration: Number,
-	transition: {
-		type: Boolean,
-		default: true,
-	},
+	title: String,
 });
 
 const className = computed((): string => {
-	let className: string;
 	switch (props.type) {
 		case 'warning':
-			className = 'orange';
-			break;
+			return 'orange';
 		case 'success':
-			className = 'teal';
-			break;
+			return 'teal';
 		default:
-			className = 'blue';
+			return 'blue';
 	}
-	return className;
+});
+
+const actualTitle = computed(() => {
+	if (props.title || props.title === '') return props.title;
+	switch (props.type) {
+		case 'warning':
+			return 'Attenzione';
+		case 'success':
+			return 'Successo';
+		default:
+			return 'Ops';
+	}
 });
 </script>
 
 <template>
-	<Transition :css="transition">
-		<div
-			v-if="show"
-			:class="`top-10 left-${padding} right-${padding} bg-${className}-100 border-l-4 border-${className}-500 text-${className}-700 p-4`"
-			role="alert"
+	<div
+		v-if="show"
+		:class="`top-10 bg-${className}-100 border-l-4 border-${className}-500 text-${className}-700 p-4`"
+		role="alert"
+	>
+		<p
+			v-if="actualTitle"
+			class="font-bold"
 		>
-			<p
-				v-if="title"
-				class="font-bold"
-			>
-				{{ title }}
-			</p>
-			<slot></slot>
-			<span v-html="message"></span>
-		</div>
-	</Transition>
+			{{ actualTitle }}
+		</p>
+		<slot></slot>
+		<span v-html="message"></span>
+	</div>
 </template>
-
-<style scoped>
-.v-leave-active {
-	transition: opacity 0.5s ease;
-}
-
-.v-leave-to {
-	opacity: 0;
-}
-</style>

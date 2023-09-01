@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 
 import AppButton from '@/components/AppButton.vue';
+import AppButtonBlank from '@/components/AppButtonBlank.vue';
 import AppDropdown from '@/components/AppDropdown.vue';
 import QuestionTag from './QuestionTag.vue';
 import QuestionTagSave from './QuestionTagSave.vue';
@@ -49,7 +50,7 @@ const select = (allOrNone: boolean) => {
 };
 
 const deleteTag = (id: number) => {
-	useDeleteFromStore(tagsStore, id);
+	useDeleteFromStore(tagsStore, id, {});
 };
 
 /**
@@ -70,10 +71,11 @@ const handleCheckboxClick = (id: number) => {
 	<!-- DROPDOWN LIST -->
 	<AppDropdown :items="[]">
 		<template #button>
-			<div class="flex items-center gap-3">
-				<font-awesome-icon :icon="['fas', 'filter']" />
-				Tags
-			</div>
+			<AppButtonBlank
+				label="Tags"
+				icon="filter"
+				color="white"
+			/>
 		</template>
 		<template #items>
 			<div class="overflow-auto">

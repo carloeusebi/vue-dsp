@@ -57,9 +57,9 @@ const printCutoff = (cutoff: QuestionVariableCutoff): string => {
 	//if cutoff has different breakpoints for male and female, prints those value accordingly
 
 	if (type === 'greater-than') {
-		elementToPrint = sex === 'F' ? `${sex} > ${cutoff.femFrom}` : `${sex} > ${cutoff.from}`;
+		elementToPrint = sex === 'F' ? `${sex || ''} > ${cutoff.femFrom}` : `${sex || ''} > ${cutoff.from}`;
 	} else if (type === 'lesser-than') {
-		elementToPrint = sex === 'F' ? `${sex} < ${cutoff.femFrom}` : `${sex} < ${cutoff.from}`;
+		elementToPrint = sex === 'F' ? `${sex || ''} < ${cutoff.femFrom}` : `${sex || ''} < ${cutoff.from}`;
 	} else {
 		elementToPrint =
 			sex === 'F' ? `${sex} ${cutoff.femFrom} - ${cutoff.femTo}` : `${sex} ${cutoff.from} - ${cutoff.to}`;

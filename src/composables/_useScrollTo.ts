@@ -13,10 +13,14 @@ import { nextTick } from 'vue';
  * @param top Where to scroll to in pixel.
  * @param behavior The scroll behavior, either auto, instant, or scroll. Default is smooth
  */
-export function useScrollTo(element: HTMLElement, top: number, behavior: 'auto' | 'instant' | 'smooth' = 'smooth') {
+export function useScrollTo(
+	element: HTMLElement | Window,
+	top: number,
+	behavior: 'auto' | 'instant' | 'smooth' = 'smooth'
+) {
 	nextTick(() => {
 		if (!element) return;
-		if (top === -1) top = element.scrollHeight;
+		if (top < 0) top = document.body.scrollHeight + top;
 		element.scrollTo({ top, behavior });
 	});
 }

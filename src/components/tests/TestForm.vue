@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { Ref, computed, ref } from 'vue';
+import { ref } from 'vue';
 
 import AppButton from '../AppButton.vue';
 import AppAlert from '../AppAlert.vue';
 import PatientForm from '../patients/PatientForm.vue';
 
-import { Errors, Patient } from '@/assets/data/interfaces';
+import { Patient } from '@/assets/data/interfaces';
 import axiosInstance from '@/assets/axios';
 import { useLoaderStore } from '@/stores';
 import { isAxiosError } from 'axios';
@@ -32,7 +32,7 @@ const handleFormSubmit = async () => {
 	//@ts-ignore
 	useScrollTo(window, 0);
 	loader.setLoader();
-	errors.value = {};
+	errors.value = [];
 
 	if (patientRef.value === null) return;
 
@@ -47,7 +47,7 @@ const handleFormSubmit = async () => {
 	} catch (err) {
 		if (isAxiosError(err)) {
 			// Axios error means the patient information are not correct
-			errors.value = err.response?.data.errors;
+			errors.value = Object.values(err.response?.data.errors);
 			console.warn(err);
 		} else {
 			// If not axios error ignore the error and go on
@@ -60,23 +60,28 @@ const handleFormSubmit = async () => {
 };
 
 //errors
-const errors: Ref<Errors> = ref({});
-const errorsStr = computed(() => {
-	const keys = Object.keys(errors.value);
-	return keys.reduce((str, key) => (str += `${errors.value[key]}<br>`), '');
-});
+const errors = ref([]);
 </script>
 
 <template>
 	<div class="container md:max-w-4xl mx-auto py-5">
 		<h2 class="text-center text-3xl">Inserisci prima delle informazioni su di te</h2>
 		<AppAlert
-			:show="errorsStr.length > 0"
-			:message="errorsStr"
+			:show="errors.length > 0"
 			type="warning"
 			title="Attenzione"
 			class="my-4"
-		/>
+		>
+			<ul>
+				<li
+					v-for="error in errors"
+					:key="error"
+				>
+					{{ error }}
+				</li>
+			</ul>
+		</AppAlert>
+
 		<hr class="my-8" />
 
 		<!-- FORM -->
@@ -90,7 +95,7 @@ const errorsStr = computed(() => {
 			<hr class="my-5" />
 			<div class="flex justify-end items-center">
 				<button
-					v-if="errorsStr.length > 0"
+					v-if="errors.length > 0"
 					type="button"
 					class="inline-flex justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto me-4"
 					@click="$emit('form-submit')"

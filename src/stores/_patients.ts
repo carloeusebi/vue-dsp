@@ -7,22 +7,25 @@ const endpoint = '/patients';
 export const usePatientsStore = defineStore('patients', {
 	//state
 	state: () => ({
-		patients: JSON.parse(localStorage.getItem('PATIENTS') as string) as Patient[],
-		labels: JSON.parse(localStorage.getItem('PATIENT_LABELS') as string) as Patient,
+		patients: [] as Patient[],
+		labels: {} as Patient,
+		lastInsertedId: null as null | number,
 	}),
-
-	// getters
-	getters: {
-		getPatients: (state): Patient[] => state.patients,
-		getLabels: (state): Patient => state.labels,
-	},
 
 	//actions
 	actions: {
-		fetch() {
-			this.axios.get(endpoint).then(res => {
-				this.load(res.data);
-			});
+		async fetch() {
+			try {
+				const { data } = await this.axios.get(endpoint);
+				this.load(data);
+			} catch (err) {
+				console.warn(err);
+			}
+		},
+
+		async fetchById(id: number): Promise<Patient | undefined> {
+			const res = await this.axios.get(`${endpoint}/${id}`);
+			return res.data;
 		},
 
 		/**
@@ -31,7 +34,7 @@ export const usePatientsStore = defineStore('patients', {
 		 * @returns The Patient object
 		 */
 		getById(id: number): Patient | undefined {
-			return this.patients.find(patient => patient.id === id);
+			return this.patients.find(patient => patient.id == id);
 		},
 
 		/**
@@ -53,7 +56,6 @@ export const usePatientsStore = defineStore('patients', {
 				return patient;
 			});
 			this.patients = patients;
-			localStorage.setItem('PATIENTS', JSON.stringify(patients));
 		},
 
 		/**
@@ -62,7 +64,6 @@ export const usePatientsStore = defineStore('patients', {
 		 */
 		loadLabels(labels: Patient) {
 			this.labels = labels;
-			localStorage.setItem('PATIENT_LABELS', JSON.stringify(labels));
 		},
 
 		/**
@@ -70,7 +71,7 @@ export const usePatientsStore = defineStore('patients', {
 		 * @param patient The patient to be saved
 		 */
 		async save(patient: Patient): Promise<void> {
-			return saveMixin(this, endpoint, patient, this.patients, this.loadPatients);
+			this.lastInsertedId = await saveMixin(this, endpoint, patient, this.patients, this.loadPatients);
 		},
 
 		/**

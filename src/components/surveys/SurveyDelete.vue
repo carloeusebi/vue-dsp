@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { RouteLocationRaw } from 'vue-router';
 
 import AppButton from '@/components/AppButton.vue';
 import AppModal from '@/components/AppModal.vue';
@@ -21,7 +22,15 @@ const handleDeleteSurvey = async () => {
 	const surveysStore = useSurveysStore();
 	const id: number = props.toDeleteSurvey.id || -1;
 
-	useDeleteFromStore(surveysStore, id);
+	const alertType = 'success';
+	const alertMessage = `${props.toDeleteSurvey.title} di ${props.toDeleteSurvey.patient_name} eliminato correttamente.`;
+
+	const redirectTo: RouteLocationRaw = {
+		name: 'surveys.index',
+		query: { alertType, alertMessage },
+	};
+
+	await useDeleteFromStore(surveysStore, id, redirectTo);
 };
 </script>
 

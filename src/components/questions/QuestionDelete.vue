@@ -7,6 +7,8 @@ import AppButton from '@/components/AppButton.vue';
 import { useQuestionsStore } from '@/stores';
 import { Question } from '@/assets/data/interfaces';
 import { useDeleteFromStore } from '@/composables';
+import AppButtonBlank from '../AppButtonBlank.vue';
+import { RouteLocationRaw } from 'vue-router';
 
 const showDeleteModal = ref(false);
 
@@ -24,17 +26,27 @@ const handleDeleteQuestion = async () => {
 	const questionStore = useQuestionsStore();
 	const id = props.toDeleteQuestion.id || -1;
 
-	useDeleteFromStore(questionStore, id);
+	const alertType = 'success';
+	const alertMessage = `${props.toDeleteQuestion.question} eliminato correttamente.`;
+
+	const redirectTo: RouteLocationRaw = {
+		name: 'questions.index',
+		query: { alertType, alertMessage },
+	};
+
+	showDeleteModal.value = false;
+
+	await useDeleteFromStore(questionStore, id, redirectTo);
 };
 </script>
 
 <template>
-	<AppButton
+	<AppButtonBlank
 		@click="showDeleteModal = true"
 		color="red"
-	>
-		Elimina
-	</AppButton>
+		label="Elimina Questionario"
+		icon="trash-can"
+	/>
 
 	<AppModal
 		:open="showDeleteModal"

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { RouteLocationRaw } from 'vue-router';
 
 import AppModal from '@/components/AppModal.vue';
 import AppButton from '@/components/AppButton.vue';
@@ -21,7 +22,14 @@ const handleDeletePatient = async () => {
 	const patientStore = usePatientsStore();
 	const id: number = props.toDeletePatient.id || -1;
 
-	useDeleteFromStore(patientStore, id);
+	const type = 'success';
+	const message = `${props.toDeletePatient.fname} ${props.toDeletePatient.lname} eliminato correttamente.`;
+
+	const redirectTo: RouteLocationRaw = {
+		name: 'patients.index',
+		query: { type, message },
+	};
+	await useDeleteFromStore(patientStore, id, redirectTo);
 };
 </script>
 

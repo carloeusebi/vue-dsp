@@ -116,18 +116,21 @@ export interface LoginForm {
 	password: string;
 }
 
-export interface Cell {
+export interface Cell<T> {
 	label?: string;
-	key: string;
+	key: keyof T;
 }
 
-export interface Order {
-	by: string;
-	type: 'up' | 'down';
+export interface Order<T> {
+	by: keyof T;
+	direction: 'up' | 'down';
 }
 
-export interface Errors {
-	[string: string]: string;
+export interface Alert {
+	show: boolean;
+	title: string;
+	message: string;
+	type: 'success' | 'warning' | 'info';
 }
 
 type PatientsStore = ReturnType<typeof usePatientsStore>;

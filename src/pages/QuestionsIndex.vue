@@ -6,16 +6,23 @@ import AppSearchbar from '@/components/AppSearchbar.vue';
 import AppAlert from '@/components/AppAlert.vue';
 import QuestionsRow from '@/components/questions/QuestionsRow.vue';
 import QuestionCreate from '@/components/questions/QuestionCreate.vue';
-import QuestionTags from '@/components/questions/QuestionTags.vue';
+import QuestionTags from '@/components/questions/tags/QuestionTags.vue';
 
-import { useQuestionsStore } from '@/stores';
-import { useFilterQuestionsByTags, useSearchFilter, useStringifyQuestionTags } from '@/composables';
+import { useLoaderStore, useQuestionsStore } from '@/stores';
+import {
+	useExtractQueryParams,
+	useFilterQuestionsByTags,
+	useSearchFilter,
+	useStringifyQuestionTags,
+} from '@/composables';
 
 const handleSearchbarKeypress = (word: string) => (searchWord.value = word.toLowerCase());
 
 const questionsStore = useQuestionsStore();
 const { questions } = storeToRefs(questionsStore);
 const searchWord = ref('');
+const loader = useLoaderStore();
+const { alertType, alertMessage } = useExtractQueryParams();
 
 let selectedTagsIds = ref<number[]>([]);
 const searchableQuestions = computed(() => useStringifyQuestionTags(questions.value));
@@ -45,7 +52,7 @@ const filteredQuestions = computed(() => {
 </script>
 
 <template>
-	<section class="relative container mx-auto mt-6 p-2 lg:p-6">
+	<section class="relative mt-6 mx-auto max-w-screen-lg overflow-x-hidden">
 		<div class="relative flex items-center gap-6">
 			<AppSearchbar @key-press="handleSearchbarKeypress" />
 			<QuestionTags
@@ -53,20 +60,14 @@ const filteredQuestions = computed(() => {
 				@change-selection="handleChangeSelection($event)"
 			/>
 		</div>
+		<AppAlert
+			:show="alertMessage != undefined && alertType != undefined"
+			:type="alertType"
+			:message="alertMessage"
+			class="my-5"
+		/>
 		<div class="flex justify-between h-[36px] my-3">
-			<!-- back button -->
-			<router-link
-				class="flex items-center"
-				to="/sondaggi"
-			>
-				<button class="text-gray-700 hover:text-gray-800 font-medium rounded-md">
-					<font-awesome-icon
-						:icon="['fas', 'circle-chevron-left']"
-						class="me-2"
-					/>
-					Indietro
-				</button>
-			</router-link>
+			<h1 class="text-3xl font-bold">Questionari</h1>
 			<QuestionCreate />
 		</div>
 
@@ -83,8 +84,7 @@ const filteredQuestions = computed(() => {
 		</ul>
 		<AppAlert
 			v-else
-			:show="true"
-			title="Ops!"
+			:show="!loader.isLoading"
 		>
 			Nessun questionario trovato!
 		</AppAlert>

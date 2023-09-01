@@ -8,7 +8,7 @@ const endpoint = 'tags';
 export const useTagsStore = defineStore('tags', {
 	//
 	state: () => ({
-		tags: JSON.parse(localStorage.getItem('TAGS') as string) as Tag[],
+		tags: [] as Tag[],
 	}),
 
 	// getters
@@ -18,10 +18,13 @@ export const useTagsStore = defineStore('tags', {
 
 	// actions
 	actions: {
-		fetch() {
-			this.axios.get(endpoint).then(res => {
-				this.load(res.data);
-			});
+		async fetch() {
+			try {
+				const { data } = await this.axios.get(endpoint);
+				this.load(data);
+			} catch (err) {
+				console.warn(err);
+			}
 		},
 
 		/**
@@ -39,7 +42,6 @@ export const useTagsStore = defineStore('tags', {
 		 */
 		load(tags: Tag[]) {
 			this.tags = tags;
-			localStorage.setItem('TAGS', JSON.stringify(tags));
 		},
 
 		/**

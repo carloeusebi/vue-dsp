@@ -73,19 +73,23 @@ const updateVariable = <T>(newArray: T[], variableId: number, prop: 'items' | 'c
 
 <template>
 	<!-- this add variable button will appear only if the list of variables is longer than 5 -->
-	<AppButtonBlank
-		v-if="modelValue.length > 5"
-		@click="addNewVariable"
-		label="Aggiungi una nuova variabile"
-	/>
+	<div class="h-[36px] mb-5">
+		<AppButtonBlank
+			v-if="modelValue.length > 5"
+			@click="addNewVariable"
+			label="Aggiungi una nuova variabile"
+			icon="plus"
+		/>
+	</div>
 	<ul>
-		<li v-for="variable in modelValue">
+		<li v-for="(variable, i) in modelValue">
 			<div class="grid grid-cols-3 gap-5 justify-center items-center mb-3">
 				<!-- NAME -->
 
 				<div class="flex-grow me-10 col-span-3 md:col-span-2">
 					<AppInputElement
 						ref="variableNameInputs"
+						:id="`variable-input-${i}`"
 						v-model="variable.name"
 						label="Nome della variabile"
 						:required="true"

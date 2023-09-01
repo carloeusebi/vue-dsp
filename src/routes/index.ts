@@ -6,6 +6,9 @@ const router = createRouter({
 	history: createWebHistory('/admin/'),
 	routes,
 	linkActiveClass: 'text-gray-900 font-medium font-black',
+	scrollBehavior() {
+		return { top: 0 };
+	},
 });
 
 // MIDDLEWARES

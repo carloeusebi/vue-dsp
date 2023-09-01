@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { ref, computed, Ref } from 'vue';
-import { usePatientsStore } from '@/stores';
+import { computed, onMounted, ref, Ref } from 'vue';
+import { useLoaderStore, usePatientsStore } from '@/stores';
 import { storeToRefs } from 'pinia';
 
 import PatientRow from '@/components/patients/PatientRow.vue';
@@ -11,24 +11,28 @@ import AppTable from '../components/AppTable.vue';
 import AppPagination from '@/components/AppPagination.vue';
 
 import { Cell, Order, Patient } from '@/assets/data/interfaces';
-import { useSort, useSearchFilter, useSplitArrayIntoChunks } from '@/composables';
+import { usePagination, useExtractQueryParams } from '@/composables';
 
 const PATIENTS_PER_PAGE = 25;
 
+const alertMessage = ref('');
+const alertType = ref('');
+
+onMounted(() => {
+	const { message, type } = useExtractQueryParams();
+	alertMessage.value = message;
+	alertType.value = type;
+});
+
 const patientsStore = usePatientsStore();
+const loader = useLoaderStore();
 const { patients } = storeToRefs(patientsStore);
 
-const searchWord = ref('');
+const showAlert = computed(() => {
+	return alertMessage.value !== undefined && alertType.value !== undefined;
+});
 
-export interface PatientCell extends Cell {
-	key: keyof Patient;
-}
-
-interface OrderPatient extends Order {
-	by: keyof Patient;
-}
-
-const tableCells: Ref<PatientCell[]> = ref([
+const tableCells: Ref<Cell<Patient>[]> = ref([
 	{ label: 'Nome', key: 'fname' },
 	{ label: 'Cognome', key: 'lname' },
 	{ label: 'Età', key: 'age' },
@@ -39,49 +43,50 @@ const tableCells: Ref<PatientCell[]> = ref([
 	},
 ]);
 
-// FILTER BY SEARCH
+const defaultOrder: Order<Patient> = { by: 'id', direction: 'down' };
 
-const handleSearchbarKeypress = (word: string) => (searchWord.value = word.toLowerCase());
-
-const filteredBySearchPatients = computed(() => {
-	if (patients.value === null) return [];
-	return useSearchFilter(patients.value, searchWord.value, ['fname', 'lname']);
-});
-
-// SORT
-
-const sort = (newOrder: Order) => {
-	order.value = { ...newOrder } as OrderPatient;
+const changeOrder = (newOrder: Order<Patient>) => {
+	order.value = { ...newOrder };
 };
 
-const order: Ref<OrderPatient> = ref({ by: 'id', type: 'down' });
-
-const filteredAndOrderedPatients = computed(() =>
-	useSort(filteredBySearchPatients.value, order.value.by, order.value.type)
+const { handleSearchbarKeypress, order, pages, activePage, filteredAndOrdered } = usePagination(
+	patients,
+	['fname', 'lname'],
+	defaultOrder,
+	PATIENTS_PER_PAGE
 );
-
-// PAGINATION
-const activePage = ref(0);
-const pages = computed(() => useSplitArrayIntoChunks(filteredAndOrderedPatients.value, PATIENTS_PER_PAGE));
 
 const handlePageClick = (newPage: number) => {
 	activePage.value = newPage;
 };
+
+const handlePatientSaved = (fullName: string) => {
+	alertMessage.value = `${fullName} inserito con successo`;
+	alertType.value = 'success';
+};
 </script>
 
 <template>
-	<section class="relative container mx-auto mt-6 p-2 lg:p-6">
+	<section class="relative mt-6">
 		<!-- SEARCH -->
 		<div class="relative flex justify-between w-full">
 			<AppSearchbar @key-press="handleSearchbarKeypress" />
-			<!-- CREATE PATIENTS -->
 		</div>
+		<AppAlert
+			:show="showAlert"
+			:type="alertType"
+			:message="alertMessage"
+			class="my-5"
+		/>
+
 		<div class="flex justify-between my-3 px-3">
 			<h1 class="text-3xl font-bold">Pazienti</h1>
+			<!-- CREATE PATIENTS -->
 			<PatientSave
 				icon="plus"
 				title="Aggiungi un paziente"
 				button-label="Aggiungi"
+				@patient-save="handlePatientSaved"
 			/>
 		</div>
 
@@ -90,16 +95,16 @@ const handlePageClick = (newPage: number) => {
 			:total-pages="pages.length"
 			:current-page="activePage"
 			:showing-per-page="PATIENTS_PER_PAGE"
-			:results="filteredBySearchPatients.length"
+			:results="filteredAndOrdered.length"
 			@page-click="handlePageClick"
 		/>
 
 		<!-- TABLE -->
 		<AppTable
-			v-if="filteredAndOrderedPatients.length > 0"
-			@sort-change="sort"
+			v-if="filteredAndOrdered.length > 0"
+			@sort-change="changeOrder"
 			:cells="tableCells"
-			:has-reset="true"
+			:reset-to="defaultOrder"
 		>
 			<template v-slot:tbody>
 				<PatientRow
@@ -112,7 +117,7 @@ const handlePageClick = (newPage: number) => {
 		</AppTable>
 		<div v-else>
 			<AppAlert
-				:show="true"
+				:show="!loader.isLoading"
 				title="Ops!"
 			>
 				Nessun paziente trovato!

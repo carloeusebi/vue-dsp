@@ -7,22 +7,24 @@ const endpoint = '/questions';
 export const useQuestionsStore = defineStore('questions', {
 	//state
 	state: () => ({
-		questions: JSON.parse(localStorage.getItem('QUESTIONS') as string) as Question[],
-		labels: JSON.parse(localStorage.getItem('QUESTION_LABELS') as string) as Question,
+		questions: [] as Question[],
+		labels: {} as Question,
+		lastInsertedId: null as null | number,
 	}),
-
-	//getters
-	getters: {
-		getQuestions: (state): Question[] => state.questions,
-		getLabels: (state): Question => state.labels,
-	},
 
 	//actions
 	actions: {
-		fetch() {
-			this.axios.get(endpoint).then(res => {
-				this.load(res.data);
-			});
+		async fetch() {
+			try {
+				const { data } = await this.axios.get(endpoint);
+				this.load(data);
+			} catch (err) {
+				console.warn(err);
+			}
+		},
+
+		getById(id: number) {
+			return this.questions.find(question => question.id == id);
 		},
 
 		/**
@@ -40,12 +42,17 @@ export const useQuestionsStore = defineStore('questions', {
 		 */
 		loadQuestions(questions: Question[]) {
 			questions.forEach(q => {
-				if (!q.items) q.items = [];
 				if (!q.legend) q.legend = [];
 				if (!q.variables) q.variables = [];
+
+				q.items = q.items
+					? q.items.map(item => {
+							item.reversed = item.reversed ? item.reversed : false;
+							return item;
+					  })
+					: [];
 			});
 			this.questions = questions;
-			localStorage.setItem('QUESTIONS', JSON.stringify(questions));
 		},
 
 		/**
@@ -54,7 +61,6 @@ export const useQuestionsStore = defineStore('questions', {
 		 */
 		loadLabels(labels: Question) {
 			this.labels = labels;
-			localStorage.setItem('QUESTION_LABELS', JSON.stringify(labels));
 		},
 
 		/**
@@ -62,9 +68,7 @@ export const useQuestionsStore = defineStore('questions', {
 		 * @param question The question to be saved
 		 */
 		async save(question: Question): Promise<void> {
-			return await saveMixin(this, endpoint, question, this.questions, this.loadQuestions).catch(e => {
-				throw e;
-			});
+			this.lastInsertedId = await saveMixin(this, endpoint, question, this.questions, this.loadQuestions);
 		},
 
 		/**

@@ -4,8 +4,9 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
 import TheLogoutButton from './TheLogoutButton.vue';
 
 const navigation = [
-	{ name: 'Pazienti', to: 'patients' },
-	{ name: 'Sondaggi', to: 'surveys' },
+	{ name: 'Pazienti', to: 'patients.index' },
+	{ name: 'Sondaggi', to: 'surveys.index' },
+	{ name: 'Questionari', to: 'questions.index' },
 ];
 </script>
 

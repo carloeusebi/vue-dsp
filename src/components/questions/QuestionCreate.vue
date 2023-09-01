@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { Ref, computed, ref } from 'vue';
-import axios from 'axios';
+import { Ref, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import AppButtonBlank from '@/components/AppButtonBlank.vue';
 import AppButton from '@/components/AppButton.vue';
@@ -8,42 +8,32 @@ import AppModal from '@/components/AppModal.vue';
 import AppInputElement from '@/components/AppInputElement.vue';
 import AppAlert from '@/components/AppAlert.vue';
 
-import { useLoaderStore, useQuestionsStore } from '@/stores';
+import { useQuestionsStore } from '@/stores';
 import { emptyQuestion, questionTypes } from '@/assets/data/data';
-import { Errors, Question } from '@/assets/data/interfaces';
+import { Question } from '@/assets/data/interfaces';
+import { useSaveToStore } from '@/composables';
 
 const questionStore = useQuestionsStore();
-const labels = questionStore.getLabels;
-
+const labels = questionStore.labels;
+const router = useRouter();
 const showModal = ref(false);
-const newQuestion = ref({ ...emptyQuestion });
+const newQuestion = ref({ ...emptyQuestion } as Question);
 const types = ref(questionTypes);
-const errors: Ref<Errors> = ref({});
-
-const errorsStr = computed(() => {
-	const keys = Object.keys(errors.value);
-	return keys.reduce((str, key) => (str += `${errors.value[key]}<br>`), '');
-});
+const errors: Ref<string[]> = ref([]);
 
 const create = async () => {
-	const loader = useLoaderStore();
-
-	loader.setLoader();
-	errors.value = {};
+	errors.value = [];
 
 	newQuestion.value.legend = [];
 	newQuestion.value.items = [];
 	newQuestion.value.variables = [];
 
-	try {
-		await questionStore.save({ ...(newQuestion.value as Question) });
+	errors.value = await useSaveToStore(newQuestion.value, questionStore);
+
+	if (!errors.value.length) {
 		showModal.value = false;
-		newQuestion.value = { ...emptyQuestion };
-	} catch (err) {
-		if (axios.isAxiosError(err)) errors.value = err.response?.data;
-		else console.error(err);
-	} finally {
-		loader.unsetLoader();
+		const id = questionStore.lastInsertedId;
+		router.push({ name: 'questions.show', params: { id } });
 	}
 };
 </script>
@@ -66,13 +56,20 @@ const create = async () => {
 
 			<!-- ALERT -->
 			<AppAlert
-				:show="errorsStr.length > 0"
+				:show="errors.length > 0"
 				type="warning"
 				title="Attenzione"
 				class="my-4"
 				:transition="false"
 			>
-				<span v-html="errorsStr"></span>
+				<ul>
+					<li
+						v-for="error in errors"
+						:key="error"
+					>
+						{{ error }}
+					</li>
+				</ul>
 			</AppAlert>
 
 			<!-- FORM -->
