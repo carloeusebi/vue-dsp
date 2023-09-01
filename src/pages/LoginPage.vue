@@ -5,9 +5,11 @@ import { useAuthStore, useLoaderStore } from '../stores';
 import AppAlert from '../components/AppAlert.vue';
 import { LoginForm } from '@/assets/data/interfaces';
 import { isAxiosError } from 'axios';
+import { useExtractQueryParams } from '@/composables';
 
 const auth = useAuthStore();
 const loader = useLoaderStore();
+const { redirect } = useExtractQueryParams();
 
 const form: Ref<LoginForm> = ref({
 	email: '',
@@ -16,12 +18,14 @@ const form: Ref<LoginForm> = ref({
 const isInvalid = ref(false);
 const errorMessage = ref('');
 
+console.log(redirect);
+
 const login = async () => {
 	loader.setLoader();
 	isInvalid.value = false;
 
 	try {
-		await auth.login(form.value);
+		await auth.login(form.value, redirect);
 	} catch (err) {
 		isInvalid.value = true;
 		if (isAxiosError(err)) {

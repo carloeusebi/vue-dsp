@@ -38,7 +38,7 @@ export const useAuthStore = defineStore('auth', {
 		 * @param credentials The credentials for the login
 		 * @returns
 		 */
-		async login(credentials: LoginForm) {
+		async login(credentials: LoginForm, redirect: string) {
 			await this.axios.get(`${import.meta.env.VITE_API_URL}/sanctum/csrf-cookie`);
 			return this.axios
 				.post('/login', credentials)
@@ -50,7 +50,7 @@ export const useAuthStore = defineStore('auth', {
 
 					this.fetchAllData();
 
-					this.router.push('/');
+					this.router.push(redirect || '/');
 				})
 				.catch(err => {
 					throw err;

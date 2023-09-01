@@ -26,6 +26,10 @@ export const routes = [
 		},
 		children: [
 			{
+				path: '/home',
+				redirect: '/pazienti',
+			},
+			{
 				path: '/pazienti',
 				name: 'patients',
 				children: [

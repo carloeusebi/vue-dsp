@@ -17,6 +17,7 @@ const emit = defineEmits(['delete-item']);
 		<!-- CHECKBOX -->
 		<div>
 			<AppCheckbox
+				class="me-7"
 				v-model="(item.reversed as boolean)"
 				:id="`checkbox-${item.id}`"
 			/>

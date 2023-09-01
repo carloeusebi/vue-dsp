@@ -3,7 +3,8 @@ import { useAuthStore } from '@/stores';
 import { routes } from './routes';
 
 const router = createRouter({
-	history: createWebHistory('/admin/'),
+	history: createWebHistory('/admin'),
+	//@ts-ignore
 	routes,
 	linkActiveClass: 'text-gray-900 font-medium font-black',
 	scrollBehavior() {
@@ -23,7 +24,7 @@ router.beforeEach((to, _from, next) => {
 	// ADMIN;
 	if (to.meta.requiresAdmin) {
 		if (user.isAdmin) next();
-		else next({ name: 'login' });
+		else next({ name: 'login', query: { redirect: to.fullPath } });
 	}
 
 	// GUEST;

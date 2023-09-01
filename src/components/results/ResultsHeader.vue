@@ -6,12 +6,14 @@ defineProps({
 
 <template>
 	<header class="mb-8">
-		<figure class="flex justify-end">
-			<img
-				src="/Logo.webp"
-				alt="Logo"
-			/>
-		</figure>
+		<router-link to="/">
+			<figure class="flex justify-end">
+				<img
+					src="/Logo.webp"
+					alt="Logo"
+				/>
+			</figure>
+		</router-link>
 		<h1 class="md:text-3xl font-bold my-10">{{ title }}</h1>
 	</header>
 </template>
