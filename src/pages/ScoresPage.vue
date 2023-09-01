@@ -5,27 +5,25 @@ import { isAxiosError } from 'axios';
 
 import { useLoaderStore } from '@/stores';
 import axiosInstance from '@/assets/axios';
-import { Question, QuestionVariableCutoff, Survey } from '@/assets/data/interfaces';
+import { Question, Survey } from '@/assets/data/interfaces';
+import { QuestionVariableCutoff } from '@/assets/data/interfaces';
+import { QuestionVariableI } from '@/assets/data/interfaces';
 
-interface Scores {
-	[string: string]: { [string: string]: number };
-}
-
-const id = useRoute().params.id;
+const id = parseInt(useRoute().params.id as string);
 const loader = useLoaderStore();
-const survey = ref<Survey | null>(null);
-const scores = ref<Scores | null>(null);
+const survey = ref<Survey>();
 const error = ref('');
 
 /**
- * On mount fetches all survey details and the survey scores
+ * On mount fetches all survey details and the survey survey
  */
 onMounted(async () => {
 	loader.setLoader();
 	try {
-		const res = await axiosInstance.get(`surveys/score/${id}`);
-		survey.value = res.data.survey;
-		scores.value = res.data.scores;
+		const { data } = await axiosInstance.get(`surveys/score/${id}`);
+		survey.value = data;
+
+		console.log(survey);
 	} catch (err) {
 		if (isAxiosError(err)) {
 			if (err.response?.status === 403) alert("Devi aver effettuato l'accesso per vedere questa pagina");
@@ -37,66 +35,38 @@ onMounted(async () => {
 	}
 });
 
-const score = (question: Question['question'], variable: string): number => {
-	return scores.value ? scores.value[question][variable] : 0;
-};
-
-//TODO FIX THIS MESS
-const getValueForSex = (cutoff: QuestionVariableCutoff, patientSex: 'M' | 'F' | 'O' | undefined) => {
-	return cutoff.femFrom || cutoff.femTo ? patientSex : undefined;
-};
-
-const printCutoff = (cutoff: QuestionVariableCutoff): string => {
-	let elementToPrint = '';
-	const { type } = cutoff;
-	const sex = getValueForSex(cutoff, survey.value?.patient.sex);
-
-	//if cutoff has different breakpoints for male and female, prints those value accordingly
-
-	if (type === 'greater-than') {
-		elementToPrint = sex === 'F' ? `${sex || ''} > ${cutoff.femFrom}` : `${sex || ''} > ${cutoff.from}`;
-	} else if (type === 'lesser-than') {
-		elementToPrint = sex === 'F' ? `${sex || ''} < ${cutoff.femFrom}` : `${sex || ''} < ${cutoff.from}`;
-	} else {
-		elementToPrint =
-			sex === 'F' ? `${sex} ${cutoff.femFrom} - ${cutoff.femTo}` : `${sex} ${cutoff.from} - ${cutoff.to}`;
-	}
-
-	return elementToPrint;
-};
-
-const scored = (score: number, cutoff: QuestionVariableCutoff): boolean => {
-	const { type } = cutoff;
-	const sex = getValueForSex(cutoff, survey.value?.patient.sex);
-
-	//if cutoff has different breakpoints for male and female, calculates those value accordingly
-
-	if (type === 'greater-than') {
-		return sex === 'F' && cutoff.femFrom ? score > cutoff.femFrom : score > cutoff.from;
-	} else if (type === 'lesser-than') {
-		return sex === 'F' && cutoff.femFrom ? score < cutoff.femFrom : score < cutoff.from;
-	} else {
-		return sex === 'F' && cutoff.femFrom && cutoff.femTo
-			? score >= cutoff.femFrom && score <= cutoff.femTo
-			: score >= cutoff.from && score <= cutoff.to;
-	}
-};
-
 const hasUnansweredItems = (question: Question): boolean => question.items.some(item => item.answer === -1);
+
+const printCutoff = (variable: QuestionVariableI, cutoff: QuestionVariableCutoff) => {
+	let { from, to, type } = cutoff;
+
+	//@ts-ignore sexScore is deprecated
+	const isGenderBased = variable.genderBased || variable.sexScores;
+
+	if (isGenderBased && survey.value?.patient.sex === 'F') {
+		from ?? cutoff.femFrom;
+		to ?? cutoff.femTo;
+	}
+
+	let printable = `${from} - ${to}`;
+	if (type === 'greater-than') printable = `> ${from}`;
+	if (type === 'lesser-than') printable = `< ${from}`;
+
+	// if Variable is gender based also prints the cutoff
+	return isGenderBased ? `${survey.value?.patient.sex} ${printable}` : printable;
+};
 </script>
 
 <template>
 	<!-- RESULTS -->
-	<div v-if="scores">
-		<section
-			v-for="question in survey?.questions"
-			:key="question.id"
-			:id="question.id.toString()"
-		>
+	<div v-if="survey">
+		<section v-for="question in survey.questions">
 			<!-- questionnaire's name -->
 			<h2>
 				{{ question.question }}
 			</h2>
+
+			<!-- UNANSWERED QUESTION ALERT -->
 			<div
 				v-if="hasUnansweredItems(question)"
 				class="text-red-500 mb-3 print:hidden"
@@ -111,7 +81,7 @@ const hasUnansweredItems = (question: Question): boolean => question.items.some(
 					v-for="variable in question.variables"
 					:key="variable.id"
 				>
-					<div class="font-bold mb-3">{{ variable.name }}: {{ score(question.question, variable.name) }}</div>
+					<div class="font-bold mb-3">{{ variable.name }}: {{ variable.score }}</div>
 					<table class="table-auto">
 						<thead>
 							<tr>
@@ -125,9 +95,9 @@ const hasUnansweredItems = (question: Question): boolean => question.items.some(
 								v-for="cutoff in variable.cutoffs"
 								:key="cutoff.id"
 							>
-								<td class="text-center align-top">{{ printCutoff(cutoff) }}</td>
+								<td class="text-center align-top">{{ printCutoff(variable, cutoff) }}</td>
 								<td></td>
-								<td :class="{ 'bg-yellow-200': scored(score(question.question, variable.name), cutoff) }">
+								<td :class="{ 'bg-yellow-200': cutoff.scored }">
 									{{ cutoff.name }}
 								</td>
 							</tr>
@@ -140,6 +110,7 @@ const hasUnansweredItems = (question: Question): boolean => question.items.some(
 			<hr class="mb-8" />
 		</section>
 	</div>
+	<div v-else>hi</div>
 </template>
 
 <style scoped></style>

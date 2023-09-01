@@ -60,6 +60,7 @@ export interface QuestionVariableCutoff {
 	to: number;
 	femFrom?: number;
 	femTo?: number;
+	scored?: boolean;
 }
 
 export interface QuestionVariableI {
@@ -68,6 +69,7 @@ export interface QuestionVariableI {
 	items: number[]; //array of items ID
 	cutoffs: QuestionVariableCutoff[];
 	genderBased?: boolean;
+	score?: number;
 }
 
 export interface Question {

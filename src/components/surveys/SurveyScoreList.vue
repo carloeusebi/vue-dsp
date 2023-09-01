@@ -1,54 +1,36 @@
 <script lang="ts" setup>
+import { QuestionVariableI, Survey } from '@/assets/data/interfaces';
+
 interface Props {
-	scores: Scores;
+	scores: Survey;
 }
+defineProps<Props>();
 
-interface Scores {
-	[key: string]: Question;
-}
-
-interface Question {
-	[key: string]: Variable;
-}
-
-interface Variable {
-	cutoffs: Cutoff[];
-	score: number;
-}
-
-interface Cutoff {
-	cutoff: string;
-	scored: boolean;
-}
-
-const props = defineProps<Props>();
-const questions = Object.keys(props.scores);
-const variables = (question: string): string[] => Object.keys(props.scores[question]);
-
-const hasScored = (variable: Variable) =>
-	variable.cutoffs.reduce((scored: boolean, cutoffs) => cutoffs.scored || scored, false);
+const hasScored = (variable: QuestionVariableI): boolean => {
+	return variable.cutoffs.reduce((scored, cutoff) => scored || cutoff.scored || false, false);
+};
 </script>
 
 <template>
 	<ul v-if="scores">
 		<li
-			v-for="question in questions"
-			:key="question"
+			v-for="question in scores.questions"
+			:key="question.id"
 			class="mb-3"
 		>
 			<div>
-				<strong>{{ question }}</strong>
+				<strong>{{ question.question }}</strong>
 			</div>
 			<ul class="ms-3">
 				<li
-					v-for="variable in variables(question)"
-					:key="variable"
+					v-for="variable in question.variables"
+					:key="variable.id"
 				>
 					<span
-						class="p-1"
-						:class="{ 'bg-yellow-200': hasScored(scores[question][variable]) }"
+						class="p-1 rounded-lg"
+						:class="{ 'bg-yellow-200': hasScored(variable) }"
 					>
-						{{ variable }}: {{ scores[question][variable].score }}
+						{{ variable.name }}: {{ variable.score }}
 					</span>
 				</li>
 			</ul>
