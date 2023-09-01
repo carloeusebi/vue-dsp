@@ -105,7 +105,7 @@ const scrollWindow = (height: number) => {
 			/>
 		</div>
 
-		<div>
+		<div class="mb-24">
 			<div v-if="question">
 				<!-- TITLE	 -->
 				<h1 class="text-3xl font-bold mb-3">{{ question?.question }}</h1>

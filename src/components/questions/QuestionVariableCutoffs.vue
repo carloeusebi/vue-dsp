@@ -26,7 +26,7 @@ const emit = defineEmits(['save', 'update:modelValue']);
 
 // REFS
 
-const sexScores = ref(props.modelValue);
+const genderBased = ref(props.modelValue);
 const showModal = ref(false);
 const deleteModal = ref<DeleteModal>({ show: false });
 const cutoffs = ref<QuestionVariableCutoff[]>([...props.variableCutoffs]);
@@ -86,8 +86,8 @@ const handleSave = () => {
 							id="sex"
 							type="checkbox"
 							class="me-2 cursor-pointer"
-							v-model="sexScores"
-							@change="emit('update:modelValue', sexScores)"
+							v-model="genderBased"
+							@change="emit('update:modelValue', genderBased)"
 						/>
 						<span class="checkmark"></span>
 					</label>
@@ -177,11 +177,11 @@ const handleSave = () => {
 									v-model="cutoff.to"
 									required
 								/>
-								<div v-if="sexScores">Per Uomo</div>
+								<div v-if="genderBased">Per Uomo</div>
 							</div>
 							<!-- only if scores per sex is enabled -->
 							<div
-								v-if="sexScores"
+								v-if="genderBased"
 								class="flex gap-3 items-center my-2"
 							>
 								<span>Punteggio da</span>
@@ -209,11 +209,11 @@ const handleSave = () => {
 									v-model="cutoff.from"
 									required
 								/>
-								<div v-if="sexScores">Per Uomo</div>
+								<div v-if="genderBased">Per Uomo</div>
 							</div>
 							<!-- only if scores per sex is enabled -->
 							<div
-								v-if="sexScores"
+								v-if="genderBased"
 								class="flex gap-3 items-center my-2"
 							>
 								<span> {{ cutoff.type === 'greater-than' ? 'Maggiore di' : 'Minore di' }}</span>
