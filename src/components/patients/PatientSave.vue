@@ -84,13 +84,8 @@ const handleSavePatient = async () => {
 					<AppCheckbox
 						v-model="stayInPage"
 						id="stay-in-page"
+						label="Rimani sulla stessa pagina"
 					/>
-					<label
-						class="cursor-pointer select-none"
-						for="stay-in-page"
-					>
-						Rimani sulla stessa pagina
-					</label>
 				</div>
 			</div>
 
