@@ -45,6 +45,6 @@ const actualTitle = computed(() => {
 			{{ actualTitle }}
 		</p>
 		<slot></slot>
-		<span>{{ message }}</span>
+		<span v-html="message"></span>
 	</div>
 </template>

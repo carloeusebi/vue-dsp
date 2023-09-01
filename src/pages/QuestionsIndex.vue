@@ -52,7 +52,7 @@ const filteredQuestions = computed(() => {
 </script>
 
 <template>
-	<section class="relative mt-6">
+	<section class="relative mt-6 mx-auto max-w-screen-lg overflow-x-hidden">
 		<div class="relative flex items-center gap-6">
 			<AppSearchbar @key-press="handleSearchbarKeypress" />
 			<QuestionTags

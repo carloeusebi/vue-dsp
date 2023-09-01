@@ -78,7 +78,7 @@ const addItem = () => {
 	const text = capitalizeItem(newItem.value);
 	form.items.push({ id, text, reversed: newItemReversed.value });
 
-	emit('answer-added', itemsListRef.value?.scrollHeight);
+	emit('answer-added');
 
 	newItem.value = '';
 	newItemReversed.value = false;
@@ -97,7 +97,7 @@ const addMULItem = () => {
 	};
 
 	form.items.push(newMULItem);
-	emit('answer-added', itemsListRef.value?.scrollHeight);
+	emit('answer-added');
 };
 </script>
 
@@ -240,7 +240,7 @@ const addMULItem = () => {
 	<QuestionVariables
 		v-model="question.variables"
 		:items="question.items"
-		@add-variable="emit('variable-added', -1)"
+		@add-variable="emit('variable-added')"
 	/>
 </template>
 

@@ -4,13 +4,14 @@ import { useRoute } from 'vue-router';
 
 import AppAlert from '@/components/AppAlert.vue';
 import AppBackButton from '@/components/AppBackButton.vue';
-import AppButtonBlank from '@/components/AppButtonBlank.vue';
 import QuestionDelete from '@/components/questions/QuestionDelete.vue';
 import QuestionForm from '@/components/questions/QuestionForm.vue';
 import QuestionTags from '@/components/questions/tags/QuestionTags.vue';
 
 import { useLoaderStore, useQuestionsStore, useTagsStore } from '@/stores';
 import { Alert, Question, Tag } from '@/assets/data/interfaces';
+import QuestionEdit from '@/components/questions/QuestionEdit.vue';
+import { useScrollTo } from '@/composables';
 
 const id = parseInt(useRoute().params.id as string);
 const questionsStore = useQuestionsStore();
@@ -40,7 +41,7 @@ const appAlert = ref<Alert>({
 
 /**
  * Updates the selected tags for a question based on the new tag IDs provided.
- * @param {number[]} newValue - An array of tag IDs to set as selected for the question.
+ * @param newValue - An array of tag IDs to set as selected for the question.
  */
 const handleTagSelectionChange = (newValue: number[]) => {
 	if (!question.value) return;
@@ -52,12 +53,27 @@ const handleTagSelectionChange = (newValue: number[]) => {
 		}
 	});
 };
+
+const handleUpdateAttempt = () => {
+	appAlert.value.show = false;
+	useScrollTo(window, 10);
+};
+
+const handleUpdateQuestion = (alertConfig: Alert) => {
+	appAlert.value = { ...alertConfig };
+};
+
+const scrollWindow = (height: number) => {
+	setTimeout(() => {
+		window.scrollBy(0, height);
+	}, 15);
+};
 </script>
 
 <template>
-	<div class="max-w-6xl mx-auto mb-8">
+	<div class="max-w-6xl mx-auto mb-8 overflow-x-hidden">
 		<header class="bg-gray-50">
-			<div class="container mx-auto px-2 md:px-5 flex justify-between mt-5">
+			<div class="container pt-8 md:pt-0 mx-auto px-2 md:px-5 flex justify-between mt-5">
 				<AppBackButton />
 				<div
 					v-if="question"
@@ -69,11 +85,10 @@ const handleTagSelectionChange = (newValue: number[]) => {
 						@change-selection="handleTagSelectionChange"
 					/>
 					<!-- save button -->
-					<AppButtonBlank
-						from="question-form"
-						color="green"
-						label="Salva"
-						icon="floppy-disk"
+					<QuestionEdit
+						:question="question"
+						@attempt="handleUpdateAttempt"
+						@update-question="handleUpdateQuestion"
 					/>
 					<QuestionDelete :to-delete-question="question" />
 				</div>
@@ -81,32 +96,39 @@ const handleTagSelectionChange = (newValue: number[]) => {
 			<hr class="mt-5" />
 		</header>
 
-		<div class="mb-5">
-			<AppAlert
-				:show="appAlert.show"
-				:type="appAlert.type"
-				:title="appAlert.title"
-				:message="appAlert.message"
-			/>
-		</div>
-
 		<div class="my-24">
 			<div v-if="question">
+				<!-- TITLE	 -->
 				<h1 class="text-3xl font-bold mb-3">{{ question?.question }}</h1>
-
 				<!-- TAGS LIST -->
-				<ul class="flex gap-2 min-h-[22px] mb-14">
-					<li
-						v-for="tag in question.tags"
-						:key="tag.id"
-						:style="`background-color: ${tag.color}10; color: ${tag.color}; border: 1px solid ${tag.color}50`"
-						class="inline-flex items-center rounded-md px-2 py-[2px] text-xs font-medium"
-					>
-						{{ tag.tag }}
-					</li>
-				</ul>
+				<div class="max-w-screen-lg overflow-x-scroll">
+					<ul class="flex gap-2 min-h-[22px] mb-5">
+						<li
+							v-for="tag in question.tags"
+							:key="tag.id"
+							:style="`background-color: ${tag.color}10; color: ${tag.color}; border: 1px solid ${tag.color}50`"
+							class="inline-flex items-center rounded-md px-2 py-[2px] text-xs font-medium"
+						>
+							{{ tag.tag }}
+						</li>
+					</ul>
+				</div>
 
-				<QuestionForm :question="question" />
+				<div class="mt-5">
+					<AppAlert
+						:show="appAlert.show"
+						:type="appAlert.type"
+						:title="appAlert.title"
+						:message="appAlert.message"
+					/>
+				</div>
+				<hr class="my-5" />
+
+				<QuestionForm
+					:question="question"
+					@answer-added="scrollWindow(42)"
+					@variable-added="scrollWindow(90)"
+				/>
 			</div>
 			<div v-else>
 				<div class="my-5">
