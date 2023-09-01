@@ -12,6 +12,7 @@ interface Props {
 	editMode: boolean;
 }
 const props = defineProps<Props>();
+const emit = defineEmits(['update']);
 
 const itemValue = (n: number): number => props.min(props.type) + n;
 
@@ -42,96 +43,136 @@ const handleDeleteComment = () => {
 	if (!proceed) return;
 
 	delete props.item.comment;
+
+	emit('update');
 };
 </script>
 
 <template>
-	<div
-		v-if="!onlyShowAnswersWithComment || item.hasOwnProperty('comment')"
-		class="grid grid-cols-6 relative"
-	>
-		<!-- question -->
+	<div>
 		<div
-			:class="[item.text ? 'col-span-4' : 'col-span-1']"
-			class="p-2 border border-black flex justify-between"
+			v-if="!onlyShowAnswersWithComment || item.hasOwnProperty('comment')"
+			class="grid grid-cols-6 relative"
 		>
-			{{ itemNumber + 1 }}. {{ item.text }}
-		</div>
-		<!-- ANSWERS -->
-		<div :class="[item.text ? 'col-span-2' : 'col-span-5']">
-			<!-- ! IF MUL -->
+			<!-- question -->
 			<div
-				v-if="item.multipleAnswers"
-				class="flex h-full"
+				:class="[item.text ? 'col-span-4' : 'col-span-1']"
+				class="p-2 border border-black flex justify-between"
 			>
+				{{ itemNumber + 1 }}. {{ item.text }}
+			</div>
+			<!-- ANSWERS -->
+			<div :class="[item.text ? 'col-span-2' : 'col-span-5']">
+				<!-- ! IF MUL -->
 				<div
-					v-for="ans in item.multipleAnswers"
-					:style="`flex-basis: calc(100% / ${item.multipleAnswers.length})`"
-					:key="ans.id"
+					v-if="item.multipleAnswers"
+					class="flex h-full"
 				>
 					<div
-						class="answer-cell border border-black flex-grow flex justify-center items-center h-full p-2"
-						:class="[ans.points === item.answer ? 'bg-green-500' : '', editMode ? 'cursor-pointer' : '']"
-						@click="changeAnswer(ans.points)"
+						v-for="ans in item.multipleAnswers"
+						:style="`flex-basis: calc(100% / ${item.multipleAnswers.length})`"
+						:key="ans.id"
 					>
-						{{ ans.customAnswer }}
+						<div
+							class="answer-cell border border-black flex-grow flex justify-center items-center h-full p-2"
+							:class="[ans.points === item.answer ? 'bg-green-500' : '', editMode ? 'cursor-pointer' : '']"
+							@click="changeAnswer(ans.points)"
+						>
+							{{ ans.customAnswer }}
+						</div>
+					</div>
+				</div>
+				<!-- ! IF OTHER TYPE -->
+				<div
+					v-else
+					class="flex h-full"
+				>
+					<!-- @vue-ignore -->
+					<div
+						v-for="(answer, n) in numberOfAnswers"
+						:key="n"
+						class="flex-grow h-full"
+						:class="{ hidden: !checkboxes[n] && !checkboxes.every(cb => !cb) }"
+					>
+						<div
+							class="answer-cell border border-black flex-grow flex justify-center items-center h-full"
+							:class="[itemValue(n) === item.answer ? 'bg-green-500' : '', editMode ? 'cursor-pointer' : '']"
+							@click="changeAnswer(itemValue(n))"
+						>
+							{{ type === 'EDI' ? (n < 2 ? 0 : n - 2) : itemValue(n) }}
+						</div>
 					</div>
 				</div>
 			</div>
-			<!-- ! IF OTHER TYPE -->
+			<!-- COMMENTS -->
+			<!-- comment for the digital version -->
 			<div
-				v-else
-				class="flex h-full"
+				class="comment-container non-printable"
+				v-if="item.comment"
 			>
-				<!-- @vue-ignore -->
-				<div
-					v-for="(answer, n) in numberOfAnswers"
-					:key="n"
-					class="flex-grow h-full"
-					:class="{ hidden: !checkboxes[n] && !checkboxes.every(cb => !cb) }"
-				>
-					<div
-						class="answer-cell border border-black flex-grow flex justify-center items-center h-full"
-						:class="[itemValue(n) === item.answer ? 'bg-green-500' : '', editMode ? 'cursor-pointer' : '']"
-						@click="changeAnswer(itemValue(n))"
-					>
-						{{ type === 'EDI' ? (n < 2 ? 0 : n - 2) : itemValue(n) }}
-					</div>
+				<div class="flex">
+					<font-awesome-icon
+						:icon="['far', 'comment-dots']"
+						size="xl"
+						class="p-2"
+					/>
+				</div>
+				<div class="comment flex">
+					<!-- comment delete button -->
+					<span class="grow">{{ item.comment }}</span>
+					<font-awesome-icon
+						@click="handleDeleteComment()"
+						:icon="['fas', 'trash-can']"
+						size="sm"
+						class="ms-1 text-red-500 z-0 self-start cursor-pointer p-2"
+					/>
 				</div>
 			</div>
-		</div>
-		<!-- COMMENTS -->
-		<!-- comment for the digital version -->
-		<div
-			class="comment-container non-printable"
-			v-if="item.comment"
-		>
-			<div class="flex">
-				<font-awesome-icon
-					:icon="['far', 'comment-dots']"
-					size="xl"
-					class="p-2"
-				/>
+			<!-- comment for the print version -->
+			<div
+				v-if="item.comment"
+				class="hidden printable"
+			>
+				*{{ item.comment }}
 			</div>
-			<div class="comment flex">
-				<!-- comment delete button -->
-				<span class="grow">{{ item.comment }}</span>
-				<font-awesome-icon
-					@click="handleDeleteComment()"
-					:icon="['fas', 'trash-can']"
-					size="sm"
-					class="ms-1 text-red-500 z-0 self-start cursor-pointer p-2"
-				/>
-			</div>
-		</div>
-		<!-- comment for the print version -->
-		<div
-			v-if="item.comment"
-			class="hidden printable"
-		>
-			*{{ item.comment }}
 		</div>
 	</div>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.answer-cell {
+	transition: all 750ms;
+}
+.comment-container {
+	position: absolute;
+	top: 50%;
+	left: 100.5%;
+	transform: translateY(-50%);
+	z-index: 1;
+
+	.fa-comment-dots {
+		z-index: -10;
+	}
+
+	&:hover .comment {
+		display: flex;
+	}
+}
+
+.comment {
+	position: absolute;
+	top: -10px;
+
+	justify-content: center;
+	align-items: center;
+	display: none;
+	background-color: #fff;
+	padding: 1rem 2rem;
+	box-shadow: 0 0 10px 2px black;
+	z-index: 10;
+	border-radius: 20px;
+	right: 5px;
+	min-width: max-content;
+	max-width: 75vw;
+}
+</style>

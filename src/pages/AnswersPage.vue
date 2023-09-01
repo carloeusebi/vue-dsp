@@ -5,7 +5,7 @@ import { isAxiosError } from 'axios';
 import AppAlert from '@/components/AppAlert.vue';
 import ResultItem from '@/components/results/ResultItem.vue';
 
-import { Question, Survey } from '@/assets/data/interfaces';
+import { Question, QuestionItemI, Survey } from '@/assets/data/interfaces';
 import { useLoaderStore, useSurveysStore } from '@/stores';
 import AppCheckbox from '@/components/AppCheckbox.vue';
 
@@ -23,6 +23,8 @@ const onlyShowAnswersWithComment = ref(false);
 const editMode = ref(false);
 const checkboxes = ref<Array<boolean[]>>([]);
 const loader = useLoaderStore();
+const refItems = ref<HTMLLIElement[]>();
+const errorBeep = new Audio(new URL(`../assets/sounds/error.mp3`, import.meta.url).href);
 
 watch(
 	() => props.survey,
@@ -30,6 +32,12 @@ watch(
 		if (!survey) return;
 		checkboxes.value = fillCheckboxes();
 		survey.questions = makeQuestionsPrintable(survey.questions);
+
+		survey.questions.forEach(question => {
+			question.items.forEach(item => {
+				itemsArray.push(item);
+			});
+		});
 	}
 );
 
@@ -72,8 +80,6 @@ const saveUpdates = async () => {
 	}
 };
 
-saveUpdates();
-
 /**
  * Checks if ha Questionnaire has comments. Used to show a Questionnaire only if it has comments.
  */
@@ -83,6 +89,67 @@ const questionHasComments = (question: Question): boolean => {
 
 const thereAreComments = (questions: Question[]): boolean => {
 	return questions.reduce((hasComments, question) => hasComments || questionHasComments(question), false);
+};
+
+const toggleEditMode = () => {
+	editMode.value = !editMode.value;
+
+	if (editMode.value && refItems.value) {
+		active.value = 0;
+		refItems.value[active.value].scrollIntoView({ block: 'center', behavior: 'smooth' });
+	}
+};
+
+/**
+ * ANSWER BY KEYPAD
+ */
+const active = ref(0);
+const itemsArray: QuestionItemI[] = [];
+
+window.addEventListener('keydown', e => {
+	const getQuestion = (questions: Question[], active: number) => {
+		let visitedItems = 0;
+		return questions.find(question => {
+			visitedItems += question.items.length;
+			console.log(visitedItems, active);
+			return visitedItems >= active;
+		});
+	};
+	const getValidValues = (questions: Question[], active: number): number[] => {
+		const question = getQuestion(questions, active);
+		if (!question || question.type === 'MUL') return [];
+
+		const validValues: number[] = [];
+		const minValue = min(question.type);
+		question.legend.forEach((_value, i) => validValues.push(minValue + i));
+
+		return validValues;
+	};
+
+	const keyPress = parseInt(e.key);
+
+	if (isNaN(keyPress) || !editMode.value || !props.survey) return;
+
+	const validValues: Array<number> = getValidValues(props.survey?.questions, active.value);
+
+	if (!validValues.includes(keyPress)) {
+		// console.log(validValues);
+		// console.log(keyPress);
+		errorBeep.play();
+		return;
+	}
+	itemsArray[active.value].answer = keyPress;
+	active.value++;
+	if (refItems.value) refItems.value[active.value].scrollIntoView({ block: 'center' });
+});
+
+const countItems = (questionIndex: number, itemIndex: number): number => {
+	if (questionIndex === 0) return itemIndex;
+	let previousQuestionsItems = 0;
+	for (let i = 0; i < questionIndex; i++) {
+		previousQuestionsItems += props.survey?.questions[i].items.length || 0;
+	}
+	return previousQuestionsItems + itemIndex;
 };
 </script>
 
@@ -137,11 +204,13 @@ const thereAreComments = (questions: Question[]): boolean => {
 						>
 							<!-- checkbox -->
 							<div class="flex items-center">
-								<AppCheckbox
-									class="non-printable me-7"
-									v-model="checkboxes[i][j]"
-									:id="`cb-${i}-${j}`"
-								/>
+								<div class="non-printable">
+									<AppCheckbox
+										class="me-7"
+										v-model="checkboxes[i][j]"
+										:id="`cb-${i}-${j}`"
+									/>
+								</div>
 								<label
 									:for="`cb-${i}-${j}`"
 									class="cursor-pointer"
@@ -155,8 +224,12 @@ const thereAreComments = (questions: Question[]): boolean => {
 					<!-- ITEMS -->
 					<ul>
 						<li
+							ref="refItems"
 							v-for="(item, itemNumber) in question.items"
 							:key="item.id"
+							:class="{ 'bg-slate-100': active === countItems(i, itemNumber) && editMode }"
+							class="print:bg-white"
+							@click="if (editMode) active = countItems(i, itemNumber);"
 						>
 							<ResultItem
 								:only-show-answers-with-comment="onlyShowAnswersWithComment"
@@ -167,6 +240,7 @@ const thereAreComments = (questions: Question[]): boolean => {
 								:type="question.type"
 								:edit-mode="editMode"
 								:min="min"
+								@update="saveUpdates"
 							/>
 						</li>
 					</ul>
@@ -190,7 +264,7 @@ const thereAreComments = (questions: Question[]): boolean => {
 			<div
 				class="edit-button"
 				:class="[editMode ? 'bg-red-800 hover:bg-red-900' : 'bg-blue-800 hover:bg-blue-900']"
-				@click="editMode = !editMode"
+				@click="toggleEditMode"
 			>
 				<font-awesome-icon
 					:icon="['fas', 'pen-to-square']"
@@ -232,39 +306,6 @@ const thereAreComments = (questions: Question[]): boolean => {
 	print-color-adjust: exact;
 }
 
-.comment-container {
-	position: absolute;
-	top: 50%;
-	left: 100.5%;
-	transform: translateY(-50%);
-	z-index: 1;
-
-	.fa-comment-dots {
-		z-index: -10;
-	}
-
-	&:hover .comment {
-		display: flex;
-	}
-}
-
-.comment {
-	position: absolute;
-	top: -10px;
-
-	justify-content: center;
-	align-items: center;
-	display: none;
-	background-color: #fff;
-	padding: 1rem 2rem;
-	box-shadow: 0 0 10px 2px black;
-	z-index: 10;
-	border-radius: 20px;
-	right: 5px;
-	min-width: max-content;
-	max-width: 75vw;
-}
-
 .edit-button,
 .save-button {
 	position: fixed;
@@ -298,21 +339,5 @@ const thereAreComments = (questions: Question[]): boolean => {
 
 	text-shadow: 0 0 10px #888;
 	user-select: none;
-}
-
-.edit-mode .answer-cell {
-	cursor: pointer;
-}
-
-// PRINT MEDIA
-
-@media print {
-	.non-printable {
-		display: none;
-	}
-
-	.printable {
-		display: block;
-	}
 }
 </style>

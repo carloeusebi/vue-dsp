@@ -37,4 +37,19 @@ onMounted(async () => {
 	</div>
 </template>
 
-<style scoped></style>
+<style lang="scss">
+.printable {
+	display: none;
+}
+
+// PRINT MEDIA
+@media print {
+	.non-printable {
+		display: none;
+	}
+
+	.printable {
+		display: block;
+	}
+}
+</style>
