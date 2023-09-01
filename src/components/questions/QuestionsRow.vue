@@ -10,7 +10,9 @@ const props = defineProps<Props>();
 
 <template>
 	<router-link :to="{ name: 'questions.show', params: { id: props.question.id } }">
-		<li class="py-4 border-y border-gray-200 bg-gray-50 hover:bg-gray-100 transition duration-150 cursor-pointer">
+		<li
+			class="py-4 border-y border-gray-200 bg-gray-50 hover:bg-gray-100 transition duration-150 cursor-pointer md:px-4"
+		>
 			<div class="flex flex-col sm:flex-row items-start sm:items-center gap-1">
 				<!-- title -->
 				<div class="font-semibold me-2">{{ question.question }}</div>

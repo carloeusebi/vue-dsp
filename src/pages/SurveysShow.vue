@@ -142,7 +142,7 @@ getScores(id);
 				<hr class="my-5 lg:hidden" />
 			</div>
 			<!-- SCORES -->
-			<div class="scores lg:min-h-[400px] max-h-[400px] lg:max-h-[600px] overflow-y-scroll rounded-md p-3">
+			<div class="scores lg:min-h-[400px] max-h-[400px] lg:max-h-[600px] overflow-y-scroll rounded-md p-3 mb-8">
 				<div
 					v-if="isFetching"
 					class="w-full h-full flex justify-center items-center"

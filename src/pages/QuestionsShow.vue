@@ -71,9 +71,9 @@ const scrollWindow = (height: number) => {
 </script>
 
 <template>
-	<div class="max-w-6xl mx-auto mb-8 overflow-x-hidden">
-		<header class="bg-gray-50">
-			<div class="container pt-8 md:pt-0 mx-auto px-2 md:px-5 flex justify-between mt-5">
+	<div class="max-w-6xl mx-auto">
+		<header class="bg-gray-50 pt-3">
+			<div class="container md:pt-0 mx-auto px-2 md:px-5 flex justify-between mt-5">
 				<AppBackButton />
 				<div
 					v-if="question"
@@ -96,13 +96,22 @@ const scrollWindow = (height: number) => {
 			<hr class="mt-5" />
 		</header>
 
-		<div class="my-24">
+		<div class="my-3">
+			<AppAlert
+				:show="appAlert.show"
+				:type="appAlert.type"
+				:title="appAlert.title"
+				:message="appAlert.message"
+			/>
+		</div>
+
+		<div>
 			<div v-if="question">
 				<!-- TITLE	 -->
 				<h1 class="text-3xl font-bold mb-3">{{ question?.question }}</h1>
 				<!-- TAGS LIST -->
 				<div class="max-w-screen-lg overflow-x-scroll">
-					<ul class="flex gap-2 min-h-[22px] mb-5">
+					<ul class="flex gap-2 min-h-[22px]">
 						<li
 							v-for="tag in question.tags"
 							:key="tag.id"
@@ -112,15 +121,6 @@ const scrollWindow = (height: number) => {
 							{{ tag.tag }}
 						</li>
 					</ul>
-				</div>
-
-				<div class="mt-5">
-					<AppAlert
-						:show="appAlert.show"
-						:type="appAlert.type"
-						:title="appAlert.title"
-						:message="appAlert.message"
-					/>
 				</div>
 				<hr class="my-5" />
 
@@ -144,11 +144,8 @@ const scrollWindow = (height: number) => {
 
 <style scoped>
 header {
-	position: fixed;
+	position: sticky;
+	top: 0;
 	z-index: 2;
-	padding-top: 7px;
-	top: 75px;
-	left: 0;
-	right: 0;
 }
 </style>
