@@ -77,6 +77,8 @@ const updateVariable = <T>(newArray: T[], variableId: number, prop: 'items' | 'c
 		v-if="modelValue.length > 5"
 		@click="addNewVariable"
 		label="Aggiungi una nuova variabile"
+		icon="plus"
+		class="mb-5"
 	/>
 	<ul>
 		<li v-for="(variable, i) in modelValue">
