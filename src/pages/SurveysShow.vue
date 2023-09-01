@@ -13,6 +13,7 @@ import { useLoaderStore, useSurveysStore } from '@/stores';
 import SurveyScoreList from '@/components/surveys/SurveyScoreList.vue';
 import SurveySendEmail from '@/components/surveys/SurveySendEmail.vue';
 import { Alert } from '@/assets/data/interfaces';
+import { isAxiosError } from 'axios';
 
 const getScores = async (id: undefined | number) => {
 	if (!id) return;
@@ -21,6 +22,10 @@ const getScores = async (id: undefined | number) => {
 		const { data } = await axiosInstance.get(`surveys/score/${id}`);
 		scores.value = data;
 	} catch (err) {
+		if (isAxiosError(err)) {
+			if (err.response?.status === 422) scoresPreviewAlertType.value = 'warning';
+			scoresPreviewAlertMessage.value = err.response?.data.message;
+		}
 		console.error(err);
 	} finally {
 		isFetching.value = false;
@@ -45,6 +50,10 @@ const loader = useLoaderStore();
 const surveysStore = useSurveysStore();
 const survey = computed(() => surveysStore.getById(id));
 const scores = ref();
+const scoresPreviewAlertType = ref<'info' | 'warning'>('info');
+const scoresPreviewAlertMessage = ref(
+	`${survey.value?.title} di ${survey.value?.patient_name} non è stato ancora completato.`
+);
 const appAlert = ref<Alert>({
 	show: false,
 	type: 'info',
@@ -79,7 +88,7 @@ getScores(id);
 			<!-- RESULTS -->
 			<router-link
 				target="_blank"
-				:to="{ name: 'results', params: { id: survey.id } }"
+				:to="{ name: 'answers', params: { id: survey.id } }"
 			>
 				<AppButtonBlank
 					label="Visualizza Risposte"
@@ -152,7 +161,8 @@ getScores(id);
 					v-else
 					:show="!loader.isLoading && !isFetching"
 					title="Aspetta"
-					:message="`${survey.title} di ${survey.patient_name} non è stato ancora completato.`"
+					:type="scoresPreviewAlertType"
+					:message="scoresPreviewAlertMessage"
 				/>
 				<div class="px-5"></div>
 			</div>
@@ -164,7 +174,7 @@ getScores(id);
 		<div class="my-5">
 			<AppAlert
 				:show="!loader.isLoading && !isFetching"
-				message="Nessun Sondaggio trovato."
+				message="Sondaggio non trovato."
 			/>
 		</div>
 	</div>
