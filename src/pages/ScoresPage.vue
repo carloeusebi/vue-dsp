@@ -8,6 +8,7 @@ import axiosInstance from '@/assets/axios';
 import { Question, Survey } from '@/assets/data/interfaces';
 import { QuestionVariableCutoff } from '@/assets/data/interfaces';
 import { QuestionVariableI } from '@/assets/data/interfaces';
+import AppAlert from '@/components/AppAlert.vue';
 
 const id = parseInt(useRoute().params.id as string);
 const loader = useLoaderStore();
@@ -22,8 +23,6 @@ onMounted(async () => {
 	try {
 		const { data } = await axiosInstance.get(`surveys/score/${id}`);
 		survey.value = data;
-
-		console.log(survey);
 	} catch (err) {
 		if (isAxiosError(err)) {
 			if (err.response?.status === 403) alert("Devi aver effettuato l'accesso per vedere questa pagina");
@@ -110,7 +109,12 @@ const printCutoff = (variable: QuestionVariableI, cutoff: QuestionVariableCutoff
 			<hr class="mb-8" />
 		</section>
 	</div>
-	<div v-else>hi</div>
+	<div v-else></div>
+	<AppAlert
+		:show="error.length > 0"
+		type="warning"
+		:message="error"
+	/>
 </template>
 
 <style scoped></style>

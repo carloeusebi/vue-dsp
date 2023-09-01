@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import TheNavbar from '@/components/TheNavbar.vue';
+import { useAuthStore } from '@/stores';
+
+useAuthStore().fetchAllData();
 </script>
 
 <template>

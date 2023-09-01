@@ -14,9 +14,6 @@ onMounted(async () => {
 	loader.setLoader();
 	survey.value = await useSurveysStore().fetchById(surveyId);
 	loader.unsetLoader();
-	if (!survey.value) {
-		console.error(404);
-	}
 });
 </script>
 
