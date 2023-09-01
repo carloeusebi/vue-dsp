@@ -18,7 +18,6 @@ import ResultsLayoutVue from '@/layouts/ResultsLayout.vue';
 
 export const routes = [
 	{
-		path: '/',
 		component: AdminLayout,
 		name: 'admin',
 		redirect: '/pazienti',
