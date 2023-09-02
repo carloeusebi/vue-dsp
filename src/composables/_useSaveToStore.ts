@@ -10,10 +10,10 @@ type DataToStore = Patient | Question | Survey | NewTag;
  * @param store The store
  * @returns An Error object, empty if there are no errors
  */
-export async function useSaveToStore(data: DataToStore, store: MyStore): Promise<string[]> {
+export async function useSaveToStore(data: DataToStore, store: MyStore): Promise<Array<string[]>> {
 	const loader = useLoaderStore();
 	loader.setLoader();
-	let errors: { [string: string]: string } = {};
+	let errors: { [string: string]: string[] } = {};
 	try {
 		//@ts-ignore
 		await store.save(data);

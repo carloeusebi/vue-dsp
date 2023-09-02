@@ -35,7 +35,7 @@ const patientRef: Ref<Patient> = ref({ ...props.toEditPatient });
 const modalComponent = ref<InstanceType<typeof AppModal> | null>(null);
 const stayInPage = ref(false);
 
-const errors = ref<string[]>([]);
+const errors = ref<Array<string[]>>([]);
 
 /**
  * Prepares patient's info and then loads store
@@ -94,19 +94,9 @@ const handleSavePatient = async () => {
 				:show="errors.length > 0"
 				type="warning"
 				title="Attenzione"
+				:errors="errors"
 				class="my-4"
-			>
-				<ul>
-					<li
-						v-for="fieldErrors in errors"
-						:key="fieldErrors"
-					>
-					<li v-for="error in fieldErrors">
-						{{ error }}
-					</li>
-					</li>
-				</ul>
-			</AppAlert>
+			/>
 			<hr class="mb-3" />
 
 			<!-- FORM -->

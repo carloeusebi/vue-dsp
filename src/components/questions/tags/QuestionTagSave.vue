@@ -24,7 +24,7 @@ const emit = defineEmits(['close']);
 
 const tagRef = ref(props.tag);
 const title = props.type === 'create' ? 'Crea un nuovo tag' : `Modifica ${props.tag.tag}`;
-const errors: Ref<string[]> = ref([]);
+const errors: Ref<Array<string[]>> = ref([]);
 
 const saveTag = async () => {
 	errors.value = [];
@@ -55,17 +55,9 @@ const saveTag = async () => {
 				:show="errors.length > 0"
 				type="warning"
 				title="Attenzione"
+				:errors="errors"
 				class="my-4"
-			>
-				<ul>
-					<li
-						v-for="error in errors"
-						:key="error"
-					>
-						{{ error }}
-					</li>
-				</ul>
-			</AppAlert>
+			/>
 
 			<!-- FORM -->
 			<form

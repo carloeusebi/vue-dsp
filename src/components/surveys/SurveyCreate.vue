@@ -34,7 +34,7 @@ const patients = computed(() => useSort(usePatientsStore().patients, { by: 'lnam
 
 const newSurvey: Ref<Survey> = ref({ ...(emptySurvey as Survey) });
 
-const errors = ref<string[]>([]);
+const errors = ref<Array<string[]>>([]);
 
 /**
  * Checks for errors
@@ -42,18 +42,19 @@ const errors = ref<string[]>([]);
 const handleFormSubmit = () => {
 	// check for errors
 	errors.value = [];
+	errors.value.push([]);
 
 	if (!newSurvey.value.title) {
-		errors.value.push('Il nome per il Sondaggio è obbligatorio');
+		errors.value[0].push('Il nome per il Sondaggio è obbligatorio');
 	}
 
 	if (!newSurvey.value.patient_id) {
-		errors.value.push('Nessun Paziente selezionato, il Paziente è obbligatorio');
+		errors.value[0].push('Nessun Paziente selezionato, il Paziente è obbligatorio');
 	}
 
 	const selectedQuestions = questions.value.filter(({ selected }) => selected);
 	if (!selectedQuestions.length) {
-		errors.value.push('Nessun questionario selezionato, selezionarne almeno uno');
+		errors.value[0].push('Nessun questionario selezionato, selezionarne almeno uno');
 	}
 
 	if (errors.value.length) return;
@@ -151,17 +152,8 @@ const filteredQuestionsIds = computed(() => {
 				type="warning"
 				title="Attenzione"
 				class="my-4"
-				:transition="false"
-			>
-				<ul>
-					<li
-						v-for="(error, n) in errors"
-						:key="n"
-					>
-						{{ error }}
-					</li>
-				</ul>
-			</AppAlert>
+				:errors="errors"
+			/>
 			<hr class="my-8" />
 
 			<!-- FORM -->

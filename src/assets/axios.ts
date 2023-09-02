@@ -6,6 +6,10 @@ const baseURL = `${import.meta.env.VITE_API_URL}/api` || 'http://localhost:8000/
 const axiosInstance = axios.create({
 	baseURL,
 	withCredentials: true,
+	headers: {
+		'Content-Type': 'application/json',
+		Accept: 'application/json',
+	},
 });
 
 axiosInstance.interceptors.response.use(

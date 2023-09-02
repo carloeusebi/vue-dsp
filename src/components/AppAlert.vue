@@ -1,12 +1,15 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 
-const props = defineProps({
-	show: Boolean,
-	type: String,
-	message: String,
-	title: String,
-});
+interface Props {
+	show: boolean;
+	type?: 'warning' | 'success' | 'info';
+	message?: string;
+	title?: string;
+	errors?: Array<string[]>;
+}
+
+const props = defineProps<Props>();
 
 const className = computed((): string => {
 	switch (props.type) {
@@ -45,6 +48,23 @@ const actualTitle = computed(() => {
 			{{ actualTitle }}
 		</p>
 		<slot></slot>
+		<!-- MESSAGE HTML -->
 		<span v-html="message"></span>
+		<!-- ERRORS -->
+		<ul v-if="errors">
+			<li
+				v-for="(fieldErrors, i) in errors"
+				:key="i"
+			>
+				<ul>
+					<li
+						v-for="error in fieldErrors"
+						:key="error"
+					>
+						{{ error }}
+					</li>
+				</ul>
+			</li>
+		</ul>
 	</div>
 </template>
