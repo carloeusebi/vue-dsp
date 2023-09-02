@@ -98,10 +98,12 @@ const handleSavePatient = async () => {
 			>
 				<ul>
 					<li
-						v-for="error in errors"
-						:key="error"
+						v-for="fieldErrors in errors"
+						:key="fieldErrors"
 					>
+					<li v-for="error in fieldErrors">
 						{{ error }}
+					</li>
 					</li>
 				</ul>
 			</AppAlert>
