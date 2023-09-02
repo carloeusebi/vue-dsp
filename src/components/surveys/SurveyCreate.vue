@@ -42,24 +42,23 @@ const errors = ref<Array<string[]>>([]);
 const handleFormSubmit = () => {
 	// check for errors
 	errors.value = [];
-	errors.value.push([]);
 
 	if (!newSurvey.value.title) {
-		errors.value[0].push('Il nome per il Sondaggio è obbligatorio');
+		errors.value.push(['Il nome per il Sondaggio è obbligatorio']);
 	}
 
 	if (!newSurvey.value.patient_id) {
-		errors.value[0].push('Nessun Paziente selezionato, il Paziente è obbligatorio');
+		errors.value.push(['Nessun Paziente selezionato, il Paziente è obbligatorio']);
 	}
 
 	const selectedQuestions = questions.value.filter(({ selected }) => selected);
 	if (!selectedQuestions.length) {
-		errors.value[0].push('Nessun questionario selezionato, selezionarne almeno uno');
+		errors.value.push(['Nessun questionario selezionato, selezionarne almeno uno']);
 	}
 
 	if (errors.value.length) return;
 
-	newSurvey.value.questions = [...selectedQuestions];
+	newSurvey.value.questionIds = selectedQuestions.map(({ id }) => id);
 	saveSurvey();
 };
 

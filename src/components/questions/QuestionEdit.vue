@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import AppButtonBlank from '../AppButtonBlank.vue';
 import AppButton from '../AppButton.vue';
@@ -15,8 +16,10 @@ interface Props {
 
 const props = defineProps<Props>();
 const emit = defineEmits(['attempt', 'update-question']);
+
+const router = useRouter();
 const showEditModal = ref(false);
-const errors = ref<string[]>([]);
+const errors = ref<Array<string[]>>([]);
 const appAlert: Alert = {
 	show: true,
 	title: 'Successo',
@@ -34,13 +37,17 @@ const handleUpdateQuestion = async () => {
 	showEditModal.value = false;
 
 	if (errors.value.length) {
-		const errorsString = errors.value.reduce((str, error) => (str += `<li>${error}</li>`), '');
+		const errorsString = errors.value[0].reduce((str, error) => (str += `<li>${error}</li>`), '');
 		appAlert.title = 'Attenzione';
 		appAlert.type = 'warning';
 		appAlert.message = `<ul>${errorsString}</ul>`;
+		emit('update-question', appAlert);
+	} else {
+		const id = questionsStore.lastInsertedId;
+		console.log('success');
+		console.log(id);
+		router.push({ name: 'questions.show', params: { id } });
 	}
-
-	emit('update-question', appAlert);
 };
 </script>
 

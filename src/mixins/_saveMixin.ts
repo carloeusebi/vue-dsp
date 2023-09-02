@@ -19,14 +19,14 @@ export async function saveMixin<T extends Store>(
 	loadMethod: (data: Array<any>) => void
 ): Promise<number> {
 	try {
-		let id;
+		let id = toSaveData.id || null;
 
-		if (toSaveData.id) {
+		if (id) {
 			// updates the database entry with the associate id
-			id = toSaveData.id;
 			const res = await store.axios.put(`${endpoint}/${id}`, toSaveData);
 
 			const updatedEntity = res.data;
+			id = updatedEntity.id as number;
 
 			storeData = storeData.map(data => {
 				if (data.id === updatedEntity.id) {
@@ -39,7 +39,7 @@ export async function saveMixin<T extends Store>(
 
 			const res = await store.axios.post(endpoint, toSaveData);
 			const insertedItem = res.data;
-			id = insertedItem.id;
+			id = insertedItem.id as number;
 			storeData.push(insertedItem);
 		}
 		// Call the loadMethod to update the local store with the new data

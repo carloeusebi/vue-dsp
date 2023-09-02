@@ -95,6 +95,7 @@ export interface Survey {
 	patient_name: string;
 	patient: Patient;
 	title: string;
+	questionIds: number[];
 	questions: Question[];
 	created_at?: string;
 	updated_at?: string;

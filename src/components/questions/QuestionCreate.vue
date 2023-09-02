@@ -19,7 +19,7 @@ const router = useRouter();
 const showModal = ref(false);
 const newQuestion = ref({ ...emptyQuestion } as Question);
 const types = ref(questionTypes);
-const errors: Ref<string[]> = ref([]);
+const errors: Ref<Array<string[]>> = ref([]);
 
 const create = async () => {
 	errors.value = [];
@@ -60,17 +60,8 @@ const create = async () => {
 				type="warning"
 				title="Attenzione"
 				class="my-4"
-				:transition="false"
-			>
-				<ul>
-					<li
-						v-for="error in errors"
-						:key="error"
-					>
-						{{ error }}
-					</li>
-				</ul>
-			</AppAlert>
+				:errors="errors"
+			/>
 
 			<!-- FORM -->
 			<form
