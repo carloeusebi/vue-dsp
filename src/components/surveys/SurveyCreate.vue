@@ -89,6 +89,7 @@ const saveSurvey = async () => {
 
 const questionsStore = useQuestionsStore();
 const { questions } = storeToRefs(questionsStore);
+questions.value.forEach(q => (q.selected = false));
 const questionsFilter = ref('');
 const searchableQuestions = computed(() => useStringifyQuestionTags(questions.value));
 
@@ -205,9 +206,22 @@ const select = (value: 'all' | 'none') => {
 					<QuestionTags @change-selection="handleChangeSelection($event)" />
 				</div>
 
+				<!-- SELECT ALL -->
 				<div class="flex gap-5 mb-3">
-					<button @click="select('all')">Seleziona tutti</button>
-					<button @click="select('none')">Deseleziona tutti</button>
+					<button
+						type="button"
+						class="p-1"
+						@click.prevent="select('all')"
+					>
+						Seleziona tutti
+					</button>
+					<button
+						type="button"
+						class="p-1"
+						@click.prevent="select('none')"
+					>
+						Deseleziona tutti
+					</button>
 				</div>
 
 				<!-- QUESTIONS CONTAINER -->
@@ -230,6 +244,7 @@ const select = (value: 'all' | 'none') => {
 									<AppCheckbox
 										v-model="question.selected"
 										:label="question.question"
+										:id="question.id.toString()"
 									/>
 									<!-- question tags -->
 									<ul class="md:flex gap-1 hidden">

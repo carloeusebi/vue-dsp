@@ -90,7 +90,7 @@ const goToNextQuestion = () => {
 	// when animation end removes the scroll
 	setTimeout(() => {
 		scroll.value = false;
-	}, 2500);
+	}, 2000);
 
 	setTimeout(() => {
 		const isLast = () => active.value === props.question.items.length - 1;
@@ -108,7 +108,7 @@ const goToNextQuestion = () => {
 				clicked.value = -1;
 			}
 		}
-	}, 1500);
+	}, 900);
 };
 
 /**
@@ -299,7 +299,7 @@ li {
 }
 
 .active {
-	animation: at-click 0.25s ease 0s 2 normal none running;
+	animation: at-click 0.2s ease 0s 2 normal none running;
 
 	box-shadow: $secondary-color 0 0 0 2px inset;
 
@@ -321,7 +321,7 @@ li {
 }
 
 .scroll {
-	animation: scroll 2s ease-in-out 1s 1 forwards;
+	animation: scroll 2s ease-in-out 0.6s 1 forwards;
 }
 
 @keyframes scroll {

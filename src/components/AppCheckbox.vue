@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 interface Props {
-	modelValue: boolean;
+	modelValue: boolean | undefined;
 	id?: string;
 	label?: string;
 }

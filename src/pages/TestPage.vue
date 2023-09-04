@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import { Ref, ref } from 'vue';
+import { Ref, computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import TestHeader from '@/components/tests/TestHeader.vue';
@@ -44,7 +44,7 @@ const resetAnswers = (index: number) => {
 		return item;
 	});
 	test.value.questions[index].items = [...resettedItems];
-	testsStore.save(test.value);
+	testsStore.save(test.value, activeQuestion.value);
 	alert(
 		`Sono passate più di due ore dalla tua ultima risposta. Le risposte del questionario "${test.value.questions[index].question}" sono state azzerate.`
 	);
@@ -72,7 +72,7 @@ const fetchTest = async (token: string) => {
 			pages.value.push({ question });
 		});
 
-		showForm.value = test.value.updated_at === null;
+		showForm.value = test.value.updated_at === null || test.value.updated_at === test.value.created_at;
 
 		// sets the first non-completed Questionnaire as the active one
 		active.value = useGetIndexOfFirstItemWithoutProp(test.value.questions, 'completed');
@@ -112,6 +112,8 @@ const { test } = storeToRefs(testsStore);
 const showLanding = ref(true);
 const showForm = ref(false);
 
+const activeQuestion = computed(() => test.value.questions[active.value]);
+
 /**
  * The index of the active Questionnaire, the same of the active Page
  */
@@ -120,7 +122,7 @@ const active = ref(0);
 /**
  * When true displays last page
  */
-const isCompleted = ref(false);
+const justCompleted = ref(false);
 
 const pages: Ref<Page[]> = ref([]);
 
@@ -128,11 +130,11 @@ const pages: Ref<Page[]> = ref([]);
  * Handle the patient's answer and saves it to the database
  */
 const handleAnswer = (itemId: number, answer: number): void => {
-	const itemToUpdate = test.value.questions[active.value].items.find(({ id }) => id === itemId) as QuestionItemI;
+	const itemToUpdate = activeQuestion.value.items.find(({ id }) => id === itemId) as QuestionItemI;
 
 	itemToUpdate.answer = answer;
 
-	testsStore.save(test.value);
+	testsStore.save(test.value, activeQuestion.value);
 };
 
 /**
@@ -141,17 +143,15 @@ const handleAnswer = (itemId: number, answer: number): void => {
 const handleQuestionComplete = () => {
 	const isLastQuestion = () => active.value === test.value.questions.length - 1;
 
-	test.value.questions[active.value].completed = true;
-	while (test.value.questions[active.value].hasOwnProperty('completed')) {
+	activeQuestion.value.completed = true;
+	while (activeQuestion.value.completed) {
 		if (isLastQuestion()) {
-			isCompleted.value = true;
+			justCompleted.value = true;
 			break;
 		} else {
 			active.value++;
 		}
-		console.log(test.value);
 	}
-	testsStore.save(test.value, isCompleted.value);
 };
 </script>
 
@@ -172,7 +172,7 @@ const handleQuestionComplete = () => {
 			/>
 			<!-- AT TEST COMPLETION -->
 			<div
-				v-else-if="isCompleted"
+				v-else-if="justCompleted"
 				class="text-center pt-5"
 			>
 				<h2>Grazie {{ test.patient.fname }} per aver completato il test</h2>

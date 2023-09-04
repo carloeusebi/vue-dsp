@@ -42,7 +42,7 @@ const handleFormSubmit = async () => {
 	};
 
 	try {
-		await axiosInstance.post(`${endpoint}/${patientRef.value.id}`, params);
+		await axiosInstance.put(`${endpoint}/${patientRef.value.id}`, params);
 		emit('form-submit');
 	} catch (err) {
 		if (isAxiosError(err)) {
@@ -60,7 +60,7 @@ const handleFormSubmit = async () => {
 };
 
 //errors
-const errors = ref([]);
+const errors = ref<Array<string[]>>([]);
 </script>
 
 <template>
@@ -71,16 +71,8 @@ const errors = ref([]);
 			type="warning"
 			title="Attenzione"
 			class="my-4"
-		>
-			<ul>
-				<li
-					v-for="error in errors"
-					:key="error"
-				>
-					{{ error }}
-				</li>
-			</ul>
-		</AppAlert>
+			:errors="errors"
+		/>
 
 		<hr class="my-8" />
 

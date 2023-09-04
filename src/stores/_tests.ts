@@ -1,4 +1,4 @@
-import { Survey } from '@/assets/data/interfaces';
+import { Question, Survey } from '@/assets/data/interfaces';
 import { isAxiosError } from 'axios';
 import { defineStore } from 'pinia';
 
@@ -47,11 +47,16 @@ export const useTestsStore = defineStore('tests', {
 		 * @param survey The Survey to update.
 		 * @param justCompleted True if the Survey has just been completed (answer was last answer).
 		 */
-		async save(survey: Survey, justCompleted = false) {
-			this.test = survey;
-			const payload = { ...survey, justCompleted };
+		async save(test: Survey, question: Question, justCompleted = false) {
+			this.test = test;
+			const questionId = question.id;
+			const answeredItems = question.items.filter(item => {
+				if (item.answer || item.answer === 0) return item;
+			});
+			const answers = answeredItems.map(({ id, answer }) => ({ id, answer }));
+			const payload = { questionId, answers, justCompleted };
 
-			return this.axios.put(endpoint, payload).catch(err => {
+			return this.axios.put(`${endpoint}/${test.id}`, payload).catch(err => {
 				if (isAxiosError(err)) console.warn(err.response?.data);
 				throw err;
 			});

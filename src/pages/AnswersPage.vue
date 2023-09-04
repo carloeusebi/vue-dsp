@@ -111,7 +111,6 @@ window.addEventListener('keydown', e => {
 		let visitedItems = 0;
 		return questions.find(question => {
 			visitedItems += question.items.length;
-			console.log(visitedItems, active);
 			return visitedItems >= active;
 		});
 	};
@@ -143,8 +142,6 @@ window.addEventListener('keydown', e => {
 	const validValues: Array<number> = getValidValues(props.survey?.questions, active.value);
 
 	if (!validValues.includes(keyPress)) {
-		// console.log(validValues);
-		// console.log(keyPress);
 		errorBeep.play();
 		return;
 	}
