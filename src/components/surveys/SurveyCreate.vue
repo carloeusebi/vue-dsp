@@ -2,11 +2,12 @@
 import { Ref, computed, ref } from 'vue';
 import draggable from 'vuedraggable';
 
-import AppInputElement from '@/components/AppInputElement.vue';
-import AppButtonBlank from '@/components/AppButtonBlank.vue';
-import AppButton from '@/components/AppButton.vue';
-import AppModal from '@/components/AppModal.vue';
 import AppAlert from '@/components/AppAlert.vue';
+import AppButton from '@/components/AppButton.vue';
+import AppButtonBlank from '@/components/AppButtonBlank.vue';
+import AppCheckbox from '../AppCheckbox.vue';
+import AppInputElement from '@/components/AppInputElement.vue';
+import AppModal from '@/components/AppModal.vue';
 import AppSearchbar from '../AppSearchbar.vue';
 import QuestionTags from '@/components/questions/tags/QuestionTags.vue';
 
@@ -123,6 +124,12 @@ const filteredQuestionsIds = computed(() => {
 	]);
 	return filteredQuestions.map(({ id }) => id);
 });
+
+const select = (value: 'all' | 'none') => {
+	questions.value.forEach(question => {
+		question.selected = value === 'all' ? true : false;
+	});
+};
 </script>
 
 <template>
@@ -141,7 +148,7 @@ const filteredQuestionsIds = computed(() => {
 	>
 		<template #content>
 			<h2>
-				Crea un nuovo sondaggio
+				Crea una nuova Batteria
 				<span v-if="patient"> per {{ patient.fname }} {{ patient.lname }}</span>
 			</h2>
 
@@ -165,7 +172,7 @@ const filteredQuestionsIds = computed(() => {
 				<AppInputElement
 					class="mb-5"
 					v-model.trim="newSurvey.title"
-					label="Nome del sondaggio"
+					label="Nome della Batteria"
 					:required="true"
 				/>
 
@@ -188,7 +195,7 @@ const filteredQuestionsIds = computed(() => {
 				</AppInputElement>
 
 				<!-- QUESTIONS -->
-				<p class="text-black my-5 text-xl">Seleziona i questionari da aggiungere al sondaggio e il loro ordine</p>
+				<p class="text-black my-5 text-xl">Seleziona i questionari da aggiungere alla Batteria e il loro ordine</p>
 
 				<!-- SEARCHBAR -->
 				<div class="searchbar-container flex items-center gap-5 my-5">
@@ -196,6 +203,11 @@ const filteredQuestionsIds = computed(() => {
 						<AppSearchbar @key-press="handleKeyBarPress" />
 					</div>
 					<QuestionTags @change-selection="handleChangeSelection($event)" />
+				</div>
+
+				<div class="flex gap-5 mb-3">
+					<button @click="select('all')">Seleziona tutti</button>
+					<button @click="select('none')">Deseleziona tutti</button>
 				</div>
 
 				<!-- QUESTIONS CONTAINER -->
@@ -212,37 +224,24 @@ const filteredQuestionsIds = computed(() => {
 							<template #item="{ element: question }">
 								<li
 									v-if="filteredQuestionsIds.includes(question.id)"
-									class="select-none my-1"
+									class="select-none flex gap-3 items-center my-1"
 								>
 									<!-- CHECKBOX -->
-									<label class="container shrink">
-										<input
-											:id="question.id"
-											:value="question.id"
-											v-model="question.selected"
-											type="checkbox"
-											class="me-2 cursor-pointer"
-										/>
-										<span class="checkmark"></span>
-									</label>
-									<!-- question name -->
-									<label
-										:for="question.id"
-										class="flex items-end gap-2 ms-7 pn-1 cursor-pointer text-gray-700 hover:text-black transition-colors"
-									>
-										{{ question.question }}
-										<!-- question tags -->
-										<ul class="md:flex gap-1 hidden">
-											<li
-												v-for="tag in question.tags"
-												:key="tag.id"
-												:style="`background-color: ${tag.color}10; color: ${tag.color}; border: 1px solid ${tag.color}50`"
-												class="inline-flex items-center rounded-md px-1 h-5 text-[9px] font-medium"
-											>
-												{{ tag.tag }}
-											</li>
-										</ul>
-									</label>
+									<AppCheckbox
+										v-model="question.selected"
+										:label="question.question"
+									/>
+									<!-- question tags -->
+									<ul class="md:flex gap-1 hidden">
+										<li
+											v-for="tag in question.tags"
+											:key="tag.id"
+											:style="`background-color: ${tag.color}10; color: ${tag.color}; border: 1px solid ${tag.color}50`"
+											class="inline-flex items-center rounded-md px-1 h-5 text-[9px] font-medium"
+										>
+											{{ tag.tag }}
+										</li>
+									</ul>
 								</li>
 							</template>
 						</draggable>
