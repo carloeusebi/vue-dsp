@@ -38,7 +38,7 @@ const mappedPatient = computed(() => {
 		>
 			<div v-if="key !== 'id'">
 				<strong>{{ labels[key] }}: </strong>
-				<span v-html="mappedPatient[key] || 'n/d'"></span>
+				<span v-html="mappedPatient[key] || '-'"></span>
 			</div>
 		</li>
 	</ul>

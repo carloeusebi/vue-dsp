@@ -12,7 +12,7 @@ interface Props {
 const props = defineProps<Props>();
 const createdAt = computed(() => new Date(props.survey.created_at as string).toLocaleDateString());
 const updatedAt = computed(() => {
-	if (!props.survey.updated_at) return '-';
+	if (!props.survey.updated_at || props.survey.updated_at === props.survey.created_at) return '-';
 
 	return new Date(props.survey.updated_at).toLocaleDateString();
 });
