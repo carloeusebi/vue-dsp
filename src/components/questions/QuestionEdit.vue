@@ -44,8 +44,7 @@ const handleUpdateQuestion = async () => {
 		emit('update-question', appAlert);
 	} else {
 		const id = questionsStore.lastInsertedId;
-		console.log('success');
-		console.log(id);
+		emit('update-question', appAlert);
 		router.push({ name: 'questions.show', params: { id } });
 	}
 };

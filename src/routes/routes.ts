@@ -46,16 +46,16 @@ export const routes = [
 				],
 			},
 			{
-				path: '/sondaggi',
+				path: '/batterie',
 				name: 'surveys',
 				children: [
 					{
-						path: '/sondaggi',
+						path: '/batterie',
 						component: SurveysIndex,
 						name: 'surveys.index',
 					},
 					{
-						path: '/sondaggi/:id',
+						path: '/batterie/:id',
 						component: SurveysShowVue,
 						name: 'surveys.show',
 					},

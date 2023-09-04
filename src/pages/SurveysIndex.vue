@@ -17,7 +17,10 @@ const SURVEYS_PER_PAGE = 25;
 
 const surveysStore = useSurveysStore();
 const { surveys } = storeToRefs(surveysStore);
-const { alertType, alertMessage } = useExtractQueryParams();
+const { alertType, alertMessage } = useExtractQueryParams() as {
+	alertType: 'success' | 'info' | 'warning';
+	alertMessage: string;
+};
 const loader = useLoaderStore();
 
 const tableCells: Ref<Cell<Survey>[]> = ref([
@@ -60,7 +63,7 @@ const handlePageClick = (newPage: number) => {
 		/>
 
 		<div class="flex justify-between my-3 px-3">
-			<h1 class="text-3xl font-bold">Sondaggi</h1>
+			<h1 class="text-3xl font-bold">Batterie</h1>
 			<!-- CREATE BUTTON -->
 			<div class="flex gap-2">
 				<SurveyCreate />

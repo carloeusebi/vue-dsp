@@ -16,12 +16,12 @@ import { usePagination, useExtractQueryParams } from '@/composables';
 const PATIENTS_PER_PAGE = 25;
 
 const alertMessage = ref('');
-const alertType = ref('');
+const alertType: Ref<'success' | 'info' | 'warning'> = ref('success');
 
 onMounted(() => {
 	const { message, type } = useExtractQueryParams();
 	alertMessage.value = message;
-	alertType.value = type;
+	alertType.value = type as 'success' | 'info' | 'warning';
 });
 
 const patientsStore = usePatientsStore();

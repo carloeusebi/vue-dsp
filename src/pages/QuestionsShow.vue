@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import AppAlert from '@/components/AppAlert.vue';
@@ -11,7 +11,7 @@ import QuestionTags from '@/components/questions/tags/QuestionTags.vue';
 import { useLoaderStore, useQuestionsStore, useTagsStore } from '@/stores';
 import { Alert, Question, Tag } from '@/assets/data/interfaces';
 import QuestionEdit from '@/components/questions/QuestionEdit.vue';
-import { useScrollTo } from '@/composables';
+import { useExtractQueryParams, useScrollTo } from '@/composables';
 
 const id = parseInt(useRoute().params.id as string);
 const questionsStore = useQuestionsStore();
@@ -19,6 +19,13 @@ const loader = useLoaderStore();
 
 const originalQuestion = computed(() => questionsStore.getById(id));
 const question = ref<Question | undefined>();
+
+const appAlert = ref<Alert>({
+	show: false,
+	type: 'success',
+	title: 'Successo',
+	message: '',
+});
 
 if (originalQuestion.value) {
 	question.value = { ...originalQuestion.value };
@@ -32,11 +39,13 @@ watch(
 	}
 );
 
-const appAlert = ref<Alert>({
-	show: false,
-	type: 'info',
-	title: '',
-	message: '',
+onMounted(() => {
+	const { message } = useExtractQueryParams();
+	console.log(message);
+	if (message) {
+		appAlert.value.show = true;
+		appAlert.value.message = message;
+	}
 });
 
 /**
