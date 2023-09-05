@@ -112,7 +112,7 @@ window.addEventListener('keydown', e => {
 		let visitedItems = 0;
 		return questions.find(question => {
 			visitedItems += question.items.length;
-			return visitedItems >= active;
+			return visitedItems > active;
 		});
 	};
 	const getValidValues = (questions: Question[], active: number): number[] => {
@@ -132,6 +132,8 @@ window.addEventListener('keydown', e => {
 			const minValue = min(question.type);
 			question.legend.forEach((_value, i) => validValues.push(minValue + i));
 		}
+
+		console.log(validValues);
 
 		return validValues;
 	};

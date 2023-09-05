@@ -10,6 +10,8 @@ import { QuestionVariableCutoff } from '@/assets/data/interfaces';
 import { QuestionVariableI } from '@/assets/data/interfaces';
 import AppAlert from '@/components/AppAlert.vue';
 
+defineProps({ survey: Object });
+
 const id = parseInt(useRoute().params.id as string);
 const loader = useLoaderStore();
 const survey = ref<Survey>();
@@ -43,8 +45,8 @@ const printCutoff = (variable: QuestionVariableI, cutoff: QuestionVariableCutoff
 	const isGenderBased = variable.genderBased || variable.sexScores;
 
 	if (isGenderBased && survey.value?.patient.sex === 'F') {
-		from ?? cutoff.femFrom;
-		to ?? cutoff.femTo;
+		if (cutoff.femFrom) from = cutoff.femFrom;
+		if (cutoff.femTo) to = cutoff.femTo;
 	}
 
 	let printable = `${from} - ${to}`;
