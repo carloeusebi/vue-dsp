@@ -19,7 +19,7 @@ const getScores = async (id: undefined | number) => {
 	if (!id) return;
 	isFetching.value = true;
 	try {
-		const { data } = await axiosInstance.get(`surveys/score/${id}`);
+		const { data } = await axiosInstance.get(`surveys/${id}/results`);
 		scores.value = data;
 	} catch (err) {
 		if (isAxiosError(err)) {

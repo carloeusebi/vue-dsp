@@ -21,7 +21,7 @@ const error = ref('');
 onMounted(async () => {
 	loader.setLoader();
 	try {
-		const { data } = await axiosInstance.get(`surveys/score/${id}`);
+		const { data } = await axiosInstance.get(`surveys/${id}/results`);
 		survey.value = data;
 	} catch (err) {
 		if (isAxiosError(err)) {

@@ -47,6 +47,7 @@ const fillCheckboxes = () => {
 	const checkboxes: Array<boolean[]> = [];
 	if (!props.survey) return checkboxes;
 	props.survey.questions.forEach(question => {
+		if (!question.legend) return;
 		const legends = [];
 		for (let i = 0; i < question.legend.length; i++) {
 			legends.push(false);
