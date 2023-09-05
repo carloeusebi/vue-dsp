@@ -38,10 +38,11 @@ const handleUpdateQuestion = async () => {
 
 	if (errors.value.length) {
 		const errorsString = errors.value[0].reduce((str, error) => (str += `<li>${error}</li>`), '');
-		appAlert.title = 'Attenzione';
-		appAlert.type = 'warning';
-		appAlert.message = `<ul>${errorsString}</ul>`;
-		emit('update-question', appAlert);
+		const errorAlert = { ...appAlert };
+		errorAlert.title = 'Attenzione';
+		errorAlert.type = 'warning';
+		errorAlert.message = `<ul>${errorsString}</ul>`;
+		emit('update-question', errorAlert);
 	} else {
 		const id = questionsStore.lastInsertedId;
 		emit('update-question', appAlert);
