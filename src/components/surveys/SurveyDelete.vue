@@ -39,7 +39,7 @@ const handleDeleteSurvey = async () => {
 		@click="showDeleteModal = true"
 		color="red"
 		icon="trash-can"
-		label="Elimina Sondaggio"
+		label="Elimina Batteria"
 	/>
 
 	<AppModal

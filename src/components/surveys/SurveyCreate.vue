@@ -138,7 +138,7 @@ const select = (value: 'all' | 'none') => {
 		color="green"
 		@click="showModal = true"
 		icon="plus"
-		label="Aggiungi un nuovo sondaggio"
+		label="Aggiungi un nuova batteria"
 	/>
 
 	<AppModal
