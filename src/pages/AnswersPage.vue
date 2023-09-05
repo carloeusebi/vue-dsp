@@ -33,7 +33,9 @@ watch(
 		checkboxes.value = fillCheckboxes();
 		survey.questions = makeQuestionsPrintable(survey.questions);
 
+		// creates the itemArray, the itemArray is used to handle the key presses.
 		survey.questions.forEach(question => {
+			if (!question.legend) question.legend = [];
 			question.items.forEach(item => {
 				itemsArray.push(item);
 			});
@@ -43,14 +45,18 @@ watch(
 
 const min = (type: Question['type']): number => (type === 'EDI' ? 0 : parseInt(type.at(0) as string));
 
+/**
+ * Creates on checkbox per legend.
+ */
 const fillCheckboxes = () => {
 	const checkboxes: Array<boolean[]> = [];
 	if (!props.survey) return checkboxes;
 	props.survey.questions.forEach(question => {
-		if (!question.legend) return;
 		const legends = [];
-		for (let i = 0; i < question.legend.length; i++) {
-			legends.push(false);
+		if (question.type !== 'MUL') {
+			for (let i = 0; i < question.legend.length; i++) {
+				legends.push(false);
+			}
 		}
 		checkboxes.push(legends);
 	});
@@ -58,8 +64,8 @@ const fillCheckboxes = () => {
 };
 
 /**
- * Adds the printable propriety to each questionnaire
- * @param questions The questions to modify
+ * Adds the printable propriety to each questionnaire. The printable is a boolean used to decide if the Questionnaire is to be printed or not.
+ * @param questions The questions to modify.
  */
 const makeQuestionsPrintable = (questions: Question[]): PrintableQuestion[] =>
 	questions.map(q => ({ ...q, printable: true })) as PrintableQuestion[];
@@ -133,10 +139,16 @@ window.addEventListener('keydown', e => {
 			question.legend.forEach((_value, i) => validValues.push(minValue + i));
 		}
 
-		console.log(validValues);
-
 		return validValues;
 	};
+
+	if (e.shiftKey && e.key === 'Tab') {
+		active.value--;
+		return;
+	} else if (e.key === 'Tab') {
+		active.value++;
+		return;
+	}
 
 	const keyPress = parseInt(e.key);
 
@@ -150,10 +162,20 @@ window.addEventListener('keydown', e => {
 	}
 	itemsArray[active.value].answer = keyPress;
 	active.value++;
-	if (refItems.value) refItems.value[active.value].scrollIntoView({ block: 'center' });
+	if (refItems.value) {
+		refItems.value[active.value].scrollIntoView({ block: 'center' });
+		refItems.value[active.value].focus();
+	}
 });
 
-const countItems = (questionIndex: number, itemIndex: number): number => {
+/**
+ * Calculates the Item position the ItemsArray, which includes all the items of all the questionnaires.
+ * It is used to compare each item with the active value, to decide which item is the active one and should have the tailwind class with the darker background.
+ *
+ * @param questionIndex The index of the Question in the Questions[].
+ * @param itemIndex The index of the Item in the Question.items[].
+ */
+const itemPosition = (questionIndex: number, itemIndex: number): number => {
 	if (questionIndex === 0) return itemIndex;
 	let previousQuestionsItems = 0;
 	for (let i = 0; i < questionIndex; i++) {
@@ -235,11 +257,12 @@ const countItems = (questionIndex: number, itemIndex: number): number => {
 					<ul>
 						<li
 							ref="refItems"
+							tabindex="1"
 							v-for="(item, itemNumber) in question.items"
 							:key="item.id"
-							:class="{ 'bg-slate-100': active === countItems(i, itemNumber) && editMode }"
-							class="print:bg-white"
-							@click="if (editMode) active = countItems(i, itemNumber);"
+							:class="{ 'bg-slate-200': active === itemPosition(i, itemNumber) && editMode }"
+							class="print:bg-white focus:outline-4"
+							@click="if (editMode) active = itemPosition(i, itemNumber);"
 						>
 							<ResultItem
 								:only-show-answers-with-comment="onlyShowAnswersWithComment"
