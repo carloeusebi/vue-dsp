@@ -51,9 +51,7 @@ const surveysStore = useSurveysStore();
 const survey = computed(() => surveysStore.getById(id));
 const scores = ref();
 const scoresPreviewAlertType = ref<'info' | 'warning'>('info');
-const scoresPreviewAlertMessage = ref(
-	`${survey.value?.title} di ${survey.value?.patient_name} non è stato ancora completato.`
-);
+const scoresPreviewAlertMessage = ref('Questo test non è stato ancora completato.');
 const appAlert = ref<Alert>({
 	show: false,
 	type: 'info',
