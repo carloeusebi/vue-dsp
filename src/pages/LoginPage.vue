@@ -18,8 +18,6 @@ const form: Ref<LoginForm> = ref({
 const isInvalid = ref(false);
 const errorMessage = ref('');
 
-console.log(redirect);
-
 const login = async () => {
 	loader.setLoader();
 	isInvalid.value = false;

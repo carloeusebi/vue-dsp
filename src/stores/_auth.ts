@@ -48,8 +48,6 @@ export const useAuthStore = defineStore('auth', {
 
 					localStorage.setItem('USER', JSON.stringify(user));
 
-					this.fetchAllData();
-
 					this.router.push(redirect || '/');
 				})
 				.catch(err => {

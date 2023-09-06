@@ -41,8 +41,7 @@ export const useSurveysStore = defineStore('surveys', {
 
 		load(surveys: Survey[]) {
 			this.surveys = surveys.map(s => {
-				s.patient_name =
-					s.patient.fname || s.patient.lname ? `${s.patient.fname} ${s.patient.lname}` : 'Paziente eliminato';
+				s.patient_name = s.patient ? `${s.patient.fname} ${s.patient.lname}` : 'Paziente eliminato';
 				return s;
 			});
 		},
