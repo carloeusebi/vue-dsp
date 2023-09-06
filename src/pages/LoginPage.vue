@@ -27,8 +27,7 @@ const login = async () => {
 	} catch (err) {
 		isInvalid.value = true;
 		if (isAxiosError(err)) {
-			errorMessage.value =
-				err.response?.status === 401 ? 'Email o Password errati' : err.response?.data['server-error'];
+			errorMessage.value = err.response?.status === 401 ? 'Email o Password errati' : err.response?.data.message;
 		} else console.warn(err);
 	} finally {
 		loader.unsetLoader();

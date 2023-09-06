@@ -34,7 +34,7 @@ const sendEmail = async () => {
 	} catch (err) {
 		if (isAxiosError(err)) {
 			console.warn(err.response?.data);
-			message = err.response?.data;
+			message = err.response?.data.message;
 		} else message = err as string;
 
 		title = 'Attenzione';

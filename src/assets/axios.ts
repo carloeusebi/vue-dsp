@@ -30,8 +30,7 @@ axiosInstance.interceptors.response.use(
 			} else if (err.response?.status === 500) {
 				console.warn(err.response?.data);
 				(err.response as AxiosResponse).data = {
-					'server-error':
-						'Si è verificato un problema interno al server. Se il problema persiste contattare il supporto!',
+					message: 'Si è verificato un problema interno al server. Se il problema persiste contattare il supporto!',
 				};
 			}
 		}

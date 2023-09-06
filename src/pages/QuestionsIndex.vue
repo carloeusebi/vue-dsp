@@ -52,7 +52,7 @@ const filteredQuestions = computed(() => {
 </script>
 
 <template>
-	<section class="relative mt-6 mx-auto max-w-screen-2xl overflow-x-hidden">
+	<section class="relative mt-6 mb-36 mx-auto max-w-screen-2xl min-h-[600px] overflow-x-hidden">
 		<div class="relative flex items-center gap-6">
 			<AppSearchbar @key-press="handleSearchbarKeypress" />
 			<QuestionTags
@@ -60,6 +60,7 @@ const filteredQuestions = computed(() => {
 				@change-selection="handleChangeSelection($event)"
 			/>
 		</div>
+		<!-- @vue-ignore -->
 		<AppAlert
 			:show="alertMessage != undefined && alertType != undefined"
 			:type="alertType"
