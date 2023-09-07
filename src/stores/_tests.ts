@@ -50,11 +50,12 @@ export const useTestsStore = defineStore('tests', {
 		async save(test: Survey, question: Question, justCompleted = false) {
 			this.test = test;
 			const questionId = question.id;
+			const token = test.token;
 			const answeredItems = question.items.filter(item => {
 				if (item.answer || item.answer === 0) return item;
 			});
 			const answers = answeredItems.map(({ id, answer }) => ({ id, answer }));
-			const payload = { questionId, answers, justCompleted };
+			const payload = { questionId, answers, justCompleted, token };
 
 			return this.axios.put(`${endpoint}/${test.id}`, payload).catch(err => {
 				if (isAxiosError(err)) console.warn(err.response?.data);
