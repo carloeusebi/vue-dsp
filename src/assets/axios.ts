@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { useAuthStore } from '@/stores';
 
-const baseURL = `${import.meta.env.VITE_API_URL}/api` || 'http://localhost:8000/api';
+const baseURL = `${import.meta.env.VITE_API_URL}` || 'http://localhost:8000/api';
 
 const axiosInstance = axios.create({
 	baseURL,
