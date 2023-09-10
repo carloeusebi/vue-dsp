@@ -72,6 +72,7 @@ const fetchTest = async (token: string) => {
 			pages.value.push({ question });
 		});
 
+		// show the patient form only on the first access, if the patient has begun to answer the test and it returns on the first page the form should be hidden.
 		showForm.value = test.value.updated_at === null || test.value.updated_at === test.value.created_at;
 
 		// sets the first non-completed Questionnaire as the active one
@@ -160,33 +161,18 @@ const handleQuestionComplete = () => {
 	<div class="container px-5 mx-auto">
 		<main>
 			<!-- LANDING -->
-			<TestLanding
-				v-if="showLanding"
-				@start="showLanding = false"
-			/>
-			<TestForm
-				v-else-if="showForm"
-				:patient="test.patient"
-				:token="test.token"
-				@form-submit="showForm = false"
-			/>
+			<TestLanding v-if="showLanding" @start="showLanding = false" />
+			<TestForm v-else-if="showForm" :patient="test.patient"
+				:token="test.token" @form-submit="showForm = false" />
 			<!-- AT TEST COMPLETION -->
-			<div
-				v-else-if="justCompleted"
-				class="text-center pt-5"
-			>
+			<div v-else-if="justCompleted" class="text-center pt-5">
 				<h2>Grazie {{ test.patient.fname }} per aver completato il test</h2>
 				<p>Questo link non sarà più valido.</p>
 			</div>
 			<!-- TEST QUESTION -->
-			<TestQuestion
-				v-else
-				:question="pages[active].question"
-				:current="active + 1"
-				:total="pages.length"
-				@answered="handleAnswer"
-				@question-complete="handleQuestionComplete"
-			/>
+			<TestQuestion v-else :question="pages[active].question"
+				:current="active + 1" :total="pages.length" @answered="handleAnswer"
+				@question-complete="handleQuestionComplete" />
 		</main>
 	</div>
 </template>
