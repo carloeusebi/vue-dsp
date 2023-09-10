@@ -54,7 +54,12 @@ export const useTestsStore = defineStore('tests', {
 			const answeredItems = question.items.filter(item => {
 				if (item.answer || item.answer === 0) return item;
 			});
-			const answers = answeredItems.map(({ id, answer }) => ({ id, answer }));
+			const answers = answeredItems.map(item => {
+				const id = item.id;
+				const answer = item.answer;
+
+				return item.comment ? { id, answer, comment: item.comment } : { id, answer };
+			});
 			const payload = { questionId, answers, justCompleted, token };
 
 			return this.axios.put(`${endpoint}/${test.id}`, payload).catch(err => {

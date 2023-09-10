@@ -119,7 +119,7 @@ const handleAnswer = (answer: number): void => {
 	if (scroll.value) return;
 	clicked.value = answer;
 
-	emit('answered', activeItemId.value, answer);
+	emit('answered', activeItemId.value, answer, comment.value);
 	goToNextQuestion();
 };
 
@@ -148,17 +148,11 @@ const skipItem = () => {
 <template>
 	<section class="flex flex-col max-w-lg mx-auto">
 		<!-- QUESTION DESCRIPTION -->
-		<div
-			v-if="showQuestionDescription"
-			class="relative z-10 pt-6 bg-gray-50"
-		>
+		<div v-if="showQuestionDescription" class="relative z-10 pt-6 bg-gray-50">
 			<h2 class="text-center font-extrabold">{{ question.question }}</h2>
 			<p class="text-justify">{{ question.description }}</p>
 			<div class="flex justify-center mx-auto my-5">
-				<AppButton
-					color="green"
-					@click="showQuestionDescription = false"
-				>
+				<AppButton color="green" @click="showQuestionDescription = false">
 					Rispondi
 				</AppButton>
 			</div>
@@ -169,64 +163,43 @@ const skipItem = () => {
 			<div class="bg-gray-50 relative z-10 pt-3">
 				<div class="text-center font-semibold">
 					<div class="mb-2">{{ question.question }}</div>
-					<div class="text-sm">Questionario {{ current }} di {{ total }}</div>
+					<div class="text-sm">Questionario {{ current }} di {{ total }}
+					</div>
 				</div>
 
 				<div class="bg-gray-200 h-1 my-3 flex">
-					<div
-						class="h-1 flex-grow"
-						v-for="segment in segments"
+					<div class="h-1 flex-grow" v-for="segment in segments"
 						:key="segment"
-						:class="{ 'bg-secondary': segment <= active }"
-					></div>
+						:class="{ 'bg-secondary': segment <= active }"></div>
 				</div>
 			</div>
 			<!-- ACTUAL QUESTION -->
 
-			<div
-				class="max-w-sm w-full mx-auto relative z-0"
-				:class="{ scroll: scroll }"
-			>
+			<div class="max-w-sm w-full mx-auto relative z-0"
+				:class="{ scroll: scroll }">
 				<p class="item-description text-center text-lg font-semibold">
 					{{ question.items[active].text }}
 				</p>
 				<!-- ! MUL -->
 				<ul v-if="question.type === 'MUL'">
-					<li
-						v-for="(ans, n) in question.items[active].multipleAnswers"
-						:key="ans.id"
-						@click="handleAnswer(ans.points)"
-						:class="{ active: clicked === ans.points }"
-					>
-						<TestAnswer
-							:index="n + 1"
-							:answer="ans.customAnswer"
-						/>
+					<li v-for="(ans, n) in question.items[active].multipleAnswers"
+						:key="ans.id" @click="handleAnswer(ans.points)"
+						:class="{ active: clicked === ans.points }">
+						<TestAnswer :index="n + 1" :answer="ans.customAnswer" />
 					</li>
 				</ul>
 				<!-- ! OTHER -->
-				<ul
-					v-else
-					class="my-5 w-full"
-				>
-					<li
-						@click="handleAnswer(n + min)"
-						v-for="(leg, n) in question.legend"
-						:key="leg.id"
-						:class="{ active: clicked === n + min }"
-					>
-						<TestAnswer
-							:index="n + 1"
-							:answer="leg.legend"
-						/>
+				<ul v-else class="my-5 w-full">
+					<li @click="handleAnswer(n + min)"
+						v-for="(leg, n) in question.legend" :key="leg.id"
+						:class="{ active: clicked === n + min }">
+						<TestAnswer :index="n + 1" :answer="leg.legend" />
 					</li>
 				</ul>
 				<!-- ADD COMMENT BUTTON -->
 				<div class="flex justify-end">
-					<button
-						@click="showCommentModal = true"
-						class="bg-primary hover:bg-secondary text-white w-full h-10 rounded-md font-bold"
-					>
+					<button @click="showCommentModal = true"
+						class="bg-primary hover:bg-secondary text-white w-full h-10 rounded-md font-bold">
 						<font-awesome-icon :icon="['far', 'comment-dots']" />
 						Aggiungi un commento
 					</button>
@@ -237,39 +210,22 @@ const skipItem = () => {
 
 	<!-- ADD COMMENT MODAL -->
 
-	<AppModal
-		:open="showCommentModal"
-		@close="showCommentModal = false"
-		:disable-history-mode="true"
-	>
+	<AppModal :open="showCommentModal" @close="showCommentModal = false"
+		:disable-history-mode="true">
 		<template #content>
-			<AppAlert
-				:show="showCommentAlert"
-				title="Errore"
+			<AppAlert :show="showCommentAlert" title="Errore"
 				message="Se vuoi saltare la domanda devi scrivere un commento."
-				type="warning"
-			/>
+				type="warning" />
 
 			<h3 class="font-bold my-3">Scrivi qui il tuo commento:</h3>
-			<form
-				id="comment-form"
-				@submit.prevent="addComment"
-			>
-				<AppInputElement
-					type="textarea"
-					v-model.trim="comment"
-				/>
+			<form id="comment-form" @submit.prevent="addComment">
+				<AppInputElement type="textarea" v-model.trim="comment" />
 			</form>
 		</template>
 		<template #button>
 			<AppButton form="comment-form"> Aggiungi commento</AppButton>
-			<AppButton
-				class="me-3"
-				color="green"
-				@click="skipItem"
-			>
-				Salta questa domanda</AppButton
-			>
+			<AppButton class="me-3" color="green" @click="skipItem">
+				Salta questa domanda</AppButton>
 		</template>
 	</AppModal>
 </template>
@@ -277,6 +233,7 @@ const skipItem = () => {
 <style lang="scss" scoped>
 $primary-color: #6ecc84;
 $secondary-color: #254d32;
+
 .item-description {
 	min-height: 75px;
 }
@@ -329,10 +286,12 @@ li {
 		transform: translateY(-100%);
 		opacity: 0;
 	}
+
 	34% {
 		transform: translateY(100%);
 		opacity: 0;
 	}
+
 	66% {
 		transform: translate(0);
 		opacity: 1;

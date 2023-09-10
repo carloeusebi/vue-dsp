@@ -130,10 +130,12 @@ const pages: Ref<Page[]> = ref([]);
 /**
  * Handle the patient's answer and saves it to the database
  */
-const handleAnswer = (itemId: number, answer: number): void => {
+const handleAnswer = (itemId: number, answer: number, comment: string): void => {
 	const itemToUpdate = activeQuestion.value.items.find(({ id }) => id === itemId) as QuestionItemI;
 
 	itemToUpdate.answer = answer;
+	if (comment)
+		itemToUpdate.comment = comment;
 
 	testsStore.save(test.value, activeQuestion.value);
 };
