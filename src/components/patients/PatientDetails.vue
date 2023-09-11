@@ -17,6 +17,12 @@ const keys = Object.keys(labels.value) as Array<keyof Patient>;
 const mappedPatient = computed(() => {
 	const mappedPatient: Patient = { ...props.patient };
 
+	if (mappedPatient.birthday)
+		mappedPatient.birthday = new Date(mappedPatient.birthday).toLocaleDateString();
+
+	if (mappedPatient.begin)
+		mappedPatient.begin = new Date(mappedPatient.begin).toLocaleDateString();
+
 	if (mappedPatient.email)
 		mappedPatient.email = `<a href="mailto:${props.patient.email}" class="font-medium text-blue-600 hover:underline">${props.patient.email}</a>`;
 
@@ -32,10 +38,7 @@ const mappedPatient = computed(() => {
 
 <template>
 	<ul>
-		<li
-			v-for="key in keys"
-			:key="key"
-		>
+		<li v-for="key in keys" :key="key">
 			<div v-if="key !== 'id'">
 				<strong>{{ labels[key] }}: </strong>
 				<span v-html="mappedPatient[key] || '-'"></span>

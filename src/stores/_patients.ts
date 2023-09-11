@@ -55,10 +55,8 @@ export const usePatientsStore = defineStore('patients', {
 				// if birthday update patient's age and convert birthday to locale date format
 				if (patient.birthday) {
 					patient.age = calculateAge(patient.birthday);
-					patient.birthday = new Date(patient.birthday).toLocaleDateString();
 				}
 				//convert begin date to local date format
-				patient.begin = new Date(patient.begin).toLocaleDateString();
 
 				return patient;
 			});
