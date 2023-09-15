@@ -1,59 +1,49 @@
 # Dellasanta Psicologo
 
-![Tests](https://github.com/carloeusebi/php-vue-dsp/actions/workflows/composer.yml/badge.svg)<br>
-Website for Federico Dellasanta Psicologo with front cover site and Admin Panel to manage patients and psychological evaluation questionnaires.
+Links: [dellasantapsicologo.it](https://dellasantapsicologo.it) |
+[Demo Admin Panel](https://carloeusebiwebdeveloper.it/dsp)
 
-> Built with PHP 8.1, Vue.js and Tailwind.css.
+> Built with Vue.js, Typescript, Tailwind.css, and Laravel 8.
+
+### Overview:
+
+Developed a comprehensive web solution for Dr. Dellasanta, a psychologist, to streamline his practice. The project consists of contact website in Laravel Blade, complemented by a dynamic admin panel created with Vue.js and Tailwind CSS.
+
+### Key Features:
+
+- <strong>Psychological Evaluation Questionnaires</strong>: Designed a system where Dr. Dellasanta can effortlessly compose psychological evaluation questionnaires. These questionnaires can be distributed via email, WhatsApp, or printed copies for those less tech-savvy patients.
+- <strong>Patient Convenience</strong>: Patients can conveniently respond to the questionnaires and leave comments using their smartphones. Responses and comments are automatically saved.
+- <strong>Effortless Data Management</strong>: Implemented an automated results calculation system, eliminating the need for manual data collection and analysis. This enhancement significantly improved Dr. Dellasanta's workflow efficiency.
+- <strong>Data Accessibility</strong>: Created an intuitive interface for Dr. Dellasanta to access patient responses and comments, as well as the calculated results. This information is accessible on his tablet, enabling him to review, discuss, and share results with patients during their sessions.
+
+### Outcome:
+
+The implementation of this web solution revolutionized Dr. Dellasanta's practice, eliminating tedious manual tasks, enhancing patient engagement, and improving the overall quality of care. The automation of data collection and result calculation has freed up valuable time, allowing Dr. Dellasanta to focus on providing more personalized support to his patients.
 
 ## Demo
 
 <!-- url is temporary -->
 
-Front cover Site: https://carloeusebiwebdeveloper.it<br>
-Admin Panel: https://carloeusebiwebdeveloper.it/admin
+Admin Panel: https://carloeusebiwebdeveloper.it/dsp
 
 ```
-Email: admin
-Password: admin
+Email: admin@example.com
+Password: admin123
 ```
 
 ## Installation
 
-Make sure you have environment setup properly. You will need MySQL, PHP8.1, Node.js and composer.
+Make sure you have environment setup properly. You will need MySQL, PHP8, Node.js and composer.
 
-## Install PHP Website + API
+## Install Laravel Website + API
 
-1. Download the project (or clone using GIT) and save it in your htdocs folder
-2. Copy `.env.example` into `.env` and configure database credentials
-3. In `.env` configure your email credentials if you want to be able to send emails
-4. Navigate to the project's root directory using terminal
-5. Run `composer install`
-6. Run migrations `php database migrate`
-7. Run factories `php database seed`
-
-## Installation using docker
-
-Make sure you have docker installed. To see how you can install docker on Windows [click here](https://youtu.be/2ezNqqaSjq8). <br>
-Make sure `docker` and `docker-compose` commands are available in command line.
-
-1. Clone the project using git
-1. Copy `.env.example` into `.env` (no need to change database credentials for local development)
-1. Navigate to the project root directory and run `docker-compose up -d`
-1. Install dependencies - `docker-compose exec app composer install`
-1. Run migrations - `docker-compose exec app php database migrate`
-1. Run factories - `docker-compose exec app php database seed`
-1. Open in browser http://localhost:8080
+Instruction: https://github.com/carloeusebi/laravel-dsp
 
 ## Install Vue.js Admin Panel
 
-1. Navigate to `vue` folder
 2. Run `npm install`
-3. Copy `vue/.env.example` into `vue/.env`
-4. Make sure `VITE_BASE_URL` key in `vue/.env` is set to your VITE port (Default: http://localhost:3000)
-5. Make sure `VITE_API_URL` key in `backend/.env` is set to your PHP Api Host
+3. Copy `.env.example` into `.env`
+4. Make sure `VITE_BASE_URL` key in `.env` is set to your VITE port (Default: http://localhost:3000)
+5. Make sure `VITE_API_URL` key in `.env` is set to your PHP Api Host
 6. Run `npm run dev`
 7. Open Vue.js Admin Panel in browser and login with
-   ```
-   admin
-   admin
-   ```
