@@ -33,7 +33,7 @@ const reverseAnswer = (answer: number): number => {
  * OR when question is being filtered by answer and the answer is not filtered.
  */
 const showItem = computed(() => {
-	const { item, onlyShowAnswersWithComment, checkboxes } = props;
+	const { item, onlyShowAnswersWithComment, checkboxes, min, type } = props;
 
 	// if item has not been answered always show the item.
 	if (!item.answer && item.answer !== 0) return true;
@@ -47,7 +47,7 @@ const showItem = computed(() => {
 
 	const answerValue = item.reversed ? reverseAnswer(item.answer) : item.answer;
 
-	showBasedOnAnswerFilter = showBasedOnAnswerFilter || checkboxes[answerValue];
+	showBasedOnAnswerFilter = showBasedOnAnswerFilter || checkboxes[answerValue - min(type)];
 
 	return Boolean(showBasedOnCommentFilter && showBasedOnAnswerFilter);
 });
