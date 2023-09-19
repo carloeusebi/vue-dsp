@@ -227,7 +227,7 @@ const itemPosition = (questionIndex: number, itemIndex: number): number => {
 					<!-- LEGEND -->
 					<div
 						v-if="question.type !== 'MUL'"
-						class="border border-black my-5 p-2 grid md:grid-cols-2"
+						class="border border-black my-5 p-2 grid md:grid-cols-2 select-none"
 					>
 						<div
 							v-for="(legend, j) in question.legend"

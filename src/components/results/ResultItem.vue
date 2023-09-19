@@ -14,8 +14,18 @@ interface Props {
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update']);
-
 const atLeastOneCheckboxIsChecked = computed(() => !props.checkboxes.every(cb => !cb));
+
+const reverseAnswer = (answer: number): number => {
+	let min = 0;
+	let max = 5;
+	if (props.type === 'MUL') return answer;
+	else if (props.type !== 'EDI') {
+		min = parseInt(props.type.at(0) as string);
+		max = parseInt(props.type.at(-1) as string);
+	}
+	return min + max - answer;
+};
 
 /**
  * Checks if item should be visible.
@@ -23,17 +33,6 @@ const atLeastOneCheckboxIsChecked = computed(() => !props.checkboxes.every(cb =>
  * OR when question is being filtered by answer and the answer is not filtered.
  */
 const showItem = computed(() => {
-	const reverseAnswer = (answer: number): number => {
-		let min = 0;
-		let max = 5;
-		if (props.type === 'MUL') return answer;
-		else if (props.type !== 'EDI') {
-			min = parseInt(props.type.at(0) as string);
-			max = parseInt(props.type.at(-1) as string);
-		}
-		return min + max - answer;
-	};
-
 	const { item, onlyShowAnswersWithComment, checkboxes } = props;
 
 	// if item has not been answered always show the item.
@@ -54,6 +53,12 @@ const showItem = computed(() => {
 });
 
 const itemValue = (n: number): number => props.min(props.type) + n;
+
+const printItem = (n: number): number => {
+	const { type, item } = props;
+	const value = type === 'EDI' ? (n < 2 ? 0 : n - 2) : itemValue(n);
+	return atLeastOneCheckboxIsChecked.value && item.reversed ? reverseAnswer(value) : value;
+};
 
 /**
  * Updates an answer
@@ -137,10 +142,10 @@ const handleDeleteComment = () => {
 					>
 						<div
 							class="answer-cell border border-black flex-grow flex justify-center items-center h-full"
-							:class="[itemValue(n) === item.answer ? 'bg-green-500' : '', editMode ? 'cursor-pointer' : '']"
+							:class="[printItem(n) === item.answer ? 'bg-green-500' : '', editMode ? 'cursor-pointer' : '']"
 							@click="changeAnswer(itemValue(n))"
 						>
-							{{ type === 'EDI' ? (n < 2 ? 0 : n - 2) : itemValue(n) }}
+							{{ printItem(n) }}
 						</div>
 					</div>
 				</div>
