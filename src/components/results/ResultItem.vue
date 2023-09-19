@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { Question, QuestionItemI } from '@/assets/data/interfaces';
+import { computed } from 'vue';
 
 interface Props {
 	onlyShowAnswersWithComment: boolean;
@@ -13,6 +14,44 @@ interface Props {
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update']);
+
+const atLeastOneCheckboxIsChecked = computed(() => !props.checkboxes.every(cb => !cb));
+
+/**
+ * Checks if item should be visible.
+ * It should not visible when `only show items with comment` checkbox is checked AND item has no comment
+ * OR when question is being filtered by answer and the answer is not filtered.
+ */
+const showItem = computed(() => {
+	const reverseAnswer = (answer: number): number => {
+		let min = 0;
+		let max = 5;
+		if (props.type === 'MUL') return answer;
+		else if (props.type !== 'EDI') {
+			min = parseInt(props.type.at(0) as string);
+			max = parseInt(props.type.at(-1) as string);
+		}
+		return min + max - answer;
+	};
+
+	const { item, onlyShowAnswersWithComment, checkboxes } = props;
+
+	// if item has not been answered always show the item.
+	if (!item.answer && item.answer !== 0) return true;
+
+	// filter by comments
+	let showBasedOnCommentFilter = !onlyShowAnswersWithComment || item.hasOwnProperty('comment');
+
+	// filter by answer
+
+	let showBasedOnAnswerFilter = checkboxes.every(cb => !cb); // when every checkbox is NOT checked, show the item!
+
+	const answerValue = item.reversed ? reverseAnswer(item.answer) : item.answer;
+
+	showBasedOnAnswerFilter = showBasedOnAnswerFilter || checkboxes[answerValue];
+
+	return Boolean(showBasedOnCommentFilter && showBasedOnAnswerFilter);
+});
 
 const itemValue = (n: number): number => props.min(props.type) + n;
 
@@ -51,12 +90,15 @@ const handleDeleteComment = () => {
 <template>
 	<div>
 		<div
-			v-if="!onlyShowAnswersWithComment || item.hasOwnProperty('comment')"
+			v-if="showItem"
 			class="grid grid-cols-6 relative"
 		>
 			<!-- question -->
 			<div
-				:class="[item.text ? 'col-span-4' : 'col-span-1']"
+				:class="[
+					item.text ? 'col-span-4' : 'col-span-1',
+					{ 'bg-yellow-100': atLeastOneCheckboxIsChecked && item.reversed },
+				]"
 				class="p-2 border border-black flex justify-between"
 			>
 				{{ itemNumber + 1 }}. {{ item.text }}
@@ -92,7 +134,6 @@ const handleDeleteComment = () => {
 						v-for="(answer, n) in numberOfAnswers"
 						:key="n"
 						class="flex-grow h-full"
-						:class="{ hidden: !checkboxes[n] && !checkboxes.every(cb => !cb) }"
 					>
 						<div
 							class="answer-cell border border-black flex-grow flex justify-center items-center h-full"

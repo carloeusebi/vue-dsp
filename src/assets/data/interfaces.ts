@@ -76,7 +76,7 @@ export interface Question {
 	id: number;
 	question: string;
 	description: string;
-	type: '' | '1-4' | '1-6' | '0-5' | '0-3' | '1-7' | '0-4' | '1-4' | '1-5' | 'EDI' | 'MUL';
+	type: '1-4' | '1-6' | '0-5' | '0-3' | '1-7' | '0-4' | '1-4' | '1-5' | 'EDI' | 'MUL';
 	legend: QuestionLegend[];
 	items: QuestionItemI[];
 	variables: QuestionVariableI[];
