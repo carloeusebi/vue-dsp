@@ -57,7 +57,17 @@ const itemValue = (n: number): number => props.min(props.type) + n;
 const printItem = (n: number): number => {
 	const { type, item } = props;
 	const value = type === 'EDI' ? (n < 2 ? 0 : n - 2) : itemValue(n);
+
+	//reverse the order if at least on checkbox is checked
 	return atLeastOneCheckboxIsChecked.value && item.reversed ? reverseAnswer(value) : value;
+};
+
+/**
+ * Return whether the answer box should be highlighted
+ */
+const isSelected = (itemValue: number, answer: number | undefined): boolean => {
+	if (answer == undefined) return false;
+	return itemValue === answer;
 };
 
 /**
@@ -142,7 +152,7 @@ const handleDeleteComment = () => {
 					>
 						<div
 							class="answer-cell border border-black flex-grow flex justify-center items-center h-full"
-							:class="[printItem(n) === item.answer ? 'bg-green-500' : '', editMode ? 'cursor-pointer' : '']"
+							:class="[isSelected(n, item.answer) ? 'bg-green-500' : '', editMode ? 'cursor-pointer' : '']"
 							@click="changeAnswer(itemValue(n))"
 						>
 							{{ printItem(n) }}
