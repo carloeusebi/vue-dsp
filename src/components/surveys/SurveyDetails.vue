@@ -19,7 +19,10 @@ const toItalianDate = (timestamp: string) => {
 
 <template>
 	<!-- PATIENT INFO -->
-	<SurveyPatient :patient="survey.patient" />
+	<SurveyPatient
+		v-if="survey.patient"
+		:patient="survey.patient"
+	/>
 	<hr class="my-3 pe-3" />
 	<!-- SURVEY INFO -->
 	<div v-if="survey.created_at">

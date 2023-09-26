@@ -44,7 +44,7 @@ const printCutoff = (variable: QuestionVariableI, cutoff: QuestionVariableCutoff
 	//@ts-ignore sexScore is deprecated
 	const isGenderBased = variable.genderBased || variable.sexScores;
 
-	if (isGenderBased && survey.value?.patient.sex === 'F') {
+	if (isGenderBased && survey.value?.patient?.sex === 'F') {
 		if (cutoff.femFrom) from = cutoff.femFrom;
 		if (cutoff.femTo) to = cutoff.femTo;
 	}
@@ -54,7 +54,7 @@ const printCutoff = (variable: QuestionVariableI, cutoff: QuestionVariableCutoff
 	if (type === 'lesser-than') printable = `< ${from}`;
 
 	// if Variable is gender based also prints the cutoff
-	return isGenderBased ? `${survey.value?.patient.sex} ${printable}` : printable;
+	return isGenderBased && survey.value?.patient ? `${survey.value?.patient.sex} ${printable}` : printable;
 };
 </script>
 
