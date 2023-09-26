@@ -7,8 +7,4 @@ import AppLoader from './components/AppLoader.vue';
 	<AppLoader />
 </template>
 
-<style>
-::-webkit-scrollbar {
-	width: 0;
-}
-</style>
+<style></style>
