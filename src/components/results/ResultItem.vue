@@ -27,6 +27,21 @@ const reverseAnswer = (answer: number): number => {
 	return min + max - answer;
 };
 
+const reverseEdi = (answer: number): number => {
+	switch (answer) {
+		case 5:
+		case 4:
+		case 3:
+			return 0;
+		case 2:
+			return 1;
+		case 1:
+			return 2;
+		default:
+			return 3;
+	}
+};
+
 /**
  * Checks if item should be visible.
  * It should not visible when `only show items with comment` checkbox is checked AND item has no comment
@@ -56,18 +71,26 @@ const itemValue = (n: number): number => props.min(props.type) + n;
 
 const printItem = (n: number): number => {
 	const { type, item } = props;
-	const value = type === 'EDI' ? (n < 2 ? 0 : n - 2) : itemValue(n);
-
-	//reverse the order if at least on checkbox is checked
-	return atLeastOneCheckboxIsChecked.value && item.reversed ? reverseAnswer(value) : value;
+	if (type === 'EDI') {
+		const value = n < 2 ? 0 : n - 2;
+		return atLeastOneCheckboxIsChecked.value && item.reversed ? reverseEdi(value) : value;
+	} else {
+		const value = itemValue(n);
+		return atLeastOneCheckboxIsChecked.value && item.reversed ? reverseAnswer(value) : value;
+	}
 };
 
 /**
- * Return whether the answer box should be highlighted
+ * Returns whether the box should be highlighted or not.
+ * @param n The position of the Box
+ * @param item
  */
-const isSelected = (itemValue: number, answer: number | undefined): boolean => {
+const isBoxAnswer = (n: number, item: QuestionItemI) => {
+	const { answer, reversed } = item;
 	if (answer == undefined) return false;
-	return itemValue === answer;
+	const actualAnswer = atLeastOneCheckboxIsChecked.value && reversed ? reverseAnswer(answer) : answer;
+
+	return itemValue(n) === actualAnswer;
 };
 
 /**
@@ -152,7 +175,7 @@ const handleDeleteComment = () => {
 					>
 						<div
 							class="answer-cell border border-black flex-grow flex justify-center items-center h-full"
-							:class="[isSelected(n, item.answer) ? 'bg-green-500' : '', editMode ? 'cursor-pointer' : '']"
+							:class="[isBoxAnswer(n, item) ? 'bg-green-500' : '', editMode ? 'cursor-pointer' : '']"
 							@click="changeAnswer(itemValue(n))"
 						>
 							{{ printItem(n) }}
