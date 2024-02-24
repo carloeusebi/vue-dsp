@@ -43,7 +43,7 @@ const tableCells: Ref<Cell<Patient>[]> = ref([
 	},
 ]);
 
-const defaultOrder: Order<Patient> = { by: 'id', direction: 'down' };
+const defaultOrder: Order<Patient> = { by: 'begin', direction: 'up' };
 
 const changeOrder = (newOrder: Order<Patient>) => {
 	order.value = { ...newOrder };
