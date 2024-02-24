@@ -93,12 +93,6 @@ const isBoxAnswer = (n: number, item: QuestionItemI) => {
 	return itemValue(n) === actualAnswer;
 };
 
-/**
- * Updates an answer
- * @param questionId the question where the answer to update is
- * @param itemId the item to update
- * @param answer the new answer
- */
 const changeAnswer = (answer: number): void => {
 	// return if we are not in question mode
 	if (!props.editMode) return;
@@ -198,7 +192,7 @@ const handleDeleteComment = () => {
 				</div>
 				<div class="comment flex">
 					<!-- comment delete button -->
-					<span class="grow">{{ item.comment }}</span>
+					<span class="grow max-w-[500px]">{{ item.comment }}</span>
 					<font-awesome-icon
 						@click="handleDeleteComment()"
 						:icon="['fas', 'trash-can']"
