@@ -101,6 +101,7 @@ const goToNextQuestion = () => {
 				emit('question-complete');
 				showQuestionDescription.value = true;
 				clicked.value = -1;
+        comment.value = '';
 				keepCycling = false;
 			} else {
 				active.value++;
