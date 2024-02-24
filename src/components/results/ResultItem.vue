@@ -123,12 +123,12 @@ const handleDeleteComment = () => {
 	<div>
 		<div
 			v-if="showItem"
-			class="grid grid-cols-6 relative"
+			class="grid grid-cols-6 relative w-[97%] xl:w-full"
 		>
 			<!-- question -->
 			<div
 				:class="[
-					item.text ? 'col-span-4' : 'col-span-1',
+					item.text ? item.multipleAnswers?.length > 3 ? 'col-span-6' : 'col-span-4' : 'col-span-1',
 					{ 'bg-yellow-100': atLeastOneCheckboxIsChecked && item.reversed },
 				]"
 				class="p-2 border border-black flex justify-between"
@@ -136,7 +136,7 @@ const handleDeleteComment = () => {
 				{{ itemNumber + 1 }}. {{ item.text }}
 			</div>
 			<!-- ANSWERS -->
-			<div :class="[item.text ? 'col-span-2' : 'col-span-5']">
+			<div :class="[item.text ? item.multipleAnswers?.length > 3 ? 'col-span-6' : 'col-span-2' : 'col-span-5']">
 				<!-- ! IF MUL -->
 				<div
 					v-if="item.multipleAnswers"
@@ -192,7 +192,7 @@ const handleDeleteComment = () => {
 				</div>
 				<div class="comment flex">
 					<!-- comment delete button -->
-					<span class="grow max-w-[500px]">{{ item.comment }}</span>
+					<span class="grow max-w-[250px] md:max-w-[400px] lg:max-w-[500px]">{{ item.comment }}</span>
 					<font-awesome-icon
 						@click="handleDeleteComment()"
 						:icon="['fas', 'trash-can']"
